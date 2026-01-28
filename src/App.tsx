@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import StudentPortal from "./pages/StudentPortal";
 import FacilitatorDashboard from "./pages/FacilitatorDashboard";
 import AdminPanel from "./pages/AdminPanel";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/student" element={<StudentPortal />} />
           <Route path="/facilitator" element={<FacilitatorDashboard />} />
           <Route path="/admin" element={<AdminPanel />} />

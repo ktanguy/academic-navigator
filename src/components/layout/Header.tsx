@@ -50,12 +50,14 @@ export const Header = () => {
 
         <div className="hidden items-center gap-3 md:flex">
           <motion.div {...buttonMotionProps}>
-            <Button variant="ghost" size="sm">
-              Sign In
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/auth">Sign In</Link>
             </Button>
           </motion.div>
           <motion.div {...buttonMotionProps}>
-            <Button size="sm">Get Started</Button>
+            <Button size="sm" asChild>
+              <Link to="/auth">Get Started</Link>
+            </Button>
           </motion.div>
         </div>
 
@@ -94,11 +96,11 @@ export const Header = () => {
                 </Link>
               ))}
               <div className="mt-4 flex flex-col gap-2 pt-4">
-                <Button variant="ghost" size="sm" className="w-full justify-center">
-                  Sign In
+                <Button variant="ghost" size="sm" className="w-full justify-center" asChild>
+                  <Link to="/auth">Sign In</Link>
                 </Button>
-                <Button size="sm" className="w-full justify-center">
-                  Get Started
+                <Button size="sm" className="w-full justify-center" asChild>
+                  <Link to="/auth">Get Started</Link>
                 </Button>
               </div>
             </nav>
