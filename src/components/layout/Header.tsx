@@ -17,7 +17,7 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-card/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full bg-card/80 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
@@ -76,7 +76,7 @@ export const Header = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={quickTransition}
-            className="border-t border-border bg-card md:hidden"
+            className="bg-card md:hidden"
           >
             <nav className="container flex flex-col gap-1 py-4">
               {navLinks.map((link) => (
@@ -93,7 +93,7 @@ export const Header = () => {
                   {link.label}
                 </Link>
               ))}
-              <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+              <div className="mt-4 flex flex-col gap-2 pt-4">
                 <Button variant="ghost" size="sm" className="w-full justify-center">
                   Sign In
                 </Button>

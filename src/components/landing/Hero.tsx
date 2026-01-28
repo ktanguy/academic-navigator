@@ -21,7 +21,7 @@ export const Hero = () => {
             variants={fadeInUp}
             transition={{ ...defaultTransition, delay: 0 }}
           >
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-soft">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-soft">
               <Sparkles className="h-4 w-4 text-primary" />
               <span>Powered by Advanced AI</span>
             </div>
@@ -76,7 +76,7 @@ export const Hero = () => {
             animate="animate"
             variants={fadeInUp}
             transition={{ ...defaultTransition, delay: 0.4 }}
-            className="mt-16 grid grid-cols-3 gap-8 border-t border-border pt-10"
+            className="mt-16 grid grid-cols-3 gap-8 pt-10"
           >
             {[
               { value: "50+", label: "Universities" },

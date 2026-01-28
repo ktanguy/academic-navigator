@@ -184,7 +184,7 @@ const AdminPanel = () => {
             </motion.div>
 
             {/* Navigation Tabs */}
-            <div className="mb-8 flex gap-1 rounded-lg border border-border bg-card p-1">
+            <div className="mb-8 flex gap-1 rounded-lg bg-card p-1">
               {[
                 { id: "analytics", label: "Analytics", icon: BarChart3 },
                 { id: "users", label: "User Management", icon: Users },
@@ -228,7 +228,7 @@ const AdminPanel = () => {
                   <StaggerContainer className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {analyticsData.map((stat, index) => (
                       <AnimatedListItem key={stat.label}>
-                        <AnimatedCard className="rounded-xl border border-border bg-card p-5 shadow-card">
+                        <AnimatedCard className="rounded-xl bg-card p-5 shadow-card">
                           <div className="flex items-center justify-between">
                             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
                               <stat.icon className="h-5 w-5 text-primary" />
@@ -265,7 +265,7 @@ const AdminPanel = () => {
                       animate="animate"
                       variants={fadeInUp}
                       transition={{ ...defaultTransition, delay: 0.2 }}
-                      className="rounded-xl border border-border bg-card p-6 shadow-card"
+                      className="rounded-xl bg-card p-6 shadow-card"
                     >
                       <div className="mb-6 flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-foreground">
@@ -294,7 +294,7 @@ const AdminPanel = () => {
                       animate="animate"
                       variants={slideInRight}
                       transition={{ ...defaultTransition, delay: 0.3 }}
-                      className="rounded-xl border border-border bg-card p-6 shadow-card"
+                      className="rounded-xl bg-card p-6 shadow-card"
                     >
                       <div className="mb-6 flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-foreground">
@@ -357,7 +357,7 @@ const AdminPanel = () => {
                     <Button>Add User</Button>
                   </div>
 
-                  <div className="rounded-xl border border-border bg-card shadow-card">
+                  <div className="rounded-xl bg-card shadow-card">
                     <div className="grid grid-cols-5 gap-4 border-b border-border bg-secondary/50 px-6 py-3 text-sm font-medium text-muted-foreground">
                       <span>Name</span>
                       <span>Email</span>
@@ -466,7 +466,7 @@ const AdminPanel = () => {
                         ease: "easeOut",
                       }}
                       whileHover={{ y: -2 }}
-                      className="flex items-center justify-between rounded-xl border border-border bg-card p-6 shadow-card transition-shadow hover:shadow-elevated"
+                      className="flex items-center justify-between rounded-xl bg-card p-6 shadow-card transition-shadow hover:shadow-elevated"
                     >
                       <div>
                         <h3 className="font-semibold text-foreground">{setting.title}</h3>

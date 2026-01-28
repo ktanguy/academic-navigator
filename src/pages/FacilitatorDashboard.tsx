@@ -167,7 +167,7 @@ const FacilitatorDashboard = () => {
                 },
               ].map((stat) => (
                 <AnimatedListItem key={stat.label}>
-                  <AnimatedCard className="rounded-xl border border-border bg-card p-5 shadow-card">
+                  <AnimatedCard className="rounded-xl bg-card p-5 shadow-card">
                     <div className="flex items-center justify-between">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
                         <stat.icon className="h-5 w-5 text-primary" />
@@ -219,7 +219,7 @@ const FacilitatorDashboard = () => {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ delay: index * 0.06, duration: 0.3, ease: "easeOut" }}
                       whileHover={{ y: -2 }}
-                      className="group rounded-xl border border-border bg-card p-5 shadow-card transition-shadow hover:shadow-elevated"
+                      className="group rounded-xl bg-card p-5 shadow-card transition-shadow hover:shadow-elevated"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-4">
