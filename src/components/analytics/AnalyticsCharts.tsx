@@ -37,9 +37,9 @@ const monthlyTrendData = [
 
 // AI Classification performance
 const classificationData = [
-  { name: "High Confidence (>85%)", value: 58, color: "hsl(157, 100%, 36%)" },
-  { name: "Medium Confidence (60-85%)", value: 28, color: "hsl(38, 92%, 50%)" },
-  { name: "Low Confidence (<60%)", value: 14, color: "hsl(0, 84%, 60%)" },
+  { name: "High Confidence (>85%)", value: 58, color: "#22c55e" },
+  { name: "Medium Confidence (60-85%)", value: 28, color: "#f59e0b" },
+  { name: "Low Confidence (<60%)", value: 14, color: "#ef4444" },
 ];
 
 // Facilitator workload
@@ -86,7 +86,7 @@ export const TicketCategoryChart = () => (
           />
           <Bar 
             dataKey="count" 
-            fill="hsl(var(--primary))" 
+            fill="#06142E" 
             radius={[0, 4, 4, 0]}
             name="Tickets"
           />
@@ -129,25 +129,25 @@ export const TrendChart = () => (
           <Line 
             type="monotone" 
             dataKey="tickets" 
-            stroke="hsl(var(--primary))" 
+            stroke="#06142E" 
             strokeWidth={2}
-            dot={{ fill: "hsl(var(--primary))", strokeWidth: 2 }}
+            dot={{ fill: "#06142E", strokeWidth: 2 }}
             name="Total Tickets"
           />
           <Line 
             type="monotone" 
             dataKey="appointments" 
-            stroke="hsl(var(--accent))" 
+            stroke="#3b82f6" 
             strokeWidth={2}
-            dot={{ fill: "hsl(var(--accent))", strokeWidth: 2 }}
+            dot={{ fill: "#3b82f6", strokeWidth: 2 }}
             name="Appointments"
           />
           <Line 
             type="monotone" 
             dataKey="aiResolved" 
-            stroke="hsl(var(--success))" 
+            stroke="#22c55e" 
             strokeWidth={2}
-            dot={{ fill: "hsl(var(--success))", strokeWidth: 2 }}
+            dot={{ fill: "#22c55e", strokeWidth: 2 }}
             name="AI Resolved"
           />
         </LineChart>
@@ -251,13 +251,13 @@ export const FacilitatorWorkloadChart = () => (
           <Legend />
           <Bar 
             dataKey="tickets" 
-            fill="hsl(var(--primary))" 
+            fill="#06142E" 
             radius={[4, 4, 0, 0]}
             name="Tickets"
           />
           <Bar 
             dataKey="appointments" 
-            fill="hsl(var(--accent))" 
+            fill="#3b82f6" 
             radius={[4, 4, 0, 0]}
             name="Appointments"
           />
