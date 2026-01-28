@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen, MessageSquare } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { fadeInUp, defaultTransition, buttonMotionProps } from "@/components/ui/motion";
 
@@ -23,11 +24,11 @@ export const CTA = () => {
 
           <div className="relative">
             <h2 className="text-3xl font-bold text-primary-foreground md:text-4xl">
-              Ready to Transform Your Academic Support?
+              Ready to Get the Help You Need?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/80">
-              Join leading universities that have improved student satisfaction 
-              and reduced response times with our AI-powered platform.
+              Browse our teacher directory to book a meeting, or submit a help 
+              ticket to get quick answers to your questions.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <motion.div {...buttonMotionProps}>
@@ -35,9 +36,12 @@ export const CTA = () => {
                   size="lg"
                   variant="secondary"
                   className="h-12 px-8 text-base"
+                  asChild
                 >
-                  Schedule a Demo
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <Link to="/directory">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Browse Directory
+                  </Link>
                 </Button>
               </motion.div>
               <motion.div {...buttonMotionProps}>
@@ -45,8 +49,12 @@ export const CTA = () => {
                   size="lg"
                   variant="ghost"
                   className="h-12 px-8 text-base text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                  asChild
                 >
-                  Contact Sales
+                  <Link to="/helpdesk">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Submit a Ticket
+                  </Link>
                 </Button>
               </motion.div>
             </div>

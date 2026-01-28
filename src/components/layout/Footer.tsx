@@ -12,11 +12,11 @@ export const Footer = () => {
                 <GraduationCap className="h-5 w-5 text-primary-foreground" />
               </div>
               <span className="text-lg font-semibold text-foreground">
-                AcademicAI
+                Magic Helper
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              AI-powered academic support for higher education institutions.
+              Your friendly academic support platform for students and faculty.
             </p>
           </div>
 
@@ -24,18 +24,18 @@ export const Footer = () => {
             <h4 className="mb-4 text-sm font-semibold text-foreground">Platform</h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/student" className="text-muted-foreground transition-colors hover:text-foreground">
-                  Student Portal
+                <Link to="/directory" className="text-muted-foreground transition-colors hover:text-foreground">
+                  Teacher Directory
                 </Link>
               </li>
               <li>
-                <Link to="/facilitator" className="text-muted-foreground transition-colors hover:text-foreground">
-                  Facilitator Dashboard
+                <Link to="/booking" className="text-muted-foreground transition-colors hover:text-foreground">
+                  Book a Meeting
                 </Link>
               </li>
               <li>
-                <Link to="/admin" className="text-muted-foreground transition-colors hover:text-foreground">
-                  Admin Panel
+                <Link to="/helpdesk" className="text-muted-foreground transition-colors hover:text-foreground">
+                  Help Desk
                 </Link>
               </li>
             </ul>
@@ -86,7 +86,7 @@ export const Footer = () => {
 
         <div className="mt-12 pt-6">
           <p className="text-center text-sm text-muted-foreground">
-            © 2026 AcademicAI. All rights reserved.
+            © 2026 Magic Helper. All rights reserved.
           </p>
         </div>
       </div>

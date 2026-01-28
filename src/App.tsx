@@ -8,6 +8,9 @@ import StudentPortal from "./pages/StudentPortal";
 import FacilitatorDashboard from "./pages/FacilitatorDashboard";
 import AdminPanel from "./pages/AdminPanel";
 import Auth from "./pages/Auth";
+import Directory from "./pages/Directory";
+import Booking from "./pages/Booking";
+import HelpDesk from "./pages/HelpDesk";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +27,9 @@ const App = () => (
           <Route path="/student" element={<StudentPortal />} />
           <Route path="/facilitator" element={<FacilitatorDashboard />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/directory" element={<Directory />} />
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/helpdesk" element={<HelpDesk />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

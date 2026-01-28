@@ -34,8 +34,8 @@ export const Hero = () => {
             transition={{ ...defaultTransition, delay: 0.1 }}
             className="text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl"
           >
-            Intelligent Academic Support for{" "}
-            <span className="text-primary">Higher Education</span>
+            Your Academic Support{" "}
+            <span className="text-primary">Made Simple</span>
           </motion.h1>
 
           <motion.p
@@ -45,9 +45,8 @@ export const Hero = () => {
             transition={{ ...defaultTransition, delay: 0.2 }}
             className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
-            Streamline student services with AI-powered assistance. Connect students 
-            to resources, automate routine queries, and empower facilitators with 
-            intelligent tools.
+            Find teachers, book meetings, submit help requests, and track your 
+            support tickets — all in one friendly platform designed for students.
           </motion.p>
 
           <motion.div
@@ -58,14 +57,16 @@ export const Hero = () => {
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <motion.div {...buttonMotionProps}>
-              <Button size="lg" className="h-12 px-8 text-base">
-                Request Demo
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button size="lg" className="h-12 px-8 text-base" asChild>
+                <a href="/directory">
+                  Find a Teacher
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
               </Button>
             </motion.div>
             <motion.div {...buttonMotionProps}>
-              <Button variant="outline" size="lg" className="h-12 px-8 text-base">
-                Learn More
+              <Button variant="outline" size="lg" className="h-12 px-8 text-base" asChild>
+                <a href="/helpdesk">Get Help</a>
               </Button>
             </motion.div>
           </motion.div>
