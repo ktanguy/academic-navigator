@@ -192,9 +192,9 @@ const Directory = () => {
                     </div>
 
                     {/* Office Hours */}
-                    <div className="mt-4 flex items-center gap-2 rounded-lg bg-secondary/50 p-3 text-sm">
-                      <Clock className="h-4 w-4 text-primary" />
-                      <span className="text-muted-foreground">{teacher.officeHours}</span>
+                    <div className="mt-4 flex items-center gap-2 rounded-lg bg-primary p-3 text-sm">
+                      <Clock className="h-4 w-4 text-primary-foreground" />
+                      <span className="text-primary-foreground">{teacher.officeHours}</span>
                     </div>
 
                     {/* Book Button */}

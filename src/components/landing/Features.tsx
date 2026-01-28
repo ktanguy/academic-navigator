@@ -81,7 +81,7 @@ export const Features = () => {
               delay={index * 0.06}
               className="group rounded-xl bg-card p-6 shadow-card transition-shadow"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-colors group-hover:bg-primary/80">
                 <feature.icon className="h-6 w-6" />
               </div>
               <h3 className="mt-4 text-lg font-semibold text-foreground">

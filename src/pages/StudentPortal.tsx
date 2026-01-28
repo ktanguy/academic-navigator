@@ -125,8 +125,8 @@ const StudentPortal = () => {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="flex items-center gap-4 rounded-xl bg-card p-5 shadow-card"
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent">
-                      <stat.icon className="h-6 w-6 text-primary" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
+                      <stat.icon className="h-6 w-6 text-primary-foreground" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-foreground">{stat.value}</p>
@@ -206,12 +206,12 @@ const StudentPortal = () => {
                       whileHover={{ y: -2 }}
                       className="flex items-center justify-between rounded-xl bg-card p-5 shadow-card transition-shadow hover:shadow-elevated"
                     >
-                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4">
                         <div
                           className={`flex h-12 w-12 items-center justify-center rounded-lg ${
                             apt.status === "completed"
                               ? "bg-success/10 text-success"
-                              : "bg-accent text-primary"
+                              : "bg-primary text-primary-foreground"
                           }`}
                         >
                           {apt.status === "completed" ? (
@@ -264,14 +264,14 @@ const StudentPortal = () => {
                         priorityConfig[ticket.priority as keyof typeof priorityConfig]
                       }`}
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent">
+                        <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                           {ticket.status === "resolved" ? (
                             <CheckCircle2 className="h-6 w-6 text-success" />
                           ) : ticket.status === "open" ? (
                             <AlertCircle className="h-6 w-6 text-warning" />
                           ) : (
-                            <MessageSquare className="h-6 w-6 text-primary" />
+                            <MessageSquare className="h-6 w-6" />
                           )}
                         </div>
                         <div>
