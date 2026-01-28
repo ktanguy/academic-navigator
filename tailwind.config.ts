@@ -75,9 +75,9 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        soft: "0 2px 8px -2px rgba(1, 75, 170, 0.08), 0 4px 16px -4px rgba(1, 75, 170, 0.12)",
-        card: "0 1px 3px rgba(1, 75, 170, 0.04), 0 4px 12px rgba(1, 75, 170, 0.06)",
-        elevated: "0 8px 24px -8px rgba(1, 75, 170, 0.15), 0 2px 8px -2px rgba(1, 75, 170, 0.08)",
+        soft: "0 2px 8px -2px rgba(6, 20, 46, 0.08), 0 4px 16px -4px rgba(6, 20, 46, 0.12)",
+        card: "0 1px 3px rgba(6, 20, 46, 0.04), 0 4px 12px rgba(6, 20, 46, 0.06)",
+        elevated: "0 8px 24px -8px rgba(6, 20, 46, 0.15), 0 2px 8px -2px rgba(6, 20, 46, 0.08)",
       },
       keyframes: {
         "accordion-down": {
