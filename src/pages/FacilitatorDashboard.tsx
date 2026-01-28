@@ -81,9 +81,9 @@ const requests = [
 ];
 
 const confidenceColors = (confidence: number) => {
-  if (confidence >= 85) return "bg-success/10 text-success border-success/30";
-  if (confidence >= 60) return "bg-warning/10 text-warning border-warning/30";
-  return "bg-destructive/10 text-destructive border-destructive/30";
+  if (confidence >= 85) return "bg-success/15 text-success border-success/40";
+  if (confidence >= 60) return "bg-warning/15 text-warning border-warning/40";
+  return "bg-destructive/15 text-destructive border-destructive/40";
 };
 
 const priorityColors = {
@@ -270,22 +270,27 @@ const FacilitatorDashboard = () => {
                               {request.summary}
                             </p>
 
-                            {/* AI Suggestion */}
-                            <div className="mt-3 flex items-center gap-3">
-                              <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.2, duration: 0.3, ease: "easeOut" }}
-                                className={`flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${confidenceColors(
-                                  request.aiConfidence
-                                )}`}
-                              >
-                                <Sparkles className="h-3 w-3" />
-                                AI Confidence: {request.aiConfidence}%
-                              </motion.div>
-                              <span className="text-sm text-muted-foreground">
+                            {/* AI Suggestion - More Prominent */}
+                            <div className="mt-3 rounded-lg bg-secondary/50 p-3">
+                              <div className="flex flex-wrap items-center gap-3">
+                                <motion.div
+                                  initial={{ opacity: 0, scale: 0.95 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ delay: 0.2, duration: 0.3, ease: "easeOut" }}
+                                  className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold ${confidenceColors(
+                                    request.aiConfidence
+                                  )}`}
+                                >
+                                  <Sparkles className="h-3.5 w-3.5" />
+                                  AI: {request.aiConfidence}% Confidence
+                                </motion.div>
+                                <span className="text-sm font-medium text-foreground">
+                                  Suggested Action:
+                                </span>
+                              </div>
+                              <p className="mt-2 text-sm text-muted-foreground">
                                 {request.aiSuggestion}
-                              </span>
+                              </p>
                             </div>
                           </div>
                         </div>

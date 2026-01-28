@@ -11,6 +11,7 @@ import {
   Search,
   Filter,
   Sparkles,
+  Brain,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -26,6 +27,13 @@ import {
   slideInRight,
   defaultTransition,
 } from "@/components/ui/motion";
+import {
+  TicketCategoryChart,
+  TrendChart,
+  AIClassificationChart,
+  FacilitatorWorkloadChart,
+  CategoryAccuracyTable,
+} from "@/components/analytics/AnalyticsCharts";
 
 // Animated counter component
 const AnimatedCounter = ({
@@ -150,7 +158,7 @@ const departmentStats = [
 ];
 
 const AdminPanel = () => {
-  const [activeSection, setActiveSection] = useState<"analytics" | "users" | "settings">(
+  const [activeSection, setActiveSection] = useState<"analytics" | "ai-classification" | "users" | "settings">(
     "analytics"
   );
 
@@ -184,16 +192,17 @@ const AdminPanel = () => {
             </motion.div>
 
             {/* Navigation Tabs */}
-            <div className="mb-8 flex gap-1 rounded-lg bg-card p-1">
+            <div className="mb-8 flex flex-wrap gap-1 rounded-lg bg-card p-1">
               {[
                 { id: "analytics", label: "Analytics", icon: BarChart3 },
+                { id: "ai-classification", label: "AI Classification", icon: Brain },
                 { id: "users", label: "User Management", icon: Users },
                 { id: "settings", label: "Settings", icon: Settings },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() =>
-                    setActiveSection(tab.id as "analytics" | "users" | "settings")
+                    setActiveSection(tab.id as "analytics" | "ai-classification" | "users" | "settings")
                   }
                   className={`relative flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                     activeSection === tab.id
@@ -206,7 +215,7 @@ const AdminPanel = () => {
                   {activeSection === tab.id && (
                     <motion.div
                       layoutId="activeAdminTab"
-                      className="absolute inset-0 rounded-md bg-accent"
+                      className="absolute inset-0 rounded-md bg-secondary"
                       style={{ zIndex: -1 }}
                       transition={{ duration: 0.2, ease: "easeOut" }}
                     />
@@ -258,7 +267,13 @@ const AdminPanel = () => {
                     ))}
                   </StaggerContainer>
 
+                  {/* Charts Grid */}
                   <div className="grid gap-6 lg:grid-cols-2">
+                    <TrendChart />
+                    <TicketCategoryChart />
+                  </div>
+
+                  <div className="mt-6 grid gap-6 lg:grid-cols-2">
                     {/* Department Performance */}
                     <motion.div
                       initial="initial"
@@ -288,52 +303,127 @@ const AdminPanel = () => {
                       </div>
                     </motion.div>
 
-                    {/* Recent Activity */}
-                    <motion.div
-                      initial="initial"
-                      animate="animate"
-                      variants={slideInRight}
-                      transition={{ ...defaultTransition, delay: 0.3 }}
-                      className="rounded-xl bg-card p-6 shadow-card"
-                    >
-                      <div className="mb-6 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-foreground">
-                          Recent Activity
-                        </h3>
-                        <Button variant="ghost" size="sm">
-                          View All
-                          <ChevronRight className="ml-1 h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="space-y-4">
-                        {recentActivity.map((activity, index) => (
-                          <motion.div
-                            key={activity.id}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{
-                              delay: 0.4 + index * 0.08,
-                              duration: 0.3,
-                              ease: "easeOut",
-                            }}
-                            className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0"
-                          >
-                            <div>
-                              <p className="font-medium text-foreground">
-                                {activity.action}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {activity.user}
-                              </p>
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              {activity.time}
-                            </span>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
+                    <FacilitatorWorkloadChart />
                   </div>
+
+                  {/* Recent Activity */}
+                  <motion.div
+                    initial="initial"
+                    animate="animate"
+                    variants={slideInRight}
+                    transition={{ ...defaultTransition, delay: 0.3 }}
+                    className="mt-6 rounded-xl bg-card p-6 shadow-card"
+                  >
+                    <div className="mb-6 flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-foreground">
+                        Recent Activity
+                      </h3>
+                      <Button variant="ghost" size="sm">
+                        View All
+                        <ChevronRight className="ml-1 h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                      {recentActivity.map((activity, index) => (
+                        <motion.div
+                          key={activity.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            delay: 0.4 + index * 0.08,
+                            duration: 0.3,
+                            ease: "easeOut",
+                          }}
+                          className="rounded-lg bg-secondary/50 p-4"
+                        >
+                          <p className="font-medium text-foreground">
+                            {activity.action}
+                          </p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {activity.user}
+                          </p>
+                          <span className="mt-2 block text-xs text-muted-foreground">
+                            {activity.time}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {activeSection === "ai-classification" && (
+                <motion.div
+                  key="ai-classification"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  {/* AI Overview Cards */}
+                  <StaggerContainer className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {[
+                      { label: "Total Classifications", value: "1,429", change: "+156 this week" },
+                      { label: "Avg. Confidence", value: "87%", change: "+2% vs last month" },
+                      { label: "Auto-Resolved", value: "892", change: "62% of total" },
+                      { label: "Manual Review", value: "198", change: "14% require review" },
+                    ].map((stat, index) => (
+                      <AnimatedListItem key={stat.label}>
+                        <AnimatedCard className="rounded-xl bg-card p-5 shadow-card">
+                          <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                          <p className="text-sm font-medium text-foreground">{stat.label}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">{stat.change}</p>
+                        </AnimatedCard>
+                      </AnimatedListItem>
+                    ))}
+                  </StaggerContainer>
+
+                  <div className="grid gap-6 lg:grid-cols-2">
+                    <AIClassificationChart />
+                    <CategoryAccuracyTable />
+                  </div>
+
+                  {/* Classification Legend */}
+                  <motion.div
+                    variants={fadeInUp}
+                    initial="initial"
+                    animate="animate"
+                    transition={{ ...defaultTransition, delay: 0.4 }}
+                    className="mt-6 rounded-xl bg-card p-6 shadow-card"
+                  >
+                    <h3 className="mb-4 text-lg font-semibold text-foreground">
+                      How AI Classification Works
+                    </h3>
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <div className="rounded-lg bg-success/10 p-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-success" />
+                          <span className="font-medium text-foreground">High Confidence (&gt;85%)</span>
+                        </div>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Requests are auto-categorized and may be resolved automatically by AI.
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-warning/10 p-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-warning" />
+                          <span className="font-medium text-foreground">Medium Confidence (60-85%)</span>
+                        </div>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Suggested category with recommendation for facilitator review.
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-destructive/10 p-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-destructive" />
+                          <span className="font-medium text-foreground">Low Confidence (&lt;60%)</span>
+                        </div>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Requires manual categorization by a facilitator.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
                 </motion.div>
               )}
 
