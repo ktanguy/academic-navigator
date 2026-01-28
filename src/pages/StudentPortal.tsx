@@ -123,7 +123,7 @@ const StudentPortal = () => {
                   <motion.div
                     whileHover={{ y: -2 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-card"
+                    className="flex items-center gap-4 rounded-xl bg-card p-5 shadow-card"
                   >
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent">
                       <stat.icon className="h-6 w-6 text-primary" />
@@ -139,7 +139,7 @@ const StudentPortal = () => {
 
             {/* Tabs */}
             <div className="mb-6 flex items-center justify-between">
-              <div className="flex gap-1 rounded-lg border border-border bg-card p-1">
+              <div className="flex gap-1 rounded-lg bg-card p-1">
                 {[
                   { id: "appointments", label: "Appointments", icon: Calendar },
                   { id: "tickets", label: "Support Tickets", icon: FileText },
@@ -204,7 +204,7 @@ const StudentPortal = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.06, duration: 0.3, ease: "easeOut" }}
                       whileHover={{ y: -2 }}
-                      className="flex items-center justify-between rounded-xl border border-border bg-card p-5 shadow-card transition-shadow hover:shadow-elevated"
+                      className="flex items-center justify-between rounded-xl bg-card p-5 shadow-card transition-shadow hover:shadow-elevated"
                     >
                       <div className="flex items-center gap-4">
                         <div
@@ -260,7 +260,7 @@ const StudentPortal = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.06, duration: 0.3, ease: "easeOut" }}
                       whileHover={{ y: -2 }}
-                      className={`flex items-center justify-between rounded-xl border bg-card p-5 shadow-card transition-shadow hover:shadow-elevated ${
+                      className={`flex items-center justify-between rounded-xl bg-card p-5 shadow-card transition-shadow hover:shadow-elevated ${
                         priorityConfig[ticket.priority as keyof typeof priorityConfig]
                       }`}
                     >

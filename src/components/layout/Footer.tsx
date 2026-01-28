@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-border bg-card">
+    <footer className="bg-card">
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-1">
@@ -84,7 +84,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-border pt-6">
+        <div className="mt-12 pt-6">
           <p className="text-center text-sm text-muted-foreground">
             © 2026 AcademicAI. All rights reserved.
           </p>

@@ -79,7 +79,7 @@ export const Features = () => {
             <AnimatedCard
               key={feature.title}
               delay={index * 0.06}
-              className="group rounded-xl border border-border bg-card p-6 shadow-card transition-shadow"
+              className="group rounded-xl bg-card p-6 shadow-card transition-shadow"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                 <feature.icon className="h-6 w-6" />
