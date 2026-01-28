@@ -87,7 +87,7 @@ export const AnimatedCard = forwardRef<
         : {
             y: -2,
             boxShadow:
-              "0 8px 24px -8px rgba(0, 223, 130, 0.15), 0 2px 8px -2px rgba(0, 223, 130, 0.08)",
+              "0 8px 24px -8px rgba(3, 98, 76, 0.12), 0 2px 8px -2px rgba(3, 98, 76, 0.06)",
             transition: quickTransition,
           }
     }
