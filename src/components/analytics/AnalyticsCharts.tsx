@@ -13,17 +13,22 @@ import {
   LineChart,
   Line,
   Legend,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from "recharts";
 import { fadeInUp, defaultTransition } from "@/components/ui/motion";
 
 // Ticket category data with AI classification stats
 const ticketCategoryData = [
-  { name: "Course Registration", count: 342, aiAccuracy: 94 },
-  { name: "Financial Aid", count: 287, aiAccuracy: 89 },
-  { name: "Academic Appeals", count: 198, aiAccuracy: 82 },
-  { name: "Housing", count: 156, aiAccuracy: 91 },
-  { name: "Career Services", count: 124, aiAccuracy: 88 },
-  { name: "IT Support", count: 98, aiAccuracy: 95 },
+  { name: "Course Registration", count: 342, aiAccuracy: 94, color: "#06142E" },
+  { name: "Financial Aid", count: 287, aiAccuracy: 89, color: "#3b82f6" },
+  { name: "Academic Appeals", count: 198, aiAccuracy: 82, color: "#8b5cf6" },
+  { name: "Housing", count: 156, aiAccuracy: 91, color: "#22c55e" },
+  { name: "Career Services", count: 124, aiAccuracy: 88, color: "#f59e0b" },
+  { name: "IT Support", count: 98, aiAccuracy: 95, color: "#ec4899" },
 ];
 
 // Monthly trend data
@@ -44,11 +49,11 @@ const classificationData = [
 
 // Facilitator workload
 const facilitatorWorkload = [
-  { name: "Dr. Sarah Chen", tickets: 45, appointments: 28 },
-  { name: "Mark Johnson", tickets: 38, appointments: 32 },
-  { name: "Dr. Emily Rodriguez", tickets: 52, appointments: 24 },
-  { name: "James Wilson", tickets: 31, appointments: 35 },
-  { name: "Lisa Park", tickets: 42, appointments: 29 },
+  { name: "Dr. Sarah Chen", tickets: 45, appointments: 28, color: "#06142E" },
+  { name: "Mark Johnson", tickets: 38, appointments: 32, color: "#3b82f6" },
+  { name: "Dr. Emily Rodriguez", tickets: 52, appointments: 24, color: "#8b5cf6" },
+  { name: "James Wilson", tickets: 31, appointments: 35, color: "#22c55e" },
+  { name: "Lisa Park", tickets: 42, appointments: 29, color: "#f59e0b" },
 ];
 
 export const TicketCategoryChart = () => (
@@ -86,10 +91,13 @@ export const TicketCategoryChart = () => (
           />
           <Bar 
             dataKey="count" 
-            fill="#06142E" 
             radius={[0, 4, 4, 0]}
             name="Tickets"
-          />
+          >
+            {ticketCategoryData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -251,16 +259,22 @@ export const FacilitatorWorkloadChart = () => (
           <Legend />
           <Bar 
             dataKey="tickets" 
-            fill="#06142E" 
             radius={[4, 4, 0, 0]}
             name="Tickets"
-          />
+          >
+            {facilitatorWorkload.map((entry, index) => (
+              <Cell key={`cell-tickets-${index}`} fill={entry.color} />
+            ))}
+          </Bar>
           <Bar 
             dataKey="appointments" 
-            fill="#3b82f6" 
             radius={[4, 4, 0, 0]}
             name="Appointments"
-          />
+          >
+            {facilitatorWorkload.map((entry, index) => (
+              <Cell key={`cell-appts-${index}`} fill={entry.color} opacity={0.6} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

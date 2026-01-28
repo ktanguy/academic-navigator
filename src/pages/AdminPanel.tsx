@@ -65,10 +65,12 @@ const AnimatedBar = ({
   percentage,
   label,
   delay,
+  color = "#06142E",
 }: {
   percentage: number;
   label: string;
   delay: number;
+  color?: string;
 }) => (
   <div className="space-y-2">
     <div className="flex justify-between text-sm">
@@ -80,7 +82,8 @@ const AnimatedBar = ({
         initial={{ width: 0 }}
         animate={{ width: `${percentage}%` }}
         transition={{ delay, duration: 0.8, ease: "easeOut" }}
-        className="h-full rounded-full bg-primary"
+        className="h-full rounded-full"
+        style={{ backgroundColor: color }}
       />
     </div>
   </div>
@@ -150,11 +153,11 @@ const recentActivity = [
 ];
 
 const departmentStats = [
-  { label: "Academic Affairs", percentage: 85 },
-  { label: "Financial Aid", percentage: 72 },
-  { label: "Student Housing", percentage: 91 },
-  { label: "Career Services", percentage: 68 },
-  { label: "IT Support", percentage: 79 },
+  { label: "Academic Affairs", percentage: 85, color: "#06142E" },
+  { label: "Financial Aid", percentage: 72, color: "#3b82f6" },
+  { label: "Student Housing", percentage: 91, color: "#22c55e" },
+  { label: "Career Services", percentage: 68, color: "#8b5cf6" },
+  { label: "IT Support", percentage: 79, color: "#f59e0b" },
 ];
 
 const AdminPanel = () => {
@@ -298,6 +301,7 @@ const AdminPanel = () => {
                             label={dept.label}
                             percentage={dept.percentage}
                             delay={0.3 + index * 0.1}
+                            color={dept.color}
                           />
                         ))}
                       </div>
