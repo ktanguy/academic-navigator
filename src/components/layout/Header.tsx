@@ -7,7 +7,9 @@ import { buttonMotionProps, quickTransition } from "@/components/ui/motion";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/student", label: "Student Portal" },
+  { href: "/directory", label: "Directory" },
+  { href: "/helpdesk", label: "Help Desk" },
+  { href: "/student", label: "Student" },
   { href: "/facilitator", label: "Facilitator" },
   { href: "/admin", label: "Admin" },
 ];
@@ -24,7 +26,7 @@ export const Header = () => {
             <GraduationCap className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="text-lg font-semibold text-foreground">
-            AcademicAI
+            Magic Helper
           </span>
         </Link>
 
