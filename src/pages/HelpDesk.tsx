@@ -147,8 +147,8 @@ const HelpDesk = () => {
                 transition={{ ...defaultTransition, delay: 0.1 }}
               >
                 <div className="rounded-2xl bg-card p-6 shadow-card">
-                  <h2 className="mb-5 flex items-center gap-2 text-lg font-semibold text-foreground">
-                    <MessageSquare className="h-5 w-5 text-primary" />
+                  <h2 className="mb-5 flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-lg font-semibold text-primary-foreground">
+                    <MessageSquare className="h-5 w-5 text-primary-foreground" />
                     Submit a Ticket
                   </h2>
 
@@ -222,10 +222,10 @@ const HelpDesk = () => {
                         className="space-y-5"
                       >
                         {/* AI Classification Result */}
-                        <div className="rounded-xl bg-primary/5 p-5">
-                          <div className="mb-4 flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-primary" />
-                            <span className="font-semibold text-foreground">
+                        <div className="rounded-xl bg-primary p-5">
+                          <div className="mb-4 flex items-center gap-2 text-primary-foreground">
+                            <Sparkles className="h-5 w-5 text-primary-foreground" />
+                            <span className="font-semibold">
                               AI Classification Result
                             </span>
                           </div>
@@ -250,14 +250,14 @@ const HelpDesk = () => {
                           </div>
 
                           <div className="mt-4">
-                            <p className="mb-2 text-xs text-muted-foreground">
+                            <p className="mb-2 text-xs text-primary-foreground/70">
                               Suggested Actions
                             </p>
                             <ul className="space-y-2">
                               {aiResult.suggestions.map((suggestion, index) => (
                                 <li
                                   key={index}
-                                  className="flex items-center gap-2 text-sm text-foreground"
+                                  className="flex items-center gap-2 text-sm text-primary-foreground"
                                 >
                                   <CheckCircle2 className="h-4 w-4 text-success" />
                                   {suggestion}
