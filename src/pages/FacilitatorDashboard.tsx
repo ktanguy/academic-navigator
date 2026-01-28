@@ -169,8 +169,8 @@ const FacilitatorDashboard = () => {
                 <AnimatedListItem key={stat.label}>
                   <AnimatedCard className="rounded-xl bg-card p-5 shadow-card">
                     <div className="flex items-center justify-between">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
-                        <stat.icon className="h-5 w-5 text-primary" />
+                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                         <stat.icon className="h-5 w-5 text-primary-foreground" />
                       </div>
                       <span
                         className={`flex items-center gap-0.5 text-xs font-medium ${
@@ -223,7 +223,7 @@ const FacilitatorDashboard = () => {
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-4">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
                             {request.student
                               .split(" ")
                               .map((n) => n[0])
