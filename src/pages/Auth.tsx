@@ -159,7 +159,7 @@ const Auth = () => {
               <GraduationCap className="h-6 w-6 text-primary-foreground" />
             </div>
             <span className="text-xl font-semibold text-primary-foreground">
-              AcademicAI
+              ALU Support
             </span>
           </motion.div>
         </div>
@@ -171,13 +171,13 @@ const Auth = () => {
           className="space-y-6"
         >
           <h1 className="text-4xl font-bold leading-tight text-primary-foreground">
-            Intelligent Academic
+            ALU Academic
             <br />
             Support Platform
           </h1>
           <p className="max-w-md text-lg text-primary-foreground/80">
-            Streamline student services with AI-powered assistance. Connect students 
-            to resources and empower facilitators with intelligent tools.
+            Streamline student services with AI-powered assistance at African Leadership University. 
+            Connect students to facilitators and resources with intelligent tools.
           </p>
           <div className="flex items-center gap-6 pt-4">
             {[
@@ -201,7 +201,7 @@ const Auth = () => {
           transition={{ ...defaultTransition, delay: 0.4 }}
           className="text-sm text-primary-foreground/60"
         >
-          © 2026 AcademicAI. All rights reserved.
+          © 2026 ALU Support. All rights reserved.
         </motion.p>
       </div>
 
@@ -218,7 +218,7 @@ const Auth = () => {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
               <GraduationCap className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-lg font-semibold text-foreground">AcademicAI</span>
+            <span className="text-lg font-semibold text-foreground">ALU Support</span>
           </motion.div>
 
           {/* Form Header */}
