@@ -17,39 +17,39 @@ import {
 const features = [
   {
     icon: MessageSquare,
-    title: "AI-Powered Support",
+    title: "DistilBERT Classification",
     description:
-      "Intelligent chatbot handles routine queries instantly, freeing staff for complex issues.",
+      "AI-powered ticket categorization using fine-tuned DistilBERT, achieving 85%+ accuracy across 5 academic categories.",
   },
   {
     icon: Calendar,
-    title: "Smart Scheduling",
+    title: "Smart Booking",
     description:
-      "Automated appointment booking with facilitators, integrated with academic calendars.",
+      "Dynamic appointment booking with context-aware forms that collect relevant information upfront for efficient resolution.",
   },
   {
     icon: BarChart3,
-    title: "Analytics Dashboard",
+    title: "Institutional Analytics",
     description:
-      "Real-time insights into student needs, service performance, and resource allocation.",
+      "Real-time dashboard showing support patterns, facilitator workload, and AI classification performance.",
   },
   {
     icon: Shield,
-    title: "Enterprise Security",
+    title: "Cost-Effective Design",
     description:
-      "FERPA-compliant data handling with role-based access control and encryption.",
+      "Built on free-tier infrastructure — Hugging Face, Google Colab, and Render — suitable for resource-constrained institutions.",
   },
   {
     icon: Zap,
-    title: "Instant Escalation",
+    title: "Smart Escalation",
     description:
-      "Seamless handoff from AI to human facilitators when specialized help is needed.",
+      "Automatic routing with 70% confidence threshold — high-confidence tickets auto-assign, low-confidence ones flag for review.",
   },
   {
     icon: Users,
-    title: "Collaborative Tools",
+    title: "Staff Directory",
     description:
-      "Enable facilitators and administrators to work together on complex student cases.",
+      "Centralized facilitator directory with office hours, department info, and one-click appointment booking.",
   },
 ];
 
@@ -66,11 +66,11 @@ export const Features = () => {
           className="mx-auto max-w-2xl text-center"
         >
           <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-            Everything You Need for Academic Support
+            Integrated Academic Support for ALU
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            A comprehensive platform designed specifically for higher education 
-            institutions and their unique needs.
+            A unified platform combining staff directory, intelligent booking, 
+            AI-powered request categorization, and institutional analytics.
           </p>
         </motion.div>
 

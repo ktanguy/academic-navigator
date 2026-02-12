@@ -24,11 +24,11 @@ export const CTA = () => {
 
           <div className="relative">
             <h2 className="text-3xl font-bold text-primary-foreground md:text-4xl">
-              Ready to Get the Help You Need?
+              Ready to Get Academic Support?
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/80">
-              Browse our teacher directory to book a meeting, or submit a help 
-              ticket to get quick answers to your questions.
+              Browse the facilitator directory to book an appointment, or submit a 
+              support ticket for AI-powered categorization and quick resolution.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <motion.div {...buttonMotionProps}>
@@ -40,7 +40,7 @@ export const CTA = () => {
                 >
                   <Link to="/directory">
                     <BookOpen className="mr-2 h-4 w-4" />
-                    Browse Directory
+                    Browse Facilitators
                   </Link>
                 </Button>
               </motion.div>

@@ -153,11 +153,11 @@ const recentActivity = [
 ];
 
 const departmentStats = [
-  { label: "Academic Affairs", percentage: 85, color: "#06142E" },
-  { label: "Financial Aid", percentage: 72, color: "#3b82f6" },
-  { label: "Student Housing", percentage: 91, color: "#22c55e" },
-  { label: "Career Services", percentage: 68, color: "#8b5cf6" },
-  { label: "IT Support", percentage: 79, color: "#f59e0b" },
+  { label: "Assignment Issues", percentage: 94, color: "#06142E" },
+  { label: "Grade Appeals", percentage: 87, color: "#3b82f6" },
+  { label: "Capstone", percentage: 91, color: "#22c55e" },
+  { label: "Administrative", percentage: 89, color: "#8b5cf6" },
+  { label: "General Inquiry", percentage: 92, color: "#f59e0b" },
 ];
 
 const AdminPanel = () => {
@@ -287,7 +287,7 @@ const AdminPanel = () => {
                     >
                       <div className="mb-6 flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-foreground">
-                          Department Performance
+                          AI Accuracy by Category
                         </h3>
                         <Button variant="ghost" size="sm">
                           View All
@@ -368,9 +368,9 @@ const AdminPanel = () => {
                   <StaggerContainer className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {[
                       { label: "Total Classifications", value: "1,429", change: "+156 this week" },
-                      { label: "Avg. Confidence", value: "87%", change: "+2% vs last month" },
-                      { label: "Auto-Resolved", value: "892", change: "62% of total" },
-                      { label: "Manual Review", value: "198", change: "14% require review" },
+                      { label: "Avg. Confidence", value: "87%", change: "Above 70% threshold" },
+                      { label: "Auto-Assigned (≥70%)", value: "892", change: "62% of total" },
+                      { label: "Flagged for Review", value: "198", change: "14% below threshold" },
                     ].map((stat, index) => (
                       <AnimatedListItem key={stat.label}>
                         <AnimatedCard className="rounded-xl bg-card p-5 shadow-card">
@@ -396,34 +396,25 @@ const AdminPanel = () => {
                     className="mt-6 rounded-xl bg-card p-6 shadow-card"
                   >
                     <h3 className="mb-4 text-lg font-semibold text-foreground">
-                      How AI Classification Works
+                      How DistilBERT Classification Works
                     </h3>
-                    <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       <div className="rounded-lg bg-success/10 p-4">
                         <div className="flex items-center gap-2">
                           <div className="h-3 w-3 rounded-full bg-success" />
-                          <span className="font-medium text-foreground">High Confidence (&gt;85%)</span>
+                          <span className="font-medium text-foreground">Auto-Assigned (≥70%)</span>
                         </div>
                         <p className="mt-2 text-sm text-muted-foreground">
-                          Requests are auto-categorized and may be resolved automatically by AI.
-                        </p>
-                      </div>
-                      <div className="rounded-lg bg-warning/10 p-4">
-                        <div className="flex items-center gap-2">
-                          <div className="h-3 w-3 rounded-full bg-warning" />
-                          <span className="font-medium text-foreground">Medium Confidence (60-85%)</span>
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          Suggested category with recommendation for facilitator review.
+                          Confidence ≥70% — ticket is auto-categorized and routed to the appropriate facilitator.
                         </p>
                       </div>
                       <div className="rounded-lg bg-destructive/10 p-4">
                         <div className="flex items-center gap-2">
                           <div className="h-3 w-3 rounded-full bg-destructive" />
-                          <span className="font-medium text-foreground">Low Confidence (&lt;60%)</span>
+                          <span className="font-medium text-foreground">Flagged for Review (&lt;70%)</span>
                         </div>
                         <p className="mt-2 text-sm text-muted-foreground">
-                          Requires manual categorization by a facilitator.
+                          Confidence &lt;70% — ticket is flagged for manual categorization by a facilitator.
                         </p>
                       </div>
                     </div>
@@ -462,25 +453,25 @@ const AdminPanel = () => {
                     {[
                       {
                         name: "Dr. Sarah Chen",
-                        email: "s.chen@university.edu",
+                        email: "s.chen@alueducation.com",
                         role: "Facilitator",
                         status: "Active",
                       },
                       {
                         name: "Mark Johnson",
-                        email: "m.johnson@university.edu",
+                        email: "m.johnson@alueducation.com",
                         role: "Facilitator",
                         status: "Active",
                       },
                       {
                         name: "Emily Rodriguez",
-                        email: "e.rodriguez@university.edu",
+                        email: "e.rodriguez@alueducation.com",
                         role: "Admin",
                         status: "Active",
                       },
                       {
                         name: "James Wilson",
-                        email: "j.wilson@university.edu",
+                        email: "j.wilson@alueducation.com",
                         role: "Facilitator",
                         status: "Pending",
                       },
@@ -534,20 +525,20 @@ const AdminPanel = () => {
                 >
                   {[
                     {
-                      title: "AI Configuration",
-                      description: "Configure AI model settings and confidence thresholds",
+                      title: "DistilBERT Configuration",
+                      description: "Configure model path, confidence threshold (currently 70%), and category labels",
                     },
                     {
-                      title: "Notification Settings",
-                      description: "Manage email and push notification preferences",
+                      title: "SendGrid Notifications",
+                      description: "Manage email notifications via SendGrid (100/day free tier)",
                     },
                     {
-                      title: "Integration Settings",
-                      description: "Connect with LMS, SIS, and other university systems",
+                      title: "Category Management",
+                      description: "Manage the 5 ticket categories: Assignment Issues, Grade Appeals, Capstone, Administrative, General Inquiry",
                     },
                     {
                       title: "Security & Privacy",
-                      description: "FERPA compliance and data protection settings",
+                      description: "Role-based access control and data protection settings",
                     },
                   ].map((setting, index) => (
                     <motion.div

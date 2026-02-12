@@ -12,11 +12,11 @@ export const Footer = () => {
                 <GraduationCap className="h-5 w-5 text-primary-foreground" />
               </div>
               <span className="text-lg font-semibold text-foreground">
-                Magic Helper
+                ALU Support
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              Your friendly academic support platform for students and faculty.
+              AI-Powered Integrated Academic Support Platform for African Leadership University.
             </p>
           </div>
 
@@ -25,12 +25,12 @@ export const Footer = () => {
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link to="/directory" className="text-muted-foreground transition-colors hover:text-foreground">
-                  Teacher Directory
+                  Staff Directory
                 </Link>
               </li>
               <li>
                 <Link to="/booking" className="text-muted-foreground transition-colors hover:text-foreground">
-                  Book a Meeting
+                  Book Appointment
                 </Link>
               </li>
               <li>
@@ -86,7 +86,7 @@ export const Footer = () => {
 
         <div className="mt-12 pt-6">
           <p className="text-center text-sm text-muted-foreground">
-            © 2026 Magic Helper. All rights reserved.
+            © 2026 ALU Academic Support Platform. Built by Tangue Kwizera.
           </p>
         </div>
       </div>

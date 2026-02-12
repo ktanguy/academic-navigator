@@ -23,7 +23,7 @@ export const Hero = () => {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-soft">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span>Powered by Advanced AI</span>
+              <span>Powered by DistilBERT AI</span>
             </div>
           </motion.div>
 
@@ -34,8 +34,8 @@ export const Hero = () => {
             transition={{ ...defaultTransition, delay: 0.1 }}
             className="text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl"
           >
-            Your Academic Support{" "}
-            <span className="text-primary">Made Simple</span>
+            AI-Powered Academic{" "}
+            <span className="text-primary">Support Platform</span>
           </motion.h1>
 
           <motion.p
@@ -45,8 +45,9 @@ export const Hero = () => {
             transition={{ ...defaultTransition, delay: 0.2 }}
             className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
-            Find teachers, book meetings, submit help requests, and track your 
-            support tickets — all in one friendly platform designed for students.
+            Find facilitators, book appointments, submit support tickets with 
+            AI-powered categorization, and track your requests — all in one 
+            integrated platform built for ALU students.
           </motion.p>
 
           <motion.div
@@ -59,7 +60,7 @@ export const Hero = () => {
             <motion.div {...buttonMotionProps}>
               <Button size="lg" className="h-12 px-8 text-base" asChild>
                 <a href="/directory">
-                  Find a Teacher
+                  Find a Facilitator
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </Button>
@@ -80,9 +81,9 @@ export const Hero = () => {
             className="mt-16 grid grid-cols-3 gap-8 pt-10"
           >
             {[
-              { value: "50+", label: "Universities" },
-              { value: "1M+", label: "Students Served" },
-              { value: "95%", label: "Satisfaction Rate" },
+              { value: "85%+", label: "AI Accuracy" },
+              { value: "<3s", label: "Response Time" },
+              { value: "5", label: "Ticket Categories" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-2xl font-bold text-foreground md:text-3xl">
