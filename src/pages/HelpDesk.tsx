@@ -133,7 +133,7 @@ const HelpDesk = () => {
             >
               <h1 className="text-3xl font-bold text-foreground">Help Desk</h1>
               <p className="mt-2 text-muted-foreground">
-                Submit a support ticket — DistilBERT AI will categorize and route it automatically
+                Submit a support ticket — AI will categorize and route it automatically
               </p>
             </motion.div>
 

@@ -402,7 +402,7 @@ const AdminPanel = () => {
                     className="mt-6 rounded-xl bg-card p-6 shadow-card"
                   >
                     <h3 className="mb-4 text-lg font-semibold text-foreground">
-                      How DistilBERT Classification Works
+                      How AI Classification Works
                     </h3>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="rounded-lg bg-success/10 p-4">
@@ -531,7 +531,7 @@ const AdminPanel = () => {
                 >
                   {[
                     {
-                      title: "DistilBERT Configuration",
+                      title: "AI Model Configuration",
                       description: "Configure model path, confidence threshold (currently 70%), and category labels",
                     },
                     {
