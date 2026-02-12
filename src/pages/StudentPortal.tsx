@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -89,6 +90,7 @@ const priorityConfig = {
 
 const StudentPortal = () => {
   const [activeTab, setActiveTab] = useState<"appointments" | "tickets">("appointments");
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -168,7 +170,7 @@ const StudentPortal = () => {
               </div>
 
               <motion.div {...buttonMotionProps}>
-                <Button>
+                <Button onClick={() => navigate(activeTab === "appointments" ? "/booking" : "/helpdesk")}>
                   <Plus className="mr-2 h-4 w-4" />
                   {activeTab === "appointments" ? "Book Appointment" : "New Ticket"}
                 </Button>

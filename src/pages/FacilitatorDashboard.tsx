@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
@@ -32,7 +32,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-
+import { useToast } from "@/hooks/use-toast";
 const requests = [
   {
     id: 1,
@@ -100,11 +100,28 @@ const FacilitatorDashboard = () => {
   const [selectedRequest, setSelectedRequest] = useState<(typeof requests)[0] | null>(
     null
   );
+  const [resolvedIds, setResolvedIds] = useState<number[]>([4]); // id 4 is already resolved
+  const { toast } = useToast();
 
   const handleEscalate = (request: (typeof requests)[0]) => {
     setSelectedRequest(request);
     setEscalateOpen(true);
   };
+
+  const handleResolve = useCallback((request: (typeof requests)[0]) => {
+    setResolvedIds((prev) => [...prev, request.id]);
+    toast({
+      title: "Ticket Resolved",
+      description: `"${request.subject}" has been marked as resolved.`,
+    });
+  }, [toast]);
+
+  const handleView = useCallback((request: (typeof requests)[0]) => {
+    toast({
+      title: request.subject,
+      description: `Student: ${request.student}\nCategory: ${request.aiCategory} (${request.aiConfidence}% confidence)\n${request.summary}`,
+    });
+  }, [toast]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -299,10 +316,10 @@ const FacilitatorDashboard = () => {
                         </div>
 
                         <div className="flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                          <Button size="sm" variant="ghost">
+                          <Button size="sm" variant="ghost" onClick={() => handleView(request)}>
                             View
                           </Button>
-                          {request.status !== "resolved" && (
+                          {!resolvedIds.includes(request.id) && (
                             <Button
                               size="sm"
                               variant="outline"
@@ -311,8 +328,14 @@ const FacilitatorDashboard = () => {
                               Escalate
                             </Button>
                           )}
-                          {request.status !== "resolved" && (
-                            <Button size="sm">Resolve</Button>
+                          {!resolvedIds.includes(request.id) && (
+                            <Button size="sm" onClick={() => handleResolve(request)}>Resolve</Button>
+                          )}
+                          {resolvedIds.includes(request.id) && (
+                            <Badge variant="outline" className="bg-success/10 text-success">
+                              <CheckCircle2 className="mr-1 h-3 w-3" />
+                              Resolved
+                            </Badge>
                           )}
                         </div>
                       </div>
@@ -356,7 +379,13 @@ const FacilitatorDashboard = () => {
                   <Button variant="ghost" onClick={() => setEscalateOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={() => setEscalateOpen(false)}>
+                  <Button onClick={() => {
+                    setEscalateOpen(false);
+                    toast({
+                      title: "Request Escalated",
+                      description: `"${selectedRequest?.subject}" has been escalated to the admin team.`,
+                    });
+                  }}>
                     Confirm Escalation
                   </Button>
                 </DialogFooter>

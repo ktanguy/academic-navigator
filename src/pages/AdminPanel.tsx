@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
@@ -34,6 +34,7 @@ import {
   FacilitatorWorkloadChart,
   CategoryAccuracyTable,
 } from "@/components/analytics/AnalyticsCharts";
+import { useToast } from "@/hooks/use-toast";
 
 // Animated counter component
 const AnimatedCounter = ({
@@ -164,6 +165,11 @@ const AdminPanel = () => {
   const [activeSection, setActiveSection] = useState<"analytics" | "ai-classification" | "users" | "settings">(
     "analytics"
   );
+  const { toast } = useToast();
+
+  const showToast = useCallback((title: string, description: string) => {
+    toast({ title, description });
+  }, [toast]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -186,11 +192,11 @@ const AdminPanel = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => showToast("Filter Applied", "Showing filtered results")}>
                   <Filter className="mr-2 h-4 w-4" />
                   Filter
                 </Button>
-                <Button>Export Report</Button>
+                <Button onClick={() => showToast("Report Exported", "Analytics report has been exported as PDF")}>Export Report</Button>
               </div>
             </motion.div>
 
@@ -435,11 +441,11 @@ const AdminPanel = () => {
                       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input placeholder="Search users..." className="pl-10" />
                     </div>
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => showToast("Filters", "Filter options coming soon")}>
                       <Filter className="mr-2 h-4 w-4" />
                       Filters
                     </Button>
-                    <Button>Add User</Button>
+                    <Button onClick={() => showToast("Add User", "User invitation form coming soon")}>Add User</Button>
                   </div>
 
                   <div className="rounded-xl bg-card shadow-card">
@@ -501,10 +507,10 @@ const AdminPanel = () => {
                           {user.status}
                         </Badge>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="ghost">
+                          <Button size="sm" variant="ghost" onClick={() => showToast("Edit User", `Editing ${user.name}'s profile`)}>
                             Edit
                           </Button>
-                          <Button size="sm" variant="ghost" className="text-destructive">
+                          <Button size="sm" variant="ghost" className="text-destructive" onClick={() => showToast("Remove User", `${user.name} has been removed`)}>
                             Remove
                           </Button>
                         </div>
@@ -559,7 +565,7 @@ const AdminPanel = () => {
                           {setting.description}
                         </p>
                       </div>
-                      <Button variant="outline">
+                      <Button variant="outline" onClick={() => showToast(setting.title, "Configuration panel opening soon")}>
                         Configure
                         <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
