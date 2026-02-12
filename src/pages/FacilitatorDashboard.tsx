@@ -36,44 +36,48 @@ import { Textarea } from "@/components/ui/textarea";
 const requests = [
   {
     id: 1,
-    student: "Jordan Lee",
-    subject: "Course Enrollment Issue",
-    summary: "Unable to enroll in COMP 301 due to prerequisite conflict",
+    student: "Jordan Mugisha",
+    subject: "Assignment Submission Error",
+    summary: "Can't submit assignment on Canvas — upload keeps failing before deadline",
     aiConfidence: 92,
-    aiSuggestion: "Override prerequisite - student completed equivalent course",
+    aiCategory: "Assignment Issues",
+    aiSuggestion: "Auto-assigned — confidence ≥70%. Suggest checking file format and size limits.",
     priority: "high",
     time: "5 min ago",
     status: "new",
   },
   {
     id: 2,
-    student: "Taylor Martinez",
-    subject: "Grade Appeal Request",
-    summary: "Requesting review of midterm exam grading",
+    student: "Amara Uwimana",
+    subject: "Grade Appeal - Midterm",
+    summary: "Requesting review of midterm exam grading in COMP 201",
     aiConfidence: 78,
-    aiSuggestion: "Schedule meeting with course instructor",
+    aiCategory: "Grade Appeals",
+    aiSuggestion: "Auto-assigned — confidence ≥70%. Schedule meeting with course facilitator.",
     priority: "medium",
     time: "18 min ago",
     status: "new",
   },
   {
     id: 3,
-    student: "Morgan Kim",
-    subject: "Accommodation Request",
-    summary: "Request for extended exam time documentation",
-    aiConfidence: 45,
-    aiSuggestion: "Requires verification - escalate to disability services",
+    student: "Kwame Nkrumah",
+    subject: "Capstone Scope Clarification",
+    summary: "Needs guidance on narrowing down capstone project scope",
+    aiConfidence: 55,
+    aiCategory: "Capstone",
+    aiSuggestion: "Flagged for review — confidence <70%. Requires manual categorization.",
     priority: "high",
     time: "32 min ago",
     status: "needs-review",
   },
   {
     id: 4,
-    student: "Casey Brown",
-    subject: "Transcript Question",
-    summary: "How to request official transcript for grad school",
-    aiConfidence: 98,
-    aiSuggestion: "AI resolved - provided step-by-step instructions",
+    student: "Fatoumata Diallo",
+    subject: "Transcript Request",
+    summary: "How to request official transcript for graduate school application",
+    aiConfidence: 95,
+    aiCategory: "Administrative",
+    aiSuggestion: "Auto-resolved — provided step-by-step instructions via knowledge base.",
     priority: "low",
     time: "1 hour ago",
     status: "resolved",
@@ -81,8 +85,7 @@ const requests = [
 ];
 
 const confidenceColors = (confidence: number) => {
-  if (confidence >= 85) return "bg-success/15 text-success border-success/40";
-  if (confidence >= 60) return "bg-warning/15 text-warning border-warning/40";
+  if (confidence >= 70) return "bg-success/15 text-success border-success/40";
   return "bg-destructive/15 text-destructive border-destructive/40";
 };
 
@@ -282,7 +285,7 @@ const FacilitatorDashboard = () => {
                                   )}`}
                                 >
                                   <Sparkles className="h-3.5 w-3.5" />
-                                  AI: {request.aiConfidence}% Confidence
+                                  DistilBERT: {request.aiConfidence}% — {(request as any).aiCategory}
                                 </motion.div>
                                 <span className="text-sm font-medium text-foreground">
                                   Suggested Action:

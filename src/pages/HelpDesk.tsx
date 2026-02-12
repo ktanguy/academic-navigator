@@ -30,39 +30,39 @@ import {
 const existingTickets = [
   {
     id: "TKT-001",
-    subject: "Course Registration Help",
-    category: "Academic Services",
+    subject: "Can't Submit Assignment on Canvas",
+    category: "Assignment Issues",
     status: "open",
     confidence: 92,
     lastUpdate: "2 hours ago",
-    description: "I need help adding a course that shows as full but I have a prerequisite override.",
+    description: "I can't submit my assignment on Canvas. The deadline is tomorrow and the upload keeps failing.",
   },
   {
     id: "TKT-002",
-    subject: "Library Access Issue",
-    category: "Technical Support",
+    subject: "Midterm Grade Appeal",
+    category: "Grade Appeals",
     status: "in-progress",
-    confidence: 87,
+    confidence: 85,
     lastUpdate: "1 day ago",
-    description: "My library card is not working at the entrance scanners.",
+    description: "I believe my midterm exam was graded incorrectly. I'd like to request a review.",
   },
   {
     id: "TKT-003",
-    subject: "Scholarship Application Question",
-    category: "Financial Aid",
+    subject: "Capstone Proposal Feedback",
+    category: "Capstone",
     status: "answered",
-    confidence: 95,
+    confidence: 94,
     lastUpdate: "3 days ago",
-    description: "Question about the deadline for merit scholarship applications.",
+    description: "Need feedback on my capstone project proposal before the submission deadline.",
   },
   {
     id: "TKT-004",
-    subject: "Lab Equipment Request",
-    category: "Facilities",
+    subject: "Transcript Request for Grad School",
+    category: "Administrative",
     status: "escalated",
-    confidence: 78,
+    confidence: 65,
     lastUpdate: "5 days ago",
-    description: "Need access to specialized equipment for my research project.",
+    description: "How do I request an official transcript to send to graduate school applications?",
   },
 ];
 
@@ -93,12 +93,12 @@ const HelpDesk = () => {
     
     // Mock AI categorization result
     setAiResult({
-      category: "Academic Services",
-      confidence: 89,
+      category: "Assignment Issues",
+      confidence: 92,
       suggestions: [
-        "Contact the Registrar's Office",
-        "Check your student portal for updates",
-        "Schedule a meeting with your advisor",
+        "Ticket auto-assigned to Academic Affairs facilitator",
+        "Check your student portal for assignment deadlines",
+        "Schedule a meeting with your facilitator for guidance",
       ],
     });
     
@@ -113,8 +113,7 @@ const HelpDesk = () => {
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 85) return "text-success";
-    if (confidence >= 60) return "text-warning";
+    if (confidence >= 70) return "text-success";
     return "text-destructive";
   };
 
@@ -134,7 +133,7 @@ const HelpDesk = () => {
             >
               <h1 className="text-3xl font-bold text-foreground">Help Desk</h1>
               <p className="mt-2 text-muted-foreground">
-                Submit a support ticket and get AI-powered assistance
+                Submit a support ticket — DistilBERT AI will categorize and route it automatically
               </p>
             </motion.div>
 

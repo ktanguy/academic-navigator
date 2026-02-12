@@ -110,10 +110,10 @@ const Directory = () => {
               className="mb-8 text-center"
             >
               <h1 className="text-3xl font-bold text-foreground md:text-4xl">
-                Find Your Teacher
+                Find Your Facilitator
               </h1>
               <p className="mt-3 text-lg text-muted-foreground">
-                Browse our directory to find the right faculty member for your needs
+                Browse the ALU staff directory to find the right facilitator for your needs
               </p>
             </motion.div>
 

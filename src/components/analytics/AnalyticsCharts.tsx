@@ -23,12 +23,11 @@ import { fadeInUp, defaultTransition } from "@/components/ui/motion";
 
 // Ticket category data with AI classification stats
 const ticketCategoryData = [
-  { name: "Course Registration", count: 342, aiAccuracy: 94, color: "#06142E" },
-  { name: "Financial Aid", count: 287, aiAccuracy: 89, color: "#3b82f6" },
-  { name: "Academic Appeals", count: 198, aiAccuracy: 82, color: "#8b5cf6" },
-  { name: "Housing", count: 156, aiAccuracy: 91, color: "#22c55e" },
-  { name: "Career Services", count: 124, aiAccuracy: 88, color: "#f59e0b" },
-  { name: "IT Support", count: 98, aiAccuracy: 95, color: "#ec4899" },
+  { name: "Assignment Issues", count: 342, aiAccuracy: 94, color: "#06142E" },
+  { name: "Grade Appeals", count: 287, aiAccuracy: 87, color: "#3b82f6" },
+  { name: "Capstone", count: 198, aiAccuracy: 91, color: "#8b5cf6" },
+  { name: "Administrative", count: 156, aiAccuracy: 89, color: "#22c55e" },
+  { name: "General Inquiry", count: 124, aiAccuracy: 92, color: "#f59e0b" },
 ];
 
 // Monthly trend data
@@ -42,9 +41,9 @@ const monthlyTrendData = [
 
 // AI Classification performance
 const classificationData = [
-  { name: "High Confidence (>85%)", value: 58, color: "#22c55e" },
-  { name: "Medium Confidence (60-85%)", value: 28, color: "#f59e0b" },
-  { name: "Low Confidence (<60%)", value: 14, color: "#ef4444" },
+  { name: "High Confidence (≥70%)", value: 62, color: "#22c55e" },
+  { name: "Low Confidence (<70%)", value: 24, color: "#f59e0b" },
+  { name: "Flagged for Review", value: 14, color: "#ef4444" },
 ];
 
 // Facilitator workload
