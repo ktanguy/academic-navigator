@@ -23,7 +23,7 @@ export const Hero = () => {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-soft">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span>Powered by DistilBERT AI</span>
+              <span>Powered by AI</span>
             </div>
           </motion.div>
 

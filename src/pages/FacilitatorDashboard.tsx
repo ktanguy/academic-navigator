@@ -302,7 +302,7 @@ const FacilitatorDashboard = () => {
                                   )}`}
                                 >
                                   <Sparkles className="h-3.5 w-3.5" />
-                                  DistilBERT: {request.aiConfidence}% — {(request as any).aiCategory}
+                                  AI: {request.aiConfidence}% — {(request as any).aiCategory}
                                 </motion.div>
                                 <span className="text-sm font-medium text-foreground">
                                   Suggested Action:

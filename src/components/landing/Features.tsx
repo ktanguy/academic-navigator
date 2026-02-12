@@ -17,9 +17,9 @@ import {
 const features = [
   {
     icon: MessageSquare,
-    title: "DistilBERT Classification",
+    title: "AI Classification",
     description:
-      "AI-powered ticket categorization using fine-tuned DistilBERT, achieving 85%+ accuracy across 5 academic categories.",
+      "AI-powered ticket categorization achieving 85%+ accuracy across 5 academic categories.",
   },
   {
     icon: Calendar,
