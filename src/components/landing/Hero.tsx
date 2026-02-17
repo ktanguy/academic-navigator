@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   fadeInUp,
@@ -15,18 +15,6 @@ export const Hero = () => {
       
       <div className="container relative">
         <div className="mx-auto max-w-3xl text-center">
-          <motion.div
-            initial="initial"
-            animate="animate"
-            variants={fadeInUp}
-            transition={{ ...defaultTransition, delay: 0 }}
-          >
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-soft">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span>Powered by AI</span>
-            </div>
-          </motion.div>
-
           <motion.h1
             initial="initial"
             animate="animate"
