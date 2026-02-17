@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { GraduationCap, Mail, Lock, User, Eye, EyeOff, ArrowRight, Users, Shield } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Users, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -155,9 +155,6 @@ const Auth = () => {
             transition={defaultTransition}
             className="flex items-center gap-3"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-foreground/20">
-              <GraduationCap className="h-6 w-6 text-primary-foreground" />
-            </div>
             <span className="text-xl font-semibold text-primary-foreground">
               ALU Support
             </span>
@@ -215,9 +212,6 @@ const Auth = () => {
             transition={defaultTransition}
             className="mb-8 flex items-center gap-2.5 lg:hidden"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <GraduationCap className="h-5 w-5 text-primary-foreground" />
-            </div>
             <span className="text-lg font-semibold text-foreground">ALU Support</span>
           </motion.div>
 
