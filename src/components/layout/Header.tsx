@@ -23,7 +23,7 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center">
           <span className="text-lg font-semibold text-foreground">
-            ALU Support
+            UniCenter
           </span>
         </Link>
 

@@ -113,7 +113,7 @@ const Directory = () => {
                 Find Your Facilitator
               </h1>
               <p className="mt-3 text-lg text-muted-foreground">
-                Browse the ALU staff directory to find the right facilitator for your needs
+                Browse the staff directory to find the right facilitator for your needs
               </p>
             </motion.div>
 

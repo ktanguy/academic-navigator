@@ -459,25 +459,25 @@ const AdminPanel = () => {
                     {[
                       {
                         name: "Dr. Sarah Chen",
-                        email: "s.chen@alueducation.com",
+                        email: "s.chen@university.edu",
                         role: "Facilitator",
                         status: "Active",
                       },
                       {
                         name: "Mark Johnson",
-                        email: "m.johnson@alueducation.com",
+                        email: "m.johnson@university.edu",
                         role: "Facilitator",
                         status: "Active",
                       },
                       {
                         name: "Emily Rodriguez",
-                        email: "e.rodriguez@alueducation.com",
+                        email: "e.rodriguez@university.edu",
                         role: "Admin",
                         status: "Active",
                       },
                       {
                         name: "James Wilson",
-                        email: "j.wilson@alueducation.com",
+                        email: "j.wilson@university.edu",
                         role: "Facilitator",
                         status: "Pending",
                       },

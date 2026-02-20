@@ -156,7 +156,7 @@ const Auth = () => {
             className="flex items-center gap-3"
           >
             <span className="text-xl font-semibold text-primary-foreground">
-              ALU Support
+              UniCenter
             </span>
           </motion.div>
         </div>
@@ -167,13 +167,13 @@ const Auth = () => {
           transition={{ ...defaultTransition, delay: 0.2 }}
           className="space-y-6"
         >
-          <h1 className="text-4xl font-bold leading-tight text-primary-foreground">
-            ALU Academic
+           <h1 className="text-4xl font-bold leading-tight text-primary-foreground">
+            UniCenter
             <br />
-            Support Platform
+            Academic Support
           </h1>
           <p className="max-w-md text-lg text-primary-foreground/80">
-            Streamline student services with AI-powered assistance at African Leadership University. 
+            Streamline student services with AI-powered assistance for your institution. 
             Connect students to facilitators and resources with intelligent tools.
           </p>
           <div className="flex items-center gap-6 pt-4">
@@ -198,7 +198,7 @@ const Auth = () => {
           transition={{ ...defaultTransition, delay: 0.4 }}
           className="text-sm text-primary-foreground/60"
         >
-          © 2026 ALU Support. All rights reserved.
+          © 2026 UniCenter. All rights reserved.
         </motion.p>
       </div>
 
@@ -212,7 +212,7 @@ const Auth = () => {
             transition={defaultTransition}
             className="mb-8 flex items-center gap-2.5 lg:hidden"
           >
-            <span className="text-lg font-semibold text-foreground">ALU Support</span>
+            <span className="text-lg font-semibold text-foreground">UniCenter</span>
           </motion.div>
 
           {/* Form Header */}

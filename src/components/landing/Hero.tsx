@@ -35,7 +35,7 @@ export const Hero = () => {
           >
             Find facilitators, book appointments, submit support tickets with 
             AI-powered categorization, and track your requests — all in one 
-            integrated platform built for ALU students.
+            integrated platform built for students and institutions.
           </motion.p>
 
           <motion.div
