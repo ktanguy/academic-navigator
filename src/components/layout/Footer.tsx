@@ -9,11 +9,11 @@ export const Footer = () => {
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center">
               <span className="text-lg font-semibold text-foreground">
-                ALU Support
+                UniCenter
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              AI-Powered Integrated Academic Support Platform for African Leadership University.
+              AI-Powered Integrated Academic Support Platform for universities and institutions.
             </p>
           </div>
 
@@ -83,7 +83,7 @@ export const Footer = () => {
 
         <div className="mt-12 pt-6">
           <p className="text-center text-sm text-muted-foreground">
-            © 2026 ALU Academic Support Platform. Built by Tangue Kwizera.
+            © 2026 UniCenter. Built by Tangue Kwizera.
           </p>
         </div>
       </div>
