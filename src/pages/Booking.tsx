@@ -12,6 +12,11 @@ import {
   Upload,
   Calendar,
   Clock,
+  Video,
+  MapPin,
+  Phone,
+  AlertTriangle,
+  Accessibility,
 } from "lucide-react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
@@ -20,6 +25,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   PageTransition,
   fadeInUp,
@@ -33,6 +46,18 @@ const meetingReasons = [
   { id: "grades", label: "Grades Discussion", icon: FileText, description: "Review your academic progress" },
   { id: "general", label: "General Discussion", icon: MessageSquare, description: "Open conversation" },
   { id: "other", label: "Other", icon: HelpCircle, description: "Something else" },
+];
+
+const meetingModes = [
+  { id: "in-person", label: "In-Person", icon: MapPin, description: "Meet at the facilitator's office" },
+  { id: "virtual", label: "Virtual (Zoom)", icon: Video, description: "Online video meeting" },
+  { id: "phone", label: "Phone Call", icon: Phone, description: "Voice call only" },
+];
+
+const urgencyLevels = [
+  { id: "low", label: "Low", description: "No deadline pressure", color: "bg-muted text-muted-foreground" },
+  { id: "medium", label: "Medium", description: "Within the next week", color: "bg-warning/15 text-warning" },
+  { id: "high", label: "Urgent", description: "Within 48 hours", color: "bg-destructive/15 text-destructive" },
 ];
 
 const timeSlots = [
@@ -68,9 +93,17 @@ const Booking = () => {
   const [selectedReason, setSelectedReason] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+  const [selectedMode, setSelectedMode] = useState("");
+  const [selectedUrgency, setSelectedUrgency] = useState("");
   const [formData, setFormData] = useState({
+    studentId: "",
     subject: "",
+    courseCode: "",
     description: "",
+    priorAttempts: "",
+    preferredLanguage: "",
+    accessibilityNeeds: false,
+    accessibilityDetails: "",
     file: null as File | null,
   });
   const [isBooked, setIsBooked] = useState(false);
@@ -89,17 +122,17 @@ const Booking = () => {
   const canProceed = () => {
     switch (step) {
       case 1:
-        return selectedReason !== "";
+        return selectedReason !== "" && selectedMode !== "";
       case 2:
         return selectedDate !== "" && selectedTime !== "";
       case 3:
-        return formData.subject !== "" && formData.description !== "";
+        return formData.studentId !== "" && formData.subject !== "" && formData.description !== "" && selectedUrgency !== "";
       default:
         return true;
     }
   };
 
-  const renderDynamicForm = () => {
+  const renderReasonSpecificFields = () => {
     switch (selectedReason) {
       case "homework":
         return (
@@ -122,17 +155,6 @@ const Booking = () => {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Upload Assignment (Optional)</Label>
-              <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-border bg-secondary/30 p-6">
-                <div className="text-center">
-                  <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Drag & drop or click to upload
-                  </p>
-                </div>
-              </div>
             </div>
           </>
         );
@@ -157,17 +179,6 @@ const Booking = () => {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Upload Proposal/Draft (Optional)</Label>
-              <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-border bg-secondary/30 p-6">
-                <div className="text-center">
-                  <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Drag & drop or click to upload
-                  </p>
-                </div>
-              </div>
             </div>
           </>
         );
@@ -249,6 +260,12 @@ const Booking = () => {
                 <div className="mt-3 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Time</span>
                   <span className="font-medium text-foreground">{selectedTime}</span>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Mode</span>
+                  <span className="font-medium text-foreground">
+                    {meetingModes.find((m) => m.id === selectedMode)?.label}
+                  </span>
                 </div>
                 <div className="mt-3 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Topic</span>
@@ -367,6 +384,32 @@ const Booking = () => {
                       </motion.button>
                     ))}
                   </div>
+
+                  {/* Meeting Mode */}
+                  <h3 className="mb-4 mt-8 text-lg font-semibold text-foreground">
+                    How would you like to meet?
+                  </h3>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {meetingModes.map((mode) => (
+                      <motion.button
+                        key={mode.id}
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setSelectedMode(mode.id)}
+                        className={`flex flex-col items-center gap-2 rounded-xl p-5 text-center transition-colors ${
+                          selectedMode === mode.id
+                            ? "bg-primary text-primary-foreground shadow-elevated"
+                            : "bg-card shadow-card hover:shadow-elevated"
+                        }`}
+                      >
+                        <mode.icon className="h-6 w-6" />
+                        <span className="font-semibold">{mode.label}</span>
+                        <span className={`text-xs ${selectedMode === mode.id ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                          {mode.description}
+                        </span>
+                      </motion.button>
+                    ))}
+                  </div>
                 </motion.div>
               )}
 
@@ -460,8 +503,141 @@ const Booking = () => {
                   <h2 className="mb-6 text-xl font-semibold text-foreground">
                     Provide meeting details
                   </h2>
-                  <div className="space-y-5 rounded-xl bg-card p-6 shadow-card">
-                    {renderDynamicForm()}
+                  <div className="space-y-6 rounded-xl bg-card p-6 shadow-card">
+                    {/* Student Info Section */}
+                    <div>
+                      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                        Student Information
+                      </h3>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="studentId">Student ID *</Label>
+                          <Input
+                            id="studentId"
+                            placeholder="e.g., STU-20240001"
+                            value={formData.studentId}
+                            onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="courseCode">Course Code</Label>
+                          <Input
+                            id="courseCode"
+                            placeholder="e.g., CS301, MATH201"
+                            value={formData.courseCode}
+                            onChange={(e) => setFormData({ ...formData, courseCode: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border" />
+
+                    {/* Reason-specific fields */}
+                    <div>
+                      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                        Meeting Details
+                      </h3>
+                      <div className="space-y-4">
+                        {renderReasonSpecificFields()}
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border" />
+
+                    {/* Urgency */}
+                    <div>
+                      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                        Urgency Level *
+                      </h3>
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        {urgencyLevels.map((level) => (
+                          <motion.button
+                            key={level.id}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setSelectedUrgency(level.id)}
+                            className={`flex flex-col items-center gap-1 rounded-lg border-2 p-4 transition-colors ${
+                              selectedUrgency === level.id
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/30"
+                            }`}
+                          >
+                            <AlertTriangle className={`h-5 w-5 ${level.id === "high" ? "text-destructive" : level.id === "medium" ? "text-warning" : "text-muted-foreground"}`} />
+                            <span className="font-semibold text-foreground">{level.label}</span>
+                            <span className="text-xs text-muted-foreground">{level.description}</span>
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border" />
+
+                    {/* Prior Attempts */}
+                    <div className="space-y-2">
+                      <Label htmlFor="priorAttempts">Have you tried resolving this on your own?</Label>
+                      <Select
+                        value={formData.priorAttempts}
+                        onValueChange={(value) => setFormData({ ...formData, priorAttempts: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="no">No, this is my first attempt</SelectItem>
+                          <SelectItem value="self-study">Yes, through self-study/research</SelectItem>
+                          <SelectItem value="peers">Yes, discussed with peers</SelectItem>
+                          <SelectItem value="office-hours">Yes, attended office hours before</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* File Upload */}
+                    <div className="space-y-2">
+                      <Label>Upload Supporting Documents (Optional)</Label>
+                      <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-border bg-secondary/30 p-6">
+                        <div className="text-center">
+                          <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            Drag & drop or click to upload (PDF, DOC, images)
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">Max 10MB</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border" />
+
+                    {/* Accessibility */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          id="accessibility"
+                          checked={formData.accessibilityNeeds}
+                          onCheckedChange={(checked) =>
+                            setFormData({ ...formData, accessibilityNeeds: checked as boolean })
+                          }
+                        />
+                        <Label htmlFor="accessibility" className="flex items-center gap-2 text-sm">
+                          <Accessibility className="h-4 w-4 text-muted-foreground" />
+                          I need accessibility accommodations
+                        </Label>
+                      </div>
+                      {formData.accessibilityNeeds && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                        >
+                          <Textarea
+                            placeholder="Please describe your accommodation needs (e.g., sign language interpreter, screen reader compatible materials, wheelchair accessible room)..."
+                            rows={3}
+                            value={formData.accessibilityDetails}
+                            onChange={(e) => setFormData({ ...formData, accessibilityDetails: e.target.value })}
+                          />
+                        </motion.div>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -479,9 +655,21 @@ const Booking = () => {
                   </h2>
                   <div className="space-y-4 rounded-xl bg-card p-6 shadow-card">
                     <div className="flex items-center justify-between py-3">
+                      <span className="text-muted-foreground">Student ID</span>
+                      <span className="font-medium text-foreground">{formData.studentId}</span>
+                    </div>
+                    <div className="border-t border-border" />
+                    <div className="flex items-center justify-between py-3">
                       <span className="text-muted-foreground">Meeting Type</span>
                       <span className="font-medium capitalize text-foreground">
                         {meetingReasons.find((r) => r.id === selectedReason)?.label}
+                      </span>
+                    </div>
+                    <div className="border-t border-border" />
+                    <div className="flex items-center justify-between py-3">
+                      <span className="text-muted-foreground">Meeting Mode</span>
+                      <span className="font-medium text-foreground">
+                        {meetingModes.find((m) => m.id === selectedMode)?.label}
                       </span>
                     </div>
                     <div className="border-t border-border" />
@@ -492,15 +680,42 @@ const Booking = () => {
                       </span>
                     </div>
                     <div className="border-t border-border" />
+                    {formData.courseCode && (
+                      <>
+                        <div className="flex items-center justify-between py-3">
+                          <span className="text-muted-foreground">Course</span>
+                          <span className="font-medium text-foreground">{formData.courseCode}</span>
+                        </div>
+                        <div className="border-t border-border" />
+                      </>
+                    )}
                     <div className="flex items-center justify-between py-3">
                       <span className="text-muted-foreground">Topic</span>
                       <span className="font-medium text-foreground">{formData.subject}</span>
+                    </div>
+                    <div className="border-t border-border" />
+                    <div className="flex items-center justify-between py-3">
+                      <span className="text-muted-foreground">Urgency</span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        urgencyLevels.find((u) => u.id === selectedUrgency)?.color
+                      }`}>
+                        {urgencyLevels.find((u) => u.id === selectedUrgency)?.label}
+                      </span>
                     </div>
                     <div className="border-t border-border" />
                     <div className="py-3">
                       <span className="text-muted-foreground">Details</span>
                       <p className="mt-2 text-sm text-foreground">{formData.description}</p>
                     </div>
+                    {formData.accessibilityNeeds && (
+                      <>
+                        <div className="border-t border-border" />
+                        <div className="py-3">
+                          <span className="text-muted-foreground">Accessibility Needs</span>
+                          <p className="mt-2 text-sm text-foreground">{formData.accessibilityDetails}</p>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </motion.div>
               )}
