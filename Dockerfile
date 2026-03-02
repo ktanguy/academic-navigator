@@ -39,10 +39,13 @@ COPY backend/ ./backend/
 COPY --from=frontend-builder /app/dist ./dist
 
 # Create instance directory for SQLite database
-RUN mkdir -p instance
+RUN mkdir -p /app/backend/instance
+
+# Set working directory to backend
+WORKDIR /app/backend
 
 # Environment variables
-ENV FLASK_APP=backend/app.py
+ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
 ENV PORT=10000
@@ -54,5 +57,5 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
-# Run with gunicorn - use PORT from environment
-CMD gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 120 backend.app:app
+# Run with gunicorn from backend directory
+CMD gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 120 app:app
