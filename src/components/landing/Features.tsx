@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   MessageSquare,
   Calendar,
@@ -353,10 +354,10 @@ const FeatureSection = ({ badge, title, description, linkText, linkHref, mockup,
       </p>
       <div className="mt-8">
         <Button size="lg" variant="outline" className="group" asChild>
-          <a href={linkHref}>
+          <Link to={linkHref}>
             {linkText}
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </a>
+          </Link>
         </Button>
       </div>
     </motion.div>

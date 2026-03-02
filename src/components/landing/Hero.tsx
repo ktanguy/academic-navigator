@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { 
   ArrowRight, 
   GraduationCap, 
@@ -174,15 +175,15 @@ export const Hero = () => {
             >
               <motion.div {...buttonMotionProps}>
                 <Button size="lg" className="h-12 px-8 text-base bg-primary hover:bg-primary/90" asChild>
-                  <a href="/helpdesk">
+                  <Link to="/helpdesk">
                     Get Started
                     <ArrowRight className="ml-2 h-4 w-4" />
-                  </a>
+                  </Link>
                 </Button>
               </motion.div>
               <motion.div {...buttonMotionProps}>
                 <Button variant="outline" size="lg" className="h-12 px-8 text-base border-primary/20 hover:bg-primary/5" asChild>
-                  <a href="/directory">Browse Directory</a>
+                  <Link to="/directory">Browse Directory</Link>
                 </Button>
               </motion.div>
             </motion.div>

@@ -16,6 +16,8 @@ services:
         generateValue: true
       - key: CLASSIFIER_API_URL
         value: https://tkwizera-student-support-api.hf.space/classify
+      - key: EMAIL_PROVIDER
+        value: gmail_smtp
       - key: SMTP_SERVER
         value: smtp.gmail.com
       - key: SMTP_PORT

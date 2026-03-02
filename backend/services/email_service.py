@@ -10,10 +10,15 @@ from email.mime.multipart import MIMEMultipart
 logger = logging.getLogger(__name__)
 
 # Configuration from environment variables
-EMAIL_PROVIDER = os.getenv('EMAIL_PROVIDER', 'none')  # 'sendgrid', 'gmail_smtp', 'gmail_api', 'none'
+EMAIL_PROVIDER = os.getenv('EMAIL_PROVIDER', 'gmail_smtp')  # Default to gmail_smtp
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-GMAIL_ADDRESS = os.getenv('GMAIL_ADDRESS')
-GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')  # App password, not regular password
+
+# Support both old and new env var names for Gmail
+GMAIL_ADDRESS = os.getenv('GMAIL_ADDRESS') or os.getenv('SMTP_USERNAME')
+GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD') or os.getenv('SMTP_PASSWORD')
+SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
+
 EMAIL_FROM = os.getenv('EMAIL_FROM', GMAIL_ADDRESS or 'noreply@academic-navigator.com')
 
 
@@ -72,7 +77,7 @@ def _send_via_sendgrid(to_email: str, subject: str, body: str, html_body: str = 
 def _send_via_gmail_smtp(to_email: str, subject: str, body: str, html_body: str = None) -> bool:
     """Send email using Gmail SMTP with App Password."""
     if not GMAIL_ADDRESS or not GMAIL_APP_PASSWORD:
-        logger.warning("Gmail SMTP credentials not configured")
+        logger.warning(f"Gmail SMTP credentials not configured. GMAIL_ADDRESS: {bool(GMAIL_ADDRESS)}, GMAIL_APP_PASSWORD: {bool(GMAIL_APP_PASSWORD)}")
         return False
     
     try:
@@ -89,10 +94,20 @@ def _send_via_gmail_smtp(to_email: str, subject: str, body: str, html_body: str 
         if html_body:
             msg.attach(MIMEText(html_body, 'html'))
         
-        # Connect to Gmail SMTP
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
-            server.send_message(msg)
+        # Connect to SMTP server
+        logger.info(f"Connecting to {SMTP_SERVER}:{SMTP_PORT}")
+        
+        if SMTP_PORT == 465:
+            # SSL connection
+            with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
+                server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+                server.send_message(msg)
+        else:
+            # TLS connection (port 587)
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+                server.send_message(msg)
         
         logger.info(f"✅ Gmail SMTP email sent to {to_email}")
         return True
