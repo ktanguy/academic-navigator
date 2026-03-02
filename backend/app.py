@@ -99,6 +99,17 @@ def create_app():
                 return send_from_directory(app.static_folder, path)
             # Return index.html for SPA client-side routing
             return send_from_directory(app.static_folder, 'index.html')
+    else:
+        # Even if serve_static is False, register a catch-all for production
+        # This handles cases where the static folder check fails
+        @app.errorhandler(404)
+        def not_found(e):
+            # Check if dist folder exists and return index.html
+            dist_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dist')
+            index_file = os.path.join(dist_folder, 'index.html')
+            if os.path.exists(index_file):
+                return send_from_directory(dist_folder, 'index.html')
+            return {'error': 'Not found'}, 404
     
     return app
 
