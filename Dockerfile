@@ -24,6 +24,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy backend requirements and install
@@ -44,13 +45,14 @@ RUN mkdir -p instance
 ENV FLASK_APP=backend/app.py
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
+ENV PORT=10000
 
-# Expose port
-EXPOSE 5001
+# Expose port (Render uses PORT env var)
+EXPOSE $PORT
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5001/api/health || exit 1
+    CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
-# Run with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "--workers", "4", "--timeout", "120", "backend.app:app"]
+# Run with gunicorn - use PORT from environment
+CMD gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 120 backend.app:app

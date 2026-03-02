@@ -1,14 +1,12 @@
 # Render Blueprint - Infrastructure as Code
 # This file defines the services for deployment on Render.com
-# Note: Static sites should be created manually in Render dashboard
 
 services:
   # Backend API Service (also serves frontend in production)
   - type: web
     name: academic-navigator-api
-    runtime: python
-    buildCommand: npm install && npm run build && cd backend && pip install -r requirements.txt
-    startCommand: cd backend && gunicorn app:app --bind 0.0.0.0:$PORT
+    runtime: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: FLASK_ENV
         value: production
