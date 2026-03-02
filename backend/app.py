@@ -35,6 +35,12 @@ def create_app():
     
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
+    # SQLite configuration for production
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
+    
     # Enable CORS for frontend - allow all origins in development
     CORS(app, 
          resources={r"/api/*": {"origins": "*"}},
