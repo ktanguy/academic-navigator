@@ -19,7 +19,20 @@ def create_app():
     
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///academic_navigator.db')
+    
+    # Database configuration - use absolute path for SQLite
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        # Handle postgres:// vs postgresql:// (Render uses postgres://)
+        if database_url.startswith('postgres://'):
+            database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    else:
+        # Use SQLite with absolute path
+        db_path = os.path.join(os.path.dirname(__file__), 'instance', 'academic_navigator.db')
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Enable CORS for frontend - allow all origins in development
