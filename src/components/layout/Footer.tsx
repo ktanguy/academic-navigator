@@ -83,7 +83,7 @@ export const Footer = () => {
 
         <div className="mt-12 pt-6">
           <p className="text-center text-sm text-muted-foreground">
-            © 2026 UniCenter. Built by Tangue Kwizera.
+            © 2026 Academic Navigator. All rights reserved.
           </p>
         </div>
       </div>

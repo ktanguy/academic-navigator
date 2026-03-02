@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { fadeInUp, defaultTransition, buttonMotionProps } from "@/components/ui/motion";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -48,6 +49,15 @@ const roleInfo = {
   },
 };
 
+// --- Theme wrapper for Auth page ---
+const AuthPageWrapper = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="w-full max-w-md rounded-2xl bg-card/95 shadow-xl dark:shadow-2xl dark:shadow-black/20 p-8 border border-border">
+      {children}
+    </div>
+  </div>
+);
+
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -55,6 +65,7 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login, register, logout } = useAuth();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -77,6 +88,8 @@ const Auth = () => {
     setErrors({});
     setIsLoading(true);
 
+    let redirectTo: string | null = null;
+
     try {
       if (isLogin) {
         const result = loginSchema.safeParse({
@@ -96,16 +109,24 @@ const Auth = () => {
           return;
         }
 
-        // Simulate login - replace with actual auth
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Call real login API
+        const user = await login(formData.email, formData.password);
+        
+        console.log("Login successful, user:", user);
         
         toast({
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
 
-        // Redirect based on demo (in real app, would check user role)
-        navigate("/student");
+        // Set redirect path based on user role
+        if (user.role === 'admin') {
+          redirectTo = "/admin";
+        } else if (user.role === 'facilitator') {
+          redirectTo = "/facilitator";
+        } else {
+          redirectTo = "/student";
+        }
       } else {
         const result = signupSchema.safeParse(formData);
 
@@ -121,310 +142,281 @@ const Auth = () => {
           return;
         }
 
-        // Simulate signup - replace with actual auth
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Call real register API
+        await register({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          role: formData.role,
+        });
+
+        // Log out immediately so user has to log in
+        await logout();
 
         toast({
           title: "Account created!",
-          description: "Please check your email to verify your account.",
+          description: "Please sign in with your new credentials.",
         });
 
-        // Switch to login
+        // Switch to login mode instead of redirecting
         setIsLogin(true);
         setFormData({ name: "", email: formData.email, password: "", role: "" });
+        // Don't redirect - stay on auth page
       }
     } catch (error) {
+      console.error("Auth error:", error);
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
+
+    // Navigate after state updates are complete
+    if (redirectTo) {
+      console.log("Navigating to:", redirectTo);
+      navigate(redirectTo);
+    }
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left Panel - Branding */}
-      <div className="hidden w-1/2 bg-primary lg:flex lg:flex-col lg:justify-between lg:p-12">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={defaultTransition}
-            className="flex items-center gap-3"
-          >
-            <span className="text-xl font-semibold text-primary-foreground">
-              UniCenter
-            </span>
-          </motion.div>
-        </div>
-
+    <AuthPageWrapper>
+      <div className="mx-auto w-full max-w-md">
+        {/* Mobile Logo */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...defaultTransition, delay: 0.2 }}
-          className="space-y-6"
+          transition={defaultTransition}
+          className="mb-8 flex items-center gap-2.5 lg:hidden"
         >
-           <h1 className="text-4xl font-bold leading-tight text-primary-foreground">
-            UniCenter
-            <br />
-            Academic Support
-          </h1>
-          <p className="max-w-md text-lg text-primary-foreground/80">
-            Streamline student services with AI-powered assistance for your institution. 
-            Connect students to facilitators and resources with intelligent tools.
-          </p>
-          <div className="flex items-center gap-6 pt-4">
-            {[
-              { value: "50+", label: "Universities" },
-              { value: "1M+", label: "Students" },
-              { value: "95%", label: "Satisfaction" },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <div className="text-2xl font-bold text-primary-foreground">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-primary-foreground/70">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+          <span className="text-lg font-semibold text-foreground">UniCenter</span>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ ...defaultTransition, delay: 0.4 }}
-          className="text-sm text-primary-foreground/60"
+        {/* Form Header */}
+        <motion.div
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={defaultTransition}
+          className="mb-8"
         >
-          © 2026 UniCenter. All rights reserved.
-        </motion.p>
-      </div>
+          <h2 className="text-2xl font-bold text-foreground">
+            {isLogin ? "Welcome back" : "Create your account"}
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            {isLogin
+              ? "Enter your credentials to access your account"
+              : "Join the platform to get started"}
+          </p>
+        </motion.div>
 
-      {/* Right Panel - Form */}
-      <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-16">
-        <div className="mx-auto w-full max-w-md">
-          {/* Mobile Logo */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={defaultTransition}
-            className="mb-8 flex items-center gap-2.5 lg:hidden"
-          >
-            <span className="text-lg font-semibold text-foreground">UniCenter</span>
-          </motion.div>
-
-          {/* Form Header */}
-          <motion.div
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={defaultTransition}
-            className="mb-8"
-          >
-            <h2 className="text-2xl font-bold text-foreground">
-              {isLogin ? "Welcome back" : "Create your account"}
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              {isLogin
-                ? "Enter your credentials to access your account"
-                : "Join the platform to get started"}
-            </p>
-          </motion.div>
-
-          {/* Form */}
-          <motion.form
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={{ ...defaultTransition, delay: 0.1 }}
-            onSubmit={handleSubmit}
-            className="space-y-5"
-          >
-            <AnimatePresence mode="wait">
-              {!isLogin && (
-                <motion.div
-                  key="name"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-2"
-                >
-                  <Label htmlFor="name">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      className="pl-10"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange("name", e.target.value)}
-                    />
-                  </div>
-                  {errors.name && (
-                    <p className="text-sm text-destructive">{errors.name}</p>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  className="pl-10"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                />
-              </div>
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="pl-10 pr-10"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-destructive">{errors.password}</p>
-              )}
-            </div>
-
-            <AnimatePresence mode="wait">
-              {!isLogin && (
-                <motion.div
-                  key="role"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-2"
-                >
-                  <Label>Select your role</Label>
-                  <Select
-                    value={formData.role}
-                    onValueChange={(value) => handleInputChange("role", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(roleInfo).map(([key, info]) => (
-                        <SelectItem key={key} value={key}>
-                          <div className="flex items-center gap-2">
-                            <info.icon className="h-4 w-4" />
-                            <span>{info.label}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formData.role && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-sm text-muted-foreground"
-                    >
-                      {roleInfo[formData.role as UserRole]?.description}
-                    </motion.p>
-                  )}
-                  {errors.role && (
-                    <p className="text-sm text-destructive">{errors.role}</p>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {isLogin && (
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
-
-            <motion.div {...buttonMotionProps}>
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-                disabled={isLoading}
+        {/* Form */}
+        <motion.form
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ ...defaultTransition, delay: 0.1 }}
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
+          <AnimatePresence mode="wait">
+            {!isLogin && (
+              <motion.div
+                key="name"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-2"
               >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <motion.span
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="h-4 w-4 rounded-full border-2 border-primary-foreground border-t-transparent"
-                    />
-                    {isLogin ? "Signing in..." : "Creating account..."}
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    {isLogin ? "Sign In" : "Create Account"}
-                    <ArrowRight className="h-4 w-4" />
-                  </span>
+                <Label htmlFor="name">Full Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    className="pl-10"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
+                  />
+                </div>
+                {errors.name && (
+                  <p className="text-sm text-destructive">{errors.name}</p>
                 )}
-              </Button>
-            </motion.div>
-          </motion.form>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Toggle */}
-          <motion.div
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={{ ...defaultTransition, delay: 0.2 }}
-            className="mt-8 text-center"
-          >
-            <p className="text-muted-foreground">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                className="pl-10"
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+              />
+            </div>
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className="pl-10 pr-10"
+                value={formData.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+              />
               <button
                 type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setErrors({});
-                }}
-                className="font-medium text-primary hover:underline"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
-                {isLogin ? "Sign up" : "Sign in"}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
-            </p>
+            </div>
+            {errors.password && (
+              <p className="text-sm text-destructive">{errors.password}</p>
+            )}
+          </div>
+
+          <AnimatePresence mode="wait">
+            {!isLogin && (
+              <motion.div
+                key="role"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-2"
+              >
+                <Label>Select your role</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => handleInputChange("role", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(roleInfo).map(([key, info]) => (
+                      <SelectItem key={key} value={key}>
+                        <div className="flex items-center gap-2">
+                          <info.icon className="h-4 w-4" />
+                          <span>{info.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formData.role && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-sm text-muted-foreground"
+                  >
+                    {roleInfo[formData.role as UserRole]?.description}
+                  </motion.p>
+                )}
+                {errors.role && (
+                  <p className="text-sm text-destructive">{errors.role}</p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {isLogin && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
+          <motion.div {...buttonMotionProps}>
+            <Button
+              type="submit"
+              className="w-full mt-6 bg-primary text-primary-foreground hover:bg-primary/90"
+              size="lg"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="h-4 w-4 rounded-full border-2 border-primary-foreground border-t-transparent"
+                  />
+                  {isLogin ? "Signing in..." : "Creating account..."}
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  {isLogin ? "Sign In" : "Create Account"}
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              )}
+            </Button>
           </motion.div>
-        </div>
+
+          <Button
+            size="sm"
+            className="flex items-center gap-2 bg-card text-foreground font-semibold shadow-md border border-border hover:bg-accent hover:text-accent-foreground transition-all duration-300 w-full justify-center mt-4"
+            onClick={() => window.location.href = 'http://localhost:5000/auth/google'}
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Sign in with Google
+          </Button>
+        </motion.form>
+
+        {/* Toggle */}
+        <motion.div
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ ...defaultTransition, delay: 0.2 }}
+          className="mt-8 text-center"
+        >
+          <p className="text-muted-foreground">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setErrors({});
+              }}
+              className="font-medium text-primary hover:underline"
+            >
+              {isLogin ? "Sign up" : "Sign in"}
+            </button>
+          </p>
+        </motion.div>
       </div>
-    </div>
+    </AuthPageWrapper>
   );
 };
 

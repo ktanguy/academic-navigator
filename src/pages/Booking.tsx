@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
@@ -18,7 +18,7 @@ import {
   AlertTriangle,
   Accessibility,
 } from "lucide-react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,9 @@ import {
   defaultTransition,
   buttonMotionProps,
 } from "@/components/ui/motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { appointmentsApi, usersApi, User, sendGmailNotification } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
 
 const meetingReasons = [
   { id: "homework", label: "Homework Help", icon: BookOpen, description: "Get help with assignments" },
@@ -75,19 +78,44 @@ const timeSlots = [
   { time: "3:30 PM", available: false },
 ];
 
-const weekDays = [
-  { date: "Jan 29", day: "Wed", available: true },
-  { date: "Jan 30", day: "Thu", available: true },
-  { date: "Jan 31", day: "Fri", available: false },
-  { date: "Feb 1", day: "Sat", available: false },
-  { date: "Feb 2", day: "Sun", available: false },
-  { date: "Feb 3", day: "Mon", available: true },
-  { date: "Feb 4", day: "Tue", available: true },
-];
+// Generate dynamic week days starting from today
+const generateWeekDays = () => {
+  const days = [];
+  const today = new Date();
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    
+    const dayOfWeek = date.getDay();
+    // Weekend days are not available
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    
+    days.push({
+      date: date.toISOString().split('T')[0], // YYYY-MM-DD format for API
+      displayDate: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), // "Jan 29" format for display
+      day: date.toLocaleDateString('en-US', { weekday: 'short' }), // "Wed" format
+      available: !isWeekend,
+    });
+  }
+  
+  return days;
+};
 
 const Booking = () => {
+  const weekDays = generateWeekDays();
   const [searchParams] = useSearchParams();
   const teacherId = searchParams.get("teacher");
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+  const { toast } = useToast();
+  
+  // Helper to format date for display
+  const formatDateForDisplay = (dateStr: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
   
   const [step, setStep] = useState(1);
   const [selectedReason, setSelectedReason] = useState("");
@@ -95,6 +123,11 @@ const Booking = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedMode, setSelectedMode] = useState("");
   const [selectedUrgency, setSelectedUrgency] = useState("");
+  const [facilitators, setFacilitators] = useState<User[]>([]);
+  const [selectedFacilitator, setSelectedFacilitator] = useState<number | null>(teacherId ? parseInt(teacherId) : null);
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     studentId: "",
     subject: "",
@@ -108,10 +141,94 @@ const Booking = () => {
   });
   const [isBooked, setIsBooked] = useState(false);
 
-  const handleNext = () => {
-    if (step < 4) setStep(step + 1);
-    else {
-      setIsBooked(true);
+  // Fetch facilitators on mount
+  useEffect(() => {
+    const fetchFacilitators = async () => {
+      try {
+        const users = await usersApi.getFacilitators();
+        setFacilitators(users);
+        if (teacherId && !selectedFacilitator) {
+          setSelectedFacilitator(parseInt(teacherId));
+        }
+      } catch (error) {
+        console.error("Failed to fetch facilitators:", error);
+      }
+    };
+    fetchFacilitators();
+  }, [teacherId]);
+
+  // Fetch available slots when date and facilitator are selected
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (selectedFacilitator && selectedDate) {
+        setIsLoadingSlots(true);
+        try {
+          const response = await appointmentsApi.getAvailableSlots(selectedFacilitator, selectedDate);
+          setAvailableSlots(response.available_slots);
+        } catch (error) {
+          console.error("Failed to fetch available slots:", error);
+          // Fall back to demo time slots
+          setAvailableSlots(timeSlots.filter(s => s.available).map(s => s.time));
+        } finally {
+          setIsLoadingSlots(false);
+        }
+      }
+    };
+    fetchSlots();
+  }, [selectedFacilitator, selectedDate]);
+
+  const handleNext = async () => {
+    if (step < 4) {
+      setStep(step + 1);
+    } else {
+      // Submit appointment
+      if (!isAuthenticated) {
+        toast({
+          title: "Sign in required",
+          description: "Please sign in to book an appointment.",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        const bookingDetails = {
+          facilitator_id: selectedFacilitator!,
+          date: selectedDate,
+          time_slot: selectedTime,
+          meeting_type: selectedReason,
+          meeting_mode: selectedMode,
+          reason: `${formData.subject}: ${formData.description}`,
+        };
+
+        await appointmentsApi.create(bookingDetails);
+
+        // After booking is successful, send Gmail notification
+        if (user && user.email && user.googleAccessToken) {
+          await sendGmailNotification({
+            email: user.email,
+            subject: 'Appointment Booked',
+            message: `Your appointment for ${formData.subject} is confirmed.`,
+            accessToken: user.googleAccessToken,
+          });
+        }
+
+        toast({
+          title: "Appointment Booked!",
+          description: "Your appointment has been scheduled successfully.",
+        });
+        setIsBooked(true);
+      } catch (error) {
+        toast({
+          title: "Booking Failed",
+          description: error instanceof Error ? error.message : "Failed to book appointment. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -255,7 +372,7 @@ const Booking = () => {
               <div className="mt-6 rounded-xl bg-card p-5 shadow-card">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Date</span>
-                  <span className="font-medium text-foreground">{selectedDate}</span>
+                  <span className="font-medium text-foreground">{formatDateForDisplay(selectedDate)}</span>
                 </div>
                 <div className="mt-3 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Time</span>
@@ -448,7 +565,7 @@ const Booking = () => {
                           }`}
                         >
                           <span className="text-xs">{day.day}</span>
-                          <span className="mt-1 font-semibold">{day.date}</span>
+                          <span className="mt-1 font-semibold">{day.displayDate}</span>
                         </motion.button>
                       ))}
                     </div>
@@ -676,7 +793,7 @@ const Booking = () => {
                     <div className="flex items-center justify-between py-3">
                       <span className="text-muted-foreground">Date & Time</span>
                       <span className="font-medium text-foreground">
-                        {selectedDate} at {selectedTime}
+                        {formatDateForDisplay(selectedDate)} at {selectedTime}
                       </span>
                     </div>
                     <div className="border-t border-border" />

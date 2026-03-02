@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -24,6 +24,8 @@ import {
   defaultTransition,
   buttonMotionProps,
 } from "@/components/ui/motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { ticketsApi, appointmentsApi, Ticket, Appointment } from "@/services/api";
 
 const appointments = [
   {
@@ -76,13 +78,16 @@ const tickets = [
   },
 ];
 
-const statusConfig = {
+const statusConfig: Record<string, { color: string; label: string }> = {
   open: { color: "bg-warning text-warning-foreground", label: "Open" },
   "in-progress": { color: "bg-primary text-primary-foreground", label: "In Progress" },
   resolved: { color: "bg-success text-success-foreground", label: "Resolved" },
+  answered: { color: "bg-success text-success-foreground", label: "Answered" },
+  escalated: { color: "bg-destructive text-destructive-foreground", label: "Escalated" },
+  closed: { color: "bg-muted text-muted-foreground", label: "Closed" },
 };
 
-const priorityConfig = {
+const priorityConfig: Record<string, string> = {
   high: "border-destructive/50 bg-destructive/5",
   medium: "border-warning/50 bg-warning/5",
   low: "border-border",
@@ -90,7 +95,80 @@ const priorityConfig = {
 
 const StudentPortal = () => {
   const [activeTab, setActiveTab] = useState<"appointments" | "tickets">("appointments");
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [userTickets, setUserTickets] = useState<Ticket[]>([]);
+  const [userAppointments, setUserAppointments] = useState<Appointment[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isAuthenticated) {
+        setIsLoadingData(false);
+        return;
+      }
+      
+      setIsLoadingData(true);
+      try {
+        const [ticketsRes, appointmentsRes] = await Promise.all([
+          ticketsApi.getAll(),
+          appointmentsApi.getAll(),
+        ]);
+        setUserTickets(ticketsRes.tickets);
+        setUserAppointments(appointmentsRes);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+    fetchData();
+  }, [isAuthenticated]);
+
+  // Calculate stats from real data
+  const upcomingAppointments = userAppointments.filter(
+    (a) => a.status === "pending" || a.status === "confirmed"
+  ).length;
+  const openTickets = userTickets.filter(
+    (t) => t.status === "open" || t.status === "in-progress"
+  ).length;
+  const resolvedTickets = userTickets.filter(
+    (t) => t.status === "closed" || t.status === "answered"
+  ).length;
+
+  // Map API data to display format
+  const displayAppointments = userAppointments.length > 0 
+    ? userAppointments.map((a) => ({
+        id: a.id,
+        title: a.meeting_type || "Appointment",
+        facilitator: a.facilitator?.name || "Facilitator",
+        date: new Date(a.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        time: a.time_slot,
+        status: a.status === "confirmed" || a.status === "pending" ? "upcoming" : "completed",
+      }))
+    : appointments;
+
+  const displayTickets = userTickets.length > 0
+    ? userTickets.map((t) => ({
+        id: t.ticket_number,
+        subject: t.subject,
+        status: t.status === "answered" || t.status === "closed" ? "resolved" : t.status,
+        priority: t.priority,
+        lastUpdate: new Date(t.updated_at).toLocaleDateString(),
+      }))
+    : tickets;
+
+  if (isLoadingData) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -107,7 +185,7 @@ const StudentPortal = () => {
               className="mb-8"
             >
               <h1 className="text-3xl font-bold text-foreground">
-                Welcome back, Alex
+                Welcome back, {user?.name?.split(" ")[0] || "Student"}
               </h1>
               <p className="mt-2 text-muted-foreground">
                 Manage your appointments and support tickets
@@ -117,9 +195,9 @@ const StudentPortal = () => {
             {/* Quick Stats */}
             <StaggerContainer className="mb-8 grid gap-4 sm:grid-cols-3">
               {[
-                { icon: Calendar, label: "Upcoming Appointments", value: "2" },
-                { icon: MessageSquare, label: "Open Tickets", value: "1" },
-                { icon: CheckCircle2, label: "Resolved This Month", value: "5" },
+                { icon: Calendar, label: "Upcoming Appointments", value: String(upcomingAppointments) },
+                { icon: MessageSquare, label: "Open Tickets", value: String(openTickets) },
+                { icon: CheckCircle2, label: "Resolved This Month", value: String(resolvedTickets) },
               ].map((stat, index) => (
                 <AnimatedListItem key={stat.label}>
                   <motion.div
@@ -199,7 +277,7 @@ const StudentPortal = () => {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="space-y-4"
                 >
-                  {appointments.map((apt, index) => (
+                  {displayAppointments.map((apt, index) => (
                     <motion.div
                       key={apt.id}
                       initial={{ opacity: 0, x: -20 }}
@@ -255,7 +333,7 @@ const StudentPortal = () => {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   className="space-y-4"
                 >
-                  {tickets.map((ticket, index) => (
+                  {displayTickets.map((ticket, index) => (
                     <motion.div
                       key={ticket.id}
                       initial={{ opacity: 0, x: 20 }}
@@ -263,7 +341,7 @@ const StudentPortal = () => {
                       transition={{ delay: index * 0.06, duration: 0.3, ease: "easeOut" }}
                       whileHover={{ y: -2 }}
                       className={`flex items-center justify-between rounded-xl bg-card p-5 shadow-card transition-shadow hover:shadow-elevated ${
-                        priorityConfig[ticket.priority as keyof typeof priorityConfig]
+                        priorityConfig[ticket.priority] || priorityConfig.low
                       }`}
                     >
                         <div className="flex items-center gap-4">
@@ -292,10 +370,10 @@ const StudentPortal = () => {
                       </div>
                       <Badge
                         className={
-                          statusConfig[ticket.status as keyof typeof statusConfig].color
+                          (statusConfig[ticket.status] || statusConfig.open).color
                         }
                       >
-                        {statusConfig[ticket.status as keyof typeof statusConfig].label}
+                        {(statusConfig[ticket.status] || statusConfig.open).label}
                       </Badge>
                     </motion.div>
                   ))}

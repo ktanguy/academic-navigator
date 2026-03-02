@@ -6,60 +6,28 @@ import { fadeInUp, defaultTransition, buttonMotionProps } from "@/components/ui/
 
 export const CTA = () => {
   return (
-    <section className="py-20 md:py-28">
-      <div className="container">
-        <motion.div
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeInUp}
-          transition={defaultTransition}
-          className="relative overflow-hidden rounded-2xl bg-primary px-6 py-16 text-center md:px-12 md:py-20"
-        >
-          {/* Background pattern */}
-          <div className="pointer-events-none absolute inset-0 opacity-10">
-            <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-primary-foreground blur-3xl" />
-            <div className="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-primary-foreground blur-3xl" />
-          </div>
-
-          <div className="relative">
-            <h2 className="text-3xl font-bold text-primary-foreground md:text-4xl">
-              Ready to Get Academic Support?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/80">
-              Browse the facilitator directory to book an appointment, or submit a 
-              support ticket for AI-powered categorization and quick resolution.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <motion.div {...buttonMotionProps}>
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="h-12 px-8 text-base"
-                  asChild
-                >
-                  <Link to="/directory">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    Browse Facilitators
-                  </Link>
-                </Button>
-              </motion.div>
-              <motion.div {...buttonMotionProps}>
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  className="h-12 px-8 text-base text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-                  asChild
-                >
-                  <Link to="/helpdesk">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Submit a Ticket
-                  </Link>
-                </Button>
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
+    <section className="container py-20 md:py-28">
+      <div className="mx-auto max-w-3xl rounded-3xl bg-card shadow-xl px-8 py-14 text-center border border-border">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+          Ready to Get Academic Support?
+        </h2>
+        <p className="mt-4 text-lg text-muted-foreground">
+          Browse the facilitator directory to book an appointment, or submit a support ticket for AI-powered categorization and quick resolution.
+        </p>
+        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <a
+            href="/directory"
+            className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 text-base font-semibold text-primary-foreground shadow-md transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          >
+            Browse Facilitators
+          </a>
+          <a
+            href="/helpdesk"
+            className="inline-flex items-center justify-center rounded-full bg-secondary px-8 py-3 text-base font-semibold text-secondary-foreground shadow-md transition hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          >
+            Submit a Ticket
+          </a>
+        </div>
       </div>
     </section>
   );

@@ -2,10 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Magic Helper – Academic Support Platform Design System
-   Primary: #014BAA (Royal Blue)
-   Background: Soft white with light green accents
+/* Academic Navigator – Design System
+   Primary: Deep Blue (#06142E)
+   Accent: Royal Blue (#014BAA)
    Success/Available: #22C55E (Green)
+   Unified Dark Mode Support
 */
 
 @layer base {
@@ -54,51 +55,65 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 219 20% 90%;
     --sidebar-ring: 219 77% 10%;
+    
+    /* Chart colors for light mode */
+    --chart-1: 219 77% 10%;
+    --chart-2: 207 90% 54%;
+    --chart-3: 142 76% 45%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 280 65% 60%;
   }
 
   .dark {
-    --background: 215 25% 8%;
-    --foreground: 120 20% 95%;
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
 
-    --card: 215 20% 12%;
-    --card-foreground: 120 20% 95%;
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 215 20% 12%;
-    --popover-foreground: 120 20% 95%;
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 96%;
 
-    --primary: 219 70% 20%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 6%;
 
-    --secondary: 219 25% 18%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 219 20% 20%;
-    --muted-foreground: 219 15% 55%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 60%;
 
-    --accent: 207 85% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 222 47% 6%;
 
-    --destructive: 0 62% 50%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 50%;
+    --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 80% 55%;
+    --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 219 20% 22%;
-    --input: 219 20% 22%;
-    --ring: 219 70% 20%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 217 91% 60%;
 
-    --sidebar-background: 219 77% 8%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 219 70% 20%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 219 70% 20%;
-    --accent-foreground: 0 0% 100%;
-    --sidebar-border: 219 25% 18%;
-    --sidebar-ring: 219 70% 20%;
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 217 91% 60%;
+    --sidebar-accent-foreground: 222 47% 6%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 217 91% 60%;
+    
+    /* Chart colors for dark mode */
+    --chart-1: 217 91% 60%;
+    --chart-2: 207 90% 65%;
+    --chart-3: 142 71% 55%;
+    --chart-4: 38 92% 60%;
+    --chart-5: 280 65% 65%;
   }
 }
 
@@ -111,10 +126,120 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "cv11", "ss01", "ss03";
   }
+  
+  /* Smooth transition for theme changes */
+  html {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+@layer components {
+  /* Card styles with better dark mode support */
+  .card-elevated {
+    @apply bg-card border border-border shadow-card;
+  }
+  
+  .dark .card-elevated {
+    @apply shadow-none border-border/50;
+  }
+  
+  /* Input fields dark mode enhancement */
+  .dark input,
+  .dark textarea,
+  .dark select {
+    @apply bg-secondary/50 border-border;
+  }
+  
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    @apply border-primary ring-primary/20;
+  }
+  
+  /* Badge dark mode adjustments */
+  .dark .badge-success {
+    @apply bg-success/20 text-success border-success/30;
+  }
+  
+  .dark .badge-warning {
+    @apply bg-warning/20 text-warning border-warning/30;
+  }
+  
+  .dark .badge-destructive {
+    @apply bg-destructive/20 text-destructive border-destructive/30;
+  }
+  
+  /* Table dark mode */
+  .dark table th {
+    @apply bg-secondary/50 text-foreground;
+  }
+  
+  .dark table td {
+    @apply border-border/50;
+  }
+  
+  .dark table tr:hover {
+    @apply bg-secondary/30;
+  }
+  
+  /* Dialog/Modal dark mode */
+  .dark [role="dialog"] {
+    @apply bg-card border-border;
+  }
+  
+  /* Dropdown dark mode */
+  .dark [role="menu"] {
+    @apply bg-card border-border;
+  }
+  
+  /* Tooltip dark mode */
+  .dark [role="tooltip"] {
+    @apply bg-popover border-border text-popover-foreground;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  /* Glass effect for both modes */
+  .glass {
+    @apply bg-background/80 backdrop-blur-lg;
+  }
+  
+  .dark .glass {
+    @apply bg-card/80 backdrop-blur-lg;
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-primary {
+    @apply bg-gradient-to-br from-primary to-primary/80;
+  }
+  
+  .dark .gradient-primary {
+    @apply bg-gradient-to-br from-primary/90 to-primary/70;
+  }
+  
+  /* Status indicator colors */
+  .status-open {
+    @apply bg-warning/15 text-warning;
+  }
+  
+  .status-in-progress {
+    @apply bg-primary/15 text-primary;
+  }
+  
+  .status-resolved {
+    @apply bg-success/15 text-success;
+  }
+  
+  .status-escalated {
+    @apply bg-destructive/15 text-destructive;
+  }
+  
+  /* Dark mode specific text improvements */
+  .dark .text-muted-foreground {
+    @apply text-slate-400;
   }
 }
