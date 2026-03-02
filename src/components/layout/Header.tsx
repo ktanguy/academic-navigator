@@ -163,54 +163,17 @@ export const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55, duration: 0.4, type: 'spring', stiffness: 180 }}
-                whileHover={{ scale: 1.07 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <Button variant="ghost" size="sm" className="w-full justify-center text-foreground hover:text-primary hover:bg-secondary transition-all duration-300" asChild>
-                  <Link to="/auth">Sign In</Link>
-                </Button>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.4, type: 'spring', stiffness: 180 }}
-                whileHover={{ scale: 1.07 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <Button size="sm" className="w-full justify-center bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all duration-300" asChild>
-                  <Link to="/auth">Get Started</Link>
-                </Button>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.4, type: 'spring', stiffness: 180 }}
-                whileHover={{ scale: 1.09 }}
-                whileTap={{ scale: 0.97 }}
-                className=""
-              >
-                <Button
-                  size="sm"
-                  className="flex items-center gap-2 bg-primary text-primary-foreground font-semibold shadow-md hover:bg-primary/90 transition-all duration-300"
-                  onClick={() => window.location.href = 'http://localhost:5000/auth/google'}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g>
-                      <path d="M21.805 10.023h-9.765v3.977h5.588c-.241 1.285-1.41 3.777-5.588 3.777-3.364 0-6.104-2.777-6.104-6.2 0-3.423 2.74-6.2 6.104-6.2 1.921 0 3.211.823 3.951 1.523l2.899-2.823c-1.646-1.523-3.77-2.477-6.85-2.477-5.418 0-9.82 4.4-9.82 9.977s4.402 9.977 9.82 9.977c5.646 0 9.396-3.977 9.396-9.523 0-.636-.07-1.123-.156-1.523z" fill="#4285F4"/>
-                      <path d="M3.272 6.697l3.273 2.404c.889-1.523 2.41-2.523 4.495-2.523 1.921 0 3.211.823 3.951 1.523l2.899-2.823c-1.646-1.523-3.77-2.477-6.85-2.477-3.364 0-6.104 2.777-6.104 6.2 0 .636.07 1.123.156 1.523z" fill="#34A853"/>
-                      <path d="M12.04 21.777c3.364 0 6.104-2.777 6.104-6.2 0-.636-.07-1.123-.156-1.523h-5.948v-3.977h9.765c.07.409.156.887.156 1.523 0 5.546-3.75 9.523-9.396 9.523-3.08 0-5.204-.954-6.85-2.477l3.273-2.404c.889 1.523 2.41 2.523 4.495 2.523z" fill="#FBBC05"/>
-                      <path d="M21.805 10.023h-9.765v3.977h5.588c-.241 1.285-1.41 3.777-5.588 3.777-1.921 0-3.211-.823-3.951-1.523l-3.273 2.404c1.646 1.523 3.77 2.477 6.85 2.477 5.646 0 9.396-3.977 9.396-9.523 0-.636-.07-1.123-.156-1.523z" fill="#EA4335"/>
-                    </g>
-                  </svg>
-                  Sign in with Google
-                </Button>
-              </motion.div>
-            </>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55, duration: 0.4, type: 'spring', stiffness: 180 }}
+              whileHover={{ scale: 1.07 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Button size="sm" className="w-full justify-center bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-all duration-300" asChild>
+                <Link to="/auth">Get Started</Link>
+              </Button>
+            </motion.div>
           )}
         </div>
         <div className="flex items-center gap-3 md:hidden">
@@ -285,14 +248,9 @@ export const Header = () => {
                     </Button>
                   </>
                 ) : (
-                  <>
-                    <Button variant="ghost" size="sm" className="w-full justify-center text-foreground hover:text-primary hover:bg-accent transition-all duration-300" asChild>
-                      <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
-                    </Button>
-                    <Button size="sm" className="w-full justify-center bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300" asChild>
-                      <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
-                    </Button>
-                  </>
+                  <Button size="sm" className="w-full justify-center bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300" asChild>
+                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
+                  </Button>
                 )}
               </div>
             </nav>
