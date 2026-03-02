@@ -1,0 +1,52 @@
+# Render Blueprint - Infrastructure as Code
+# This file defines the services for deployment on Render.com
+
+services:
+  # Backend API Service
+  - type: web
+    name: academic-navigator-api
+    runtime: python
+    buildCommand: |
+      cd backend && pip install -r requirements.txt
+    startCommand: |
+      cd backend && gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CLASSIFIER_API_URL
+        value: https://tkwizera-student-support-api.hf.space/classify
+      - key: SMTP_SERVER
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://academic-navigator.onrender.com
+    healthCheckPath: /api/health
+    plan: free
+
+  # Frontend Static Site
+  - type: web
+    name: academic-navigator
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://academic-navigator-api.onrender.com/api
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    plan: free
