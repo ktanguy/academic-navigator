@@ -9,8 +9,14 @@ load_dotenv()
 
 def create_app():
     # Check if we're serving static files (production mode)
-    static_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dist')
+    # When running from /app/backend, parent dir is /app, and dist is at /app/dist
+    static_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dist')
     serve_static = os.path.exists(static_folder) and os.getenv('FLASK_ENV') == 'production'
+    
+    print(f"[DEBUG] Static folder: {static_folder}")
+    print(f"[DEBUG] Static folder exists: {os.path.exists(static_folder)}")
+    print(f"[DEBUG] FLASK_ENV: {os.getenv('FLASK_ENV')}")
+    print(f"[DEBUG] Serving static files: {serve_static}")
     
     if serve_static:
         app = Flask(__name__, static_folder=static_folder, static_url_path='')
@@ -83,9 +89,15 @@ def create_app():
         
         @app.route('/<path:path>')
         def serve_static_files(path):
+            # Don't intercept API routes
+            if path.startswith('api/'):
+                return {'error': 'Not found'}, 404
+            
             # Try to serve the file, fall back to index.html for SPA routing
-            if os.path.exists(os.path.join(app.static_folder, path)):
+            file_path = os.path.join(app.static_folder, path)
+            if os.path.exists(file_path) and os.path.isfile(file_path):
                 return send_from_directory(app.static_folder, path)
+            # Return index.html for SPA client-side routing
             return send_from_directory(app.static_folder, 'index.html')
     
     return app
