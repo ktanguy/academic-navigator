@@ -21,6 +21,9 @@ SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
 
 EMAIL_FROM = os.getenv('EMAIL_FROM', GMAIL_ADDRESS or 'noreply@academic-navigator.com')
 
+# Base URL for links in emails
+APP_BASE_URL = os.getenv('APP_BASE_URL', 'https://academic-navigator-api.onrender.com')
+
 
 def send_email(to_email: str, subject: str, body: str, html_body: str = None) -> bool:
     """
@@ -195,7 +198,7 @@ Academic Navigator Team
     html = create_html_email(
         title="New Appointment Booked",
         message=f"{student_name} has booked an appointment with you on <strong>{date}</strong> at <strong>{time}</strong>.<br><br>Meeting Type: {meeting_type}",
-        action_url="http://localhost:8080/facilitator",
+        action_url=f"{APP_BASE_URL}/facilitator",
         action_text="View Appointment"
     )
     return send_email(facilitator_email, subject, body, html)
@@ -223,7 +226,7 @@ Academic Navigator Team
     html = create_html_email(
         title="Ticket Escalated",
         message=f"Ticket <strong>#{ticket_number}</strong> has been escalated by {escalated_by}.<br><br><strong>Subject:</strong> {ticket_subject}<br><strong>Department:</strong> {department}<br><strong>Reason:</strong> {reason}",
-        action_url="http://localhost:8080/facilitator",
+        action_url=f"{APP_BASE_URL}/facilitator",
         action_text="Review Ticket"
     )
     return send_email(admin_email, subject, body, html)
@@ -251,7 +254,7 @@ Academic Navigator Team
     html = create_html_email(
         title="Ticket Resolved",
         message=f"Your ticket <strong>#{ticket_number}</strong> ({ticket_subject}) has been resolved by {resolved_by}.<br><br>If you have further questions, you can reopen the ticket or create a new one.",
-        action_url="http://localhost:8080/student",
+        action_url=f"{APP_BASE_URL}/student",
         action_text="View Ticket"
     )
     return send_email(student_email, subject, body, html)
@@ -278,7 +281,7 @@ Academic Navigator Team
     html = create_html_email(
         title="New Ticket Assigned",
         message=f"A new ticket <strong>#{ticket_number}</strong> has been assigned to you.<br><br><strong>Subject:</strong> {ticket_subject}<br><strong>From:</strong> {student_name}<br><strong>Category:</strong> {category}",
-        action_url="http://localhost:8080/facilitator",
+        action_url=f"{APP_BASE_URL}/facilitator",
         action_text="View Ticket"
     )
     return send_email(facilitator_email, subject, body, html)
