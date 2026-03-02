@@ -1,3 +1,6 @@
+// Vitest Configuration for Academic Navigator
+// Unit and integration testing setup
+
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";

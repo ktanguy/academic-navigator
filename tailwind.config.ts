@@ -1,3 +1,6 @@
+// Tailwind CSS Configuration for Academic Navigator
+// Dark mode and custom theme setup
+
 import type { Config } from "tailwindcss";
 
 export default {

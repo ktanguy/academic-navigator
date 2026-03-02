@@ -1,3 +1,6 @@
+// ESLint Configuration for Academic Navigator
+// Updated for production deployment
+
 import js from "@eslint/js";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
