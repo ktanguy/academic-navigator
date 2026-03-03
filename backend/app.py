@@ -135,6 +135,25 @@ def create_app():
             print("  - facilitator@alu.edu / password123 (Facilitator)")
             print("  - student@alu.edu / password123 (Student)")
             print("[INFO] Default office hours created for facilitator (Mon-Fri 9AM-5PM)")
+        
+        # Ensure all facilitators have office hours (for existing databases)
+        facilitators_without_hours = User.query.filter_by(role='facilitator').all()
+        for fac in facilitators_without_hours:
+            existing_hours = OfficeHours.query.filter_by(facilitator_id=fac.id).count()
+            if existing_hours == 0:
+                print(f"[INFO] Adding default office hours for facilitator: {fac.name}")
+                for day in range(5):  # Monday=0 to Friday=4
+                    office_hour = OfficeHours(
+                        facilitator_id=fac.id,
+                        day_of_week=day,
+                        start_time='09:00',
+                        end_time='17:00',
+                        is_available=True,
+                        slot_duration=30,
+                        location='Office, Academic Building'
+                    )
+                    db.session.add(office_hour)
+                db.session.commit()
     
     # Health check route
     @app.route('/api/health')
