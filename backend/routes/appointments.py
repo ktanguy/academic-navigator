@@ -69,6 +69,10 @@ def create_appointment(current_user):
         status='pending'
     )
     
+    # Store dynamic form data if provided
+    if data.get('form_data'):
+        appointment.set_form_data(data['form_data'])
+    
     db.session.add(appointment)
     db.session.commit()
     

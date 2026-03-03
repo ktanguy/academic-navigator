@@ -65,12 +65,14 @@ def create_app():
     from routes.users import users_bp
     from routes.appointments import appointments_bp
     from routes.notifications import notifications_bp
+    from routes.office_hours import office_hours_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(tickets_bp, url_prefix='/api/tickets')
     app.register_blueprint(users_bp, url_prefix='/api/users')
     app.register_blueprint(appointments_bp, url_prefix='/api/appointments')
     app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
+    app.register_blueprint(office_hours_bp, url_prefix='/api/office-hours')
     
     # Create tables
     with app.app_context():

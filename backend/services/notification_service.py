@@ -266,3 +266,97 @@ def mark_all_notifications_read(user_id):
     """
     Notification.query.filter_by(user_id=user_id, is_read=False).update({'is_read': True})
     db.session.commit()
+
+
+def notify_ticket_needs_review(ticket, ai_category, ai_confidence):
+    """
+    Send notifications when a ticket is flagged for manual review due to low AI confidence.
+    Notifies all admins and facilitators.
+    """
+    notifications = []
+    student = User.query.get(ticket.user_id)
+    
+    # Notify all admins
+    admins = User.query.filter_by(role='admin').all()
+    for admin in admins:
+        notification = Notification(
+            user_id=admin.id,
+            title="Ticket Needs Manual Review",
+            message=f"Ticket #{ticket.ticket_number} '{ticket.subject}' from {student.name if student else 'a student'} requires manual review. AI confidence: {int(ai_confidence * 100)}% (below 70% threshold). Suggested category: {ai_category}.",
+            notification_type="ticket_needs_review",
+            reference_id=ticket.id,
+            reference_type="ticket"
+        )
+        db.session.add(notification)
+        notifications.append(notification)
+        
+        # Send email to admin
+        send_email(
+            to_email=admin.email,
+            to_name=admin.name,
+            subject=f"Ticket #{ticket.ticket_number} Needs Manual Review",
+            body=f"""A new ticket requires your manual review due to low AI classification confidence.
+
+Ticket Details:
+- Ticket Number: {ticket.ticket_number}
+- Subject: {ticket.subject}
+- From: {student.name if student else 'A student'}
+- AI Suggested Category: {ai_category}
+- AI Confidence: {int(ai_confidence * 100)}%
+- Threshold: 70%
+
+Please review and assign this ticket manually.
+"""
+        )
+    
+    db.session.commit()
+    logger.info(f"Sent {len(notifications)} notifications for ticket #{ticket.ticket_number} needing review")
+    
+    return notifications
+
+
+def notify_ticket_reviewed(ticket, reviewer):
+    """
+    Send notification to student when their ticket has been reviewed and assigned.
+    """
+    student = User.query.get(ticket.user_id)
+    facilitator = User.query.get(ticket.assigned_to) if ticket.assigned_to else None
+    
+    message = f"Your ticket #{ticket.ticket_number} '{ticket.subject}' has been reviewed and categorized as '{ticket.category}'. "
+    if facilitator:
+        message += f"It has been assigned to {facilitator.name}."
+    else:
+        message += "A facilitator will be assigned shortly."
+    
+    notification = Notification(
+        user_id=ticket.user_id,
+        title="Ticket Reviewed",
+        message=message,
+        notification_type="ticket_reviewed",
+        reference_id=ticket.id,
+        reference_type="ticket"
+    )
+    
+    db.session.add(notification)
+    db.session.commit()
+    
+    # Send email to student
+    if student:
+        send_email(
+            to_email=student.email,
+            to_name=student.name,
+            subject=f"Ticket #{ticket.ticket_number} Has Been Reviewed",
+            body=f"""Good news! Your support ticket has been reviewed.
+
+Ticket Details:
+- Ticket Number: {ticket.ticket_number}
+- Subject: {ticket.subject}
+- Category: {ticket.category}
+- Status: {ticket.status}
+{f'- Assigned to: {facilitator.name}' if facilitator else ''}
+
+You will receive updates as your ticket is processed.
+"""
+        )
+    
+    return notification

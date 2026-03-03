@@ -12,7 +12,9 @@ from classifier import classify_ticket, get_classifier_info
 from services.notification_service import (
     notify_ticket_escalated,
     notify_ticket_resolved,
-    notify_ticket_assigned
+    notify_ticket_assigned,
+    notify_ticket_needs_review,
+    notify_ticket_reviewed
 )
 
 tickets_bp = Blueprint('tickets', __name__)
@@ -125,7 +127,7 @@ def get_tickets(current_user):
 @tickets_bp.route('', methods=['POST'])
 @token_required
 def create_ticket(current_user):
-    """Create a new ticket with AI classification"""
+    """Create a new ticket with AI classification and confidence-based routing"""
     data = request.get_json()
     
     # Validate
@@ -139,11 +141,19 @@ def create_ticket(current_user):
     # Use user-selected category if provided, otherwise use AI
     category = data.get('category') or ai_category
     
-    # Smart facilitator assignment based on category and workload
-    facilitator = find_best_facilitator(category)
-    
     # Set department based on category
     department = get_department_for_category(category)
+    
+    # Confidence threshold check (0.70 = 70%)
+    # If confidence >= 0.70: auto-assign to facilitator
+    # If confidence < 0.70: flag for manual review
+    CONFIDENCE_THRESHOLD = 0.70
+    needs_review = ai_confidence < CONFIDENCE_THRESHOLD
+    
+    # Only auto-assign if confidence is high enough
+    facilitator = None
+    if not needs_review:
+        facilitator = find_best_facilitator(category)
     
     ticket = Ticket(
         ticket_number=generate_ticket_number(),
@@ -151,9 +161,10 @@ def create_ticket(current_user):
         description=data['description'],
         category=category,
         priority=data.get('priority', 'medium'),
-        status='open',
+        status='needs-review' if needs_review else 'open',
         ai_category=ai_category,
         ai_confidence=ai_confidence,
+        needs_review=needs_review,
         user_id=current_user.id,
         assigned_to=facilitator.id if facilitator else None,
         department=department or data.get('department')
@@ -162,25 +173,36 @@ def create_ticket(current_user):
     db.session.add(ticket)
     db.session.commit()
     
-    # Notify facilitator about the new ticket assignment
+    # Notify facilitator about the new ticket assignment (only if auto-assigned)
     if facilitator:
         notify_ticket_assigned(ticket, facilitator)
     
-    # Add system response
+    # Add system response based on confidence
+    if needs_review:
+        system_message = f"Ticket created and AI suggested category '{ai_category}' with {int(ai_confidence * 100)}% confidence. Flagged for manual review due to low confidence (threshold: 70%)."
+    else:
+        system_message = f"Ticket created and categorized as '{ai_category}' with {int(ai_confidence * 100)}% confidence. Auto-assigned to support team."
+    
     system_response = TicketResponse(
         ticket_id=ticket.id,
-        message=f"Ticket created and categorized as '{ai_category}' with {int(ai_confidence * 100)}% confidence. Assigned to support team.",
+        message=system_message,
         is_system=True
     )
     db.session.add(system_response)
     db.session.commit()
+    
+    # Notify admins if ticket needs review
+    if needs_review:
+        notify_ticket_needs_review(ticket, ai_category, ai_confidence)
     
     return jsonify({
         'message': 'Ticket created successfully',
         'ticket': ticket.to_dict(),
         'ai_classification': {
             'category': ai_category,
-            'confidence': ai_confidence
+            'confidence': ai_confidence,
+            'needs_review': needs_review,
+            'threshold': CONFIDENCE_THRESHOLD
         }
     }), 201
 
@@ -299,6 +321,86 @@ def escalate_ticket(current_user, ticket_id):
     })
 
 
+@tickets_bp.route('/<int:ticket_id>/review', methods=['POST'])
+@token_required
+def review_ticket(current_user, ticket_id):
+    """
+    Review a ticket that was flagged for manual review due to low AI confidence.
+    Only admins and facilitators can review tickets.
+    """
+    if current_user.role not in ['facilitator', 'admin']:
+        return jsonify({'error': 'Access denied. Only facilitators and admins can review tickets.'}), 403
+    
+    ticket = Ticket.query.get_or_404(ticket_id)
+    
+    if not ticket.needs_review:
+        return jsonify({'error': 'This ticket does not require review'}), 400
+    
+    data = request.get_json()
+    
+    # Get the approved category (either confirm AI suggestion or override)
+    approved_category = data.get('category', ticket.ai_category)
+    assign_to = data.get('assign_to')  # Optional: specific facilitator ID
+    
+    # Update ticket
+    ticket.category = approved_category
+    ticket.needs_review = False
+    ticket.reviewed_by = current_user.id
+    ticket.reviewed_at = datetime.utcnow()
+    ticket.status = 'open'
+    ticket.department = get_department_for_category(approved_category)
+    
+    # Assign to specific facilitator or find best one
+    if assign_to:
+        facilitator = User.query.filter_by(id=assign_to, role='facilitator').first()
+    else:
+        facilitator = find_best_facilitator(approved_category)
+    
+    if facilitator:
+        ticket.assigned_to = facilitator.id
+        notify_ticket_assigned(ticket, facilitator)
+    
+    # Add system message about the review
+    review_message = f"Ticket reviewed by {current_user.name}. "
+    if approved_category != ticket.ai_category:
+        review_message += f"Category changed from '{ticket.ai_category}' to '{approved_category}'. "
+    else:
+        review_message += f"AI category '{approved_category}' confirmed. "
+    if facilitator:
+        review_message += f"Assigned to {facilitator.name}."
+    
+    system_response = TicketResponse(
+        ticket_id=ticket.id,
+        message=review_message,
+        is_system=True
+    )
+    db.session.add(system_response)
+    db.session.commit()
+    
+    # Notify the student that their ticket has been reviewed
+    notify_ticket_reviewed(ticket, current_user)
+    
+    return jsonify({
+        'message': 'Ticket reviewed and assigned successfully',
+        'ticket': ticket.to_dict()
+    })
+
+
+@tickets_bp.route('/needs-review', methods=['GET'])
+@token_required
+def get_tickets_needing_review(current_user):
+    """Get all tickets that need manual review (low confidence)"""
+    if current_user.role not in ['facilitator', 'admin']:
+        return jsonify({'error': 'Access denied'}), 403
+    
+    tickets = Ticket.query.filter_by(needs_review=True).order_by(Ticket.created_at.desc()).all()
+    
+    return jsonify({
+        'tickets': [t.to_dict() for t in tickets],
+        'count': len(tickets)
+    })
+
+
 @tickets_bp.route('/stats', methods=['GET'])
 @token_required
 def get_ticket_stats(current_user):
@@ -315,8 +417,12 @@ def get_ticket_stats(current_user):
         'in-progress': base_query.filter_by(status='in-progress').count(),
         'answered': base_query.filter_by(status='answered').count(),
         'escalated': base_query.filter_by(status='escalated').count(),
-        'closed': base_query.filter_by(status='closed').count()
+        'closed': base_query.filter_by(status='closed').count(),
+        'needs-review': base_query.filter_by(status='needs-review').count()
     }
+    
+    # Count tickets needing review
+    needs_review_count = base_query.filter_by(needs_review=True).count()
     
     # Count by category
     categories = ['assignment', 'grades', 'capstone', 'administrative', 'technical', 'general']
@@ -331,11 +437,17 @@ def get_ticket_stats(current_user):
         'high': base_query.filter_by(priority='high').count()
     }
     
+    # AI confidence stats
+    from sqlalchemy import func
+    avg_confidence = db.session.query(func.avg(Ticket.ai_confidence)).scalar() or 0
+    
     return jsonify({
         'total': base_query.count(),
         'by_status': by_status,
         'by_category': by_category,
-        'by_priority': by_priority
+        'by_priority': by_priority,
+        'needs_review': needs_review_count,
+        'avg_ai_confidence': round(avg_confidence, 2)
     })
 
 

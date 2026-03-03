@@ -24,9 +24,12 @@ export interface Ticket {
   description: string;
   category: string;
   priority: 'low' | 'medium' | 'high';
-  status: 'open' | 'in-progress' | 'answered' | 'escalated' | 'closed' | 'resolved';
+  status: 'open' | 'in-progress' | 'answered' | 'escalated' | 'closed' | 'resolved' | 'needs-review';
   ai_category?: string;
   ai_confidence?: number;
+  needs_review?: boolean;
+  reviewed_by?: number;
+  reviewed_at?: string;
   user_id: number;
   user_name?: string;
   assigned_to?: number;
@@ -35,6 +38,7 @@ export interface Ticket {
   updated_at: string;
   submitter?: User;
   assignee?: User;
+  reviewer?: User;
   responses?: TicketResponse[];
 }
 
@@ -59,10 +63,30 @@ export interface Appointment {
   meeting_mode: 'in-person' | 'video' | 'phone';
   reason?: string;
   notes?: string;
+  form_data?: Record<string, unknown>;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   created_at: string;
   student?: User;
   facilitator?: User;
+}
+
+export interface OfficeHours {
+  id: number;
+  facilitator_id: number;
+  day_of_week: number;
+  day_name: string;
+  start_time: string;
+  end_time: string;
+  is_available: boolean;
+  slot_duration: number;
+  location?: string;
+  notes?: string;
+}
+
+export interface AvailableSlot {
+  time: string;
+  duration: number;
+  location?: string;
 }
 
 export interface Notification {
@@ -258,8 +282,26 @@ export const ticketsApi = {
     by_status: Record<string, number>;
     by_category: Record<string, number>;
     by_priority: Record<string, number>;
+    needs_review?: number;
+    avg_ai_confidence?: number;
   }> => {
     return apiRequest('/tickets/stats');
+  },
+
+  // Get tickets needing manual review (low confidence)
+  getNeedsReview: async (): Promise<{ tickets: Ticket[]; count: number }> => {
+    return apiRequest('/tickets/needs-review');
+  },
+
+  // Review a ticket that was flagged for manual review
+  review: async (
+    ticketId: number,
+    data: { category: string; assign_to?: number }
+  ): Promise<{ message: string; ticket: Ticket }> => {
+    return apiRequest(`/tickets/${ticketId}/review`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 
   getClassifierInfo: async (): Promise<{
@@ -366,6 +408,7 @@ export const appointmentsApi = {
     meeting_type?: string;
     meeting_mode?: string;
     reason?: string;
+    form_data?: Record<string, unknown>;
   }): Promise<{ message: string; appointment: Appointment }> => {
     return apiRequest('/appointments', {
       method: 'POST',
@@ -436,4 +479,96 @@ export async function sendGmailNotification({ email, subject, message, accessTok
 // Health check
 export const healthCheck = async (): Promise<{ status: string; message: string }> => {
   return apiRequest('/health');
+};
+
+// Office Hours API
+export const officeHoursApi = {
+  // Get all office hours (optionally filter by facilitator or day)
+  getAll: async (params?: {
+    facilitator_id?: number;
+    day?: number;
+  }): Promise<{ office_hours: OfficeHours[] }> => {
+    const searchParams = new URLSearchParams();
+    if (params?.facilitator_id) searchParams.set('facilitator_id', params.facilitator_id.toString());
+    if (params?.day !== undefined) searchParams.set('day', params.day.toString());
+    
+    const query = searchParams.toString();
+    return apiRequest(`/office-hours${query ? `?${query}` : ''}`);
+  },
+
+  // Get office hours for a specific facilitator
+  getByFacilitator: async (facilitatorId: number): Promise<{
+    facilitator: User;
+    office_hours: OfficeHours[];
+  }> => {
+    return apiRequest(`/office-hours/facilitator/${facilitatorId}`);
+  },
+
+  // Get available time slots for a facilitator on a specific date
+  getAvailableSlots: async (facilitatorId: number, date: string): Promise<{
+    date: string;
+    day_of_week: number;
+    available_slots: AvailableSlot[];
+    booked_slots: string[];
+  }> => {
+    return apiRequest(`/office-hours/facilitator/${facilitatorId}/available-slots?date=${encodeURIComponent(date)}`);
+  },
+
+  // Create office hours (facilitators only)
+  create: async (data: {
+    day_of_week: number;
+    start_time: string;
+    end_time: string;
+    slot_duration?: number;
+    location?: string;
+    notes?: string;
+    facilitator_id?: number; // For admins setting other facilitators' hours
+  }): Promise<{ message: string; office_hours: OfficeHours }> => {
+    return apiRequest('/office-hours', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Update office hours
+  update: async (
+    id: number,
+    data: Partial<Omit<OfficeHours, 'id' | 'facilitator_id' | 'day_name'>>
+  ): Promise<{ message: string; office_hours: OfficeHours }> => {
+    return apiRequest(`/office-hours/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Delete office hours
+  delete: async (id: number): Promise<{ message: string }> => {
+    return apiRequest(`/office-hours/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Get current facilitator's office hours
+  getMy: async (): Promise<{ office_hours: OfficeHours[] }> => {
+    return apiRequest('/office-hours/my');
+  },
+
+  // Set weekly schedule in bulk
+  setWeeklySchedule: async (data: {
+    schedule: Array<{
+      day_of_week: number;
+      start_time: string;
+      end_time: string;
+      is_available?: boolean;
+      slot_duration?: number;
+      location?: string;
+      notes?: string;
+    }>;
+    facilitator_id?: number; // For admins
+  }): Promise<{ message: string; office_hours: OfficeHours[] }> => {
+    return apiRequest('/office-hours/bulk', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
 };

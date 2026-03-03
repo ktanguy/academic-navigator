@@ -40,7 +40,7 @@ import {
   buttonMotionProps,
 } from "@/components/ui/motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { appointmentsApi, usersApi, User, sendGmailNotification } from "@/services/api";
+import { appointmentsApi, usersApi, User, sendGmailNotification, officeHoursApi, AvailableSlot } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 const meetingReasons = [
@@ -125,7 +125,8 @@ const Booking = () => {
   const [selectedUrgency, setSelectedUrgency] = useState("");
   const [facilitators, setFacilitators] = useState<User[]>([]);
   const [selectedFacilitator, setSelectedFacilitator] = useState<number | null>(teacherId ? parseInt(teacherId) : null);
-  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -157,18 +158,24 @@ const Booking = () => {
     fetchFacilitators();
   }, [teacherId]);
 
-  // Fetch available slots when date and facilitator are selected
+  // Fetch available slots from office hours when date and facilitator are selected
   useEffect(() => {
     const fetchSlots = async () => {
       if (selectedFacilitator && selectedDate) {
         setIsLoadingSlots(true);
         try {
-          const response = await appointmentsApi.getAvailableSlots(selectedFacilitator, selectedDate);
+          // Use the office hours API to get real availability
+          const response = await officeHoursApi.getAvailableSlots(selectedFacilitator, selectedDate);
           setAvailableSlots(response.available_slots);
+          setBookedSlots(response.booked_slots);
         } catch (error) {
           console.error("Failed to fetch available slots:", error);
           // Fall back to demo time slots
-          setAvailableSlots(timeSlots.filter(s => s.available).map(s => s.time));
+          const fallbackSlots: AvailableSlot[] = timeSlots
+            .filter(s => s.available)
+            .map(s => ({ time: s.time, duration: 30 }));
+          setAvailableSlots(fallbackSlots);
+          setBookedSlots([]);
         } finally {
           setIsLoadingSlots(false);
         }
@@ -194,6 +201,31 @@ const Booking = () => {
 
       setIsSubmitting(true);
       try {
+        // Build dynamic form data based on meeting type
+        const dynamicFormData: Record<string, unknown> = {
+          student_id: formData.studentId,
+          subject: formData.subject,
+          description: formData.description,
+          urgency: selectedUrgency,
+          accessibility_needs: formData.accessibilityNeeds,
+        };
+        
+        // Add type-specific fields
+        if (selectedReason === 'homework') {
+          dynamicFormData.course_code = formData.courseCode;
+          dynamicFormData.prior_attempts = formData.priorAttempts;
+        } else if (selectedReason === 'capstone') {
+          dynamicFormData.project_title = formData.subject;
+          dynamicFormData.current_progress = formData.description;
+        } else if (selectedReason === 'grades') {
+          dynamicFormData.course_assessment = formData.subject;
+          dynamicFormData.concerns = formData.description;
+        }
+        
+        if (formData.accessibilityNeeds && formData.accessibilityDetails) {
+          dynamicFormData.accessibility_details = formData.accessibilityDetails;
+        }
+
         const bookingDetails = {
           facilitator_id: selectedFacilitator!,
           date: selectedDate,
@@ -201,6 +233,7 @@ const Booking = () => {
           meeting_type: selectedReason,
           meeting_mode: selectedMode,
           reason: `${formData.subject}: ${formData.description}`,
+          form_data: dynamicFormData,
         };
 
         await appointmentsApi.create(bookingDetails);
@@ -576,33 +609,52 @@ const Booking = () => {
                     <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
                       <Clock className="h-4 w-4" />
                       Select Time
+                      {isLoadingSlots && <span className="text-xs text-muted-foreground">(Loading...)</span>}
                     </div>
-                    <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-                      {timeSlots.map((slot) => (
-                        <motion.button
-                          key={slot.time}
-                          whileHover={{ y: -2 }}
-                          whileTap={{ scale: 0.98 }}
-                          disabled={!slot.available}
-                          onClick={() => setSelectedTime(slot.time)}
-                          className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                            !slot.available
-                              ? "cursor-not-allowed bg-destructive/10 text-destructive/50"
-                              : selectedTime === slot.time
-                              ? "bg-success text-success-foreground"
-                              : "bg-card shadow-card hover:bg-success/10 hover:text-success"
-                          }`}
-                        >
-                          {slot.time}
-                        </motion.button>
-                      ))}
-                    </div>
+                    {!selectedDate ? (
+                      <p className="text-sm text-muted-foreground">Please select a date first</p>
+                    ) : availableSlots.length === 0 && !isLoadingSlots ? (
+                      <p className="text-sm text-muted-foreground">No available slots on this date. The facilitator may not have office hours scheduled.</p>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+                        {availableSlots.map((slot) => (
+                          <motion.button
+                            key={slot.time}
+                            whileHover={{ y: -2 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setSelectedTime(slot.time)}
+                            className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                              selectedTime === slot.time
+                                ? "bg-success text-success-foreground"
+                                : "bg-card shadow-card hover:bg-success/10 hover:text-success"
+                            }`}
+                          >
+                            <div>{slot.time}</div>
+                            {slot.duration && (
+                              <div className="text-xs opacity-70">{slot.duration} min</div>
+                            )}
+                          </motion.button>
+                        ))}
+                      </div>
+                    )}
+                    {bookedSlots.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-xs text-muted-foreground mb-2">Already booked times:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {bookedSlots.map((slot) => (
+                            <span key={slot} className="px-2 py-1 text-xs bg-destructive/10 text-destructive rounded">
+                              {slot}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <span className="h-3 w-3 rounded bg-success" /> Available
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="h-3 w-3 rounded bg-destructive/30" /> Unavailable
+                        <span className="h-3 w-3 rounded bg-destructive/30" /> Booked
                       </span>
                     </div>
                   </div>

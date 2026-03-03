@@ -85,6 +85,7 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   answered: { color: "bg-success text-success-foreground", label: "Answered" },
   escalated: { color: "bg-destructive text-destructive-foreground", label: "Escalated" },
   closed: { color: "bg-muted text-muted-foreground", label: "Closed" },
+  "needs-review": { color: "bg-orange-500 text-white", label: "Under Review" },
 };
 
 const priorityConfig: Record<string, string> = {

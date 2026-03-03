@@ -276,7 +276,7 @@ const initialUsers = [
 ];
 
 const AdminPanel = () => {
-  const [activeSection, setActiveSection] = useState<"analytics" | "ai-classification" | "users" | "settings">(
+  const [activeSection, setActiveSection] = useState<"analytics" | "ai-classification" | "users" | "settings" | "tickets-review">(
     "analytics"
   );
   const { toast } = useToast();
@@ -291,6 +291,13 @@ const AdminPanel = () => {
   const [deleteUserOpen, setDeleteUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<typeof initialUsers[0] | null>(null);
   const [newUser, setNewUser] = useState({ name: "", email: "", role: "Facilitator", department: "" });
+  
+  // Tickets needing review state
+  const [ticketsNeedingReview, setTicketsNeedingReview] = useState<Ticket[]>([]);
+  const [isLoadingReviewTickets, setIsLoadingReviewTickets] = useState(false);
+  const [selectedReviewTicket, setSelectedReviewTicket] = useState<Ticket | null>(null);
+  const [reviewCategory, setReviewCategory] = useState("");
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   
   // Analytics state
   const [isLoadingStats, setIsLoadingStats] = useState(true);
@@ -528,6 +535,48 @@ const AdminPanel = () => {
     fetchData();
   }, []);
 
+  // Fetch tickets needing review
+  const fetchTicketsNeedingReview = useCallback(async () => {
+    setIsLoadingReviewTickets(true);
+    try {
+      const response = await ticketsApi.getNeedsReview();
+      setTicketsNeedingReview(response.tickets || []);
+    } catch (error) {
+      console.error("Failed to fetch tickets needing review:", error);
+    } finally {
+      setIsLoadingReviewTickets(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeSection === "tickets-review") {
+      fetchTicketsNeedingReview();
+    }
+  }, [activeSection, fetchTicketsNeedingReview]);
+
+  // Handle ticket review
+  const handleReviewTicket = async () => {
+    if (!selectedReviewTicket || !reviewCategory) return;
+    
+    try {
+      await ticketsApi.review(selectedReviewTicket.id, { category: reviewCategory });
+      toast({
+        title: "Ticket Reviewed",
+        description: `Ticket #${selectedReviewTicket.ticket_number} has been reviewed and assigned.`,
+      });
+      setReviewDialogOpen(false);
+      setSelectedReviewTicket(null);
+      setReviewCategory("");
+      fetchTicketsNeedingReview();
+    } catch (error) {
+      toast({
+        title: "Review Failed",
+        description: error instanceof Error ? error.message : "Failed to review ticket",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Test AI classification
   const handleTestClassification = async () => {
     if (!testText.trim()) return;
@@ -666,13 +715,14 @@ const AdminPanel = () => {
               {[
                 { id: "analytics", label: "Analytics", icon: BarChart3 },
                 { id: "ai-classification", label: "AI Classification", icon: Brain },
+                { id: "tickets-review", label: "Review Queue", icon: FileText, badge: ticketsNeedingReview.length },
                 { id: "users", label: "User Management", icon: Users },
                 { id: "settings", label: "Settings", icon: Settings },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() =>
-                    setActiveSection(tab.id as "analytics" | "ai-classification" | "users" | "settings")
+                    setActiveSection(tab.id as "analytics" | "ai-classification" | "users" | "settings" | "tickets-review")
                   }
                   className={`relative flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                     activeSection === tab.id
@@ -682,6 +732,11 @@ const AdminPanel = () => {
                 >
                   <tab.icon className="h-4 w-4" />
                   {tab.label}
+                  {'badge' in tab && tab.badge > 0 && (
+                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs text-white">
+                      {tab.badge}
+                    </span>
+                  )}
                   {activeSection === tab.id && (
                     <motion.div
                       layoutId="activeAdminTab"
@@ -1230,6 +1285,102 @@ const AdminPanel = () => {
                 </motion.div>
               )}
 
+              {activeSection === "tickets-review" && (
+                <motion.div
+                  key="tickets-review"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="space-y-6"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold">Tickets Needing Review</h2>
+                      <p className="text-sm text-muted-foreground">
+                        These tickets have AI confidence below 70% and need manual categorization
+                      </p>
+                    </div>
+                    <Button variant="outline" onClick={fetchTicketsNeedingReview} disabled={isLoadingReviewTickets}>
+                      <RefreshCw className={`mr-2 h-4 w-4 ${isLoadingReviewTickets ? 'animate-spin' : ''}`} />
+                      Refresh
+                    </Button>
+                  </div>
+
+                  {/* Info Card */}
+                  <div className="rounded-xl bg-orange-500/10 border border-orange-500/20 p-4">
+                    <div className="flex items-start gap-3">
+                      <Brain className="h-5 w-5 text-orange-500 mt-0.5" />
+                      <div>
+                        <h3 className="font-medium text-orange-700 dark:text-orange-400">AI Confidence Threshold</h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Tickets are flagged for review when the AI classifier confidence is below 70%. 
+                          Review the suggested category and confirm or change it to ensure accurate routing.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tickets List */}
+                  {isLoadingReviewTickets ? (
+                    <div className="flex items-center justify-center py-12">
+                      <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : ticketsNeedingReview.length === 0 ? (
+                    <div className="rounded-xl bg-card p-12 text-center shadow-card">
+                      <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+                      <h3 className="mt-4 text-lg font-medium">All caught up!</h3>
+                      <p className="mt-2 text-muted-foreground">
+                        No tickets currently need manual review.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {ticketsNeedingReview.map((ticket) => (
+                        <motion.div
+                          key={ticket.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="rounded-xl bg-card p-5 shadow-card"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline">{ticket.ticket_number}</Badge>
+                                <Badge className="bg-orange-500/15 text-orange-600 hover:bg-orange-500/25">
+                                  {Math.round((ticket.ai_confidence || 0) * 100)}% Confidence
+                                </Badge>
+                              </div>
+                              <h3 className="mt-2 font-medium">{ticket.subject}</h3>
+                              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                                {ticket.description}
+                              </p>
+                              <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                                <span>From: {ticket.submitter?.name || 'Unknown'}</span>
+                                <span>•</span>
+                                <span>AI Suggested: <strong className="text-foreground">{ticket.ai_category}</strong></span>
+                                <span>•</span>
+                                <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                            <Button
+                              onClick={() => {
+                                setSelectedReviewTicket(ticket);
+                                setReviewCategory(ticket.ai_category || '');
+                                setReviewDialogOpen(true);
+                              }}
+                            >
+                              Review
+                            </Button>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
               {activeSection === "settings" && (
                 <motion.div
                   key="settings"
@@ -1600,6 +1751,68 @@ const AdminPanel = () => {
             <Button variant="destructive" onClick={handleDeleteUser}>
               <Trash2 className="mr-2 h-4 w-4" />
               Remove User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Review Ticket Dialog */}
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Review Ticket</DialogTitle>
+            <DialogDescription>
+              Confirm or change the AI-suggested category for this ticket
+            </DialogDescription>
+          </DialogHeader>
+          {selectedReviewTicket && (
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="outline">{selectedReviewTicket.ticket_number}</Badge>
+                  <Badge className="bg-orange-500/15 text-orange-600">
+                    {Math.round((selectedReviewTicket.ai_confidence || 0) * 100)}% Confidence
+                  </Badge>
+                </div>
+                <h4 className="font-medium">{selectedReviewTicket.subject}</h4>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {selectedReviewTicket.description}
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>AI Suggested Category</Label>
+                <div className="flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">{selectedReviewTicket.ai_category}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="review-category">Confirm or Change Category</Label>
+                <Select value={reviewCategory} onValueChange={setReviewCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="assignment">Assignment Issues</SelectItem>
+                    <SelectItem value="grades">Grade Appeals</SelectItem>
+                    <SelectItem value="capstone">Capstone Project</SelectItem>
+                    <SelectItem value="administrative">Administrative Issues</SelectItem>
+                    <SelectItem value="technical">Technical Support</SelectItem>
+                    <SelectItem value="general">General Inquiry</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReviewDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleReviewTicket} disabled={!reviewCategory}>
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              Confirm & Assign
             </Button>
           </DialogFooter>
         </DialogContent>
