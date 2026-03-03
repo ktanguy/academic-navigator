@@ -11,10 +11,13 @@ def create_app():
     # Check if we're serving static files (production mode)
     # When running from /app/backend, parent dir is /app, and dist is at /app/dist
     static_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dist')
-    serve_static = os.path.exists(static_folder) and os.getenv('FLASK_ENV') == 'production'
+    index_file = os.path.join(static_folder, 'index.html')
+    
+    # Serve static files if dist folder exists with index.html (production build present)
+    serve_static = os.path.exists(index_file)
     
     print(f"[DEBUG] Static folder: {static_folder}")
-    print(f"[DEBUG] Static folder exists: {os.path.exists(static_folder)}")
+    print(f"[DEBUG] Index file exists: {os.path.exists(index_file)}")
     print(f"[DEBUG] FLASK_ENV: {os.getenv('FLASK_ENV')}")
     print(f"[DEBUG] Serving static files: {serve_static}")
     
@@ -102,15 +105,33 @@ def create_app():
             # Return index.html for SPA client-side routing
             return send_from_directory(app.static_folder, 'index.html')
     else:
-        # Even if serve_static is False, register a catch-all for production
-        # This handles cases where the static folder check fails
-        @app.errorhandler(404)
-        def not_found(e):
-            # Check if dist folder exists and return index.html
-            dist_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dist')
+        # Even if serve_static is False initially, register routes for production
+        # This handles cases where the check above fails but dist exists
+        dist_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dist')
+        
+        @app.route('/')
+        def serve_index_fallback():
             index_file = os.path.join(dist_folder, 'index.html')
             if os.path.exists(index_file):
                 return send_from_directory(dist_folder, 'index.html')
+            return {'message': 'Academic Navigator API', 'docs': '/api/health'}, 200
+        
+        @app.route('/<path:path>')
+        def serve_spa_fallback(path):
+            # Don't intercept API routes
+            if path.startswith('api/'):
+                return {'error': 'Not found'}, 404
+            
+            # Try to serve the file from dist
+            file_path = os.path.join(dist_folder, path)
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                return send_from_directory(dist_folder, path)
+            
+            # Return index.html for SPA client-side routing
+            index_file = os.path.join(dist_folder, 'index.html')
+            if os.path.exists(index_file):
+                return send_from_directory(dist_folder, 'index.html')
+            
             return {'error': 'Not found'}, 404
     
     return app
