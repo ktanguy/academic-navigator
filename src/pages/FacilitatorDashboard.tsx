@@ -54,6 +54,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ticketsApi, Ticket } from "@/services/api";
+import { OfficeHoursManager } from "@/components/OfficeHoursManager";
 
 // Escalation destinations based on the proposal
 const escalationDestinations: {
@@ -785,6 +786,17 @@ const FacilitatorDashboard = () => {
                   )}
                 </AnimatePresence>
               </div>
+            </motion.div>
+
+            {/* Office Hours Management */}
+            <motion.div
+              variants={fadeInUp}
+              initial="initial"
+              animate="animate"
+              transition={{ ...defaultTransition, delay: 0.3 }}
+              className="mt-8"
+            >
+              <OfficeHoursManager />
             </motion.div>
           </div>
         </PageTransition>
