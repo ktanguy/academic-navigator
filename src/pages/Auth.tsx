@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Users, Shield } from "lucide-react";
@@ -65,7 +65,17 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login, register, logout } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading, login, register, logout } = useAuth();
+
+  // Redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user) {
+      const redirectPath = user.role === 'admin' ? '/admin' 
+        : user.role === 'facilitator' ? '/facilitator' 
+        : '/student';
+      navigate(redirectPath, { replace: true });
+    }
+  }, [authLoading, isAuthenticated, user, navigate]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -180,6 +190,17 @@ const Auth = () => {
       navigate(redirectTo);
     }
   };
+
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <AuthPageWrapper>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        </div>
+      </AuthPageWrapper>
+    );
+  }
 
   return (
     <AuthPageWrapper>
