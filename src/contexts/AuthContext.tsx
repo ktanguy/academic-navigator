@@ -47,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     const response = await authApi.login(email, password);
     setUser(response.user);
+    // Ensure context is fully updated before proceeding
+    await refreshUser();
     return response.user;
   };
 
