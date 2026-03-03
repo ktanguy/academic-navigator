@@ -4,8 +4,46 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
+from sqlalchemy import text
 
 load_dotenv()
+
+
+def run_migrations(app):
+    """Run database migrations to ensure schema is up to date"""
+    from models.models import db
+    
+    try:
+        # Check if needs_review column exists in tickets table
+        result = db.session.execute(text("PRAGMA table_info(tickets)"))
+        columns = [row[1] for row in result.fetchall()]
+        
+        if 'needs_review' not in columns:
+            print("[MIGRATION] Adding needs_review column to tickets...")
+            db.session.execute(text("ALTER TABLE tickets ADD COLUMN needs_review BOOLEAN DEFAULT 0"))
+            db.session.commit()
+        
+        if 'reviewed_by' not in columns:
+            print("[MIGRATION] Adding reviewed_by column to tickets...")
+            db.session.execute(text("ALTER TABLE tickets ADD COLUMN reviewed_by INTEGER"))
+            db.session.commit()
+        
+        if 'reviewed_at' not in columns:
+            print("[MIGRATION] Adding reviewed_at column to tickets...")
+            db.session.execute(text("ALTER TABLE tickets ADD COLUMN reviewed_at DATETIME"))
+            db.session.commit()
+        
+        # Update existing low-confidence tickets to needs_review=True
+        db.session.execute(text(
+            "UPDATE tickets SET needs_review = 1 WHERE ai_confidence < 0.70 AND ai_confidence IS NOT NULL AND (needs_review IS NULL OR needs_review = 0)"
+        ))
+        db.session.commit()
+        
+        print("[MIGRATION] Database schema is up to date")
+    except Exception as e:
+        print(f"[MIGRATION] Warning: Could not run migrations: {e}")
+        db.session.rollback()
+
 
 def create_app():
     # Static folder for frontend (dist folder from Vite build)
@@ -72,9 +110,12 @@ def create_app():
     app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
     app.register_blueprint(office_hours_bp, url_prefix='/api/office-hours')
     
-    # Create tables and seed default users if needed
+    # Create tables and run migrations
     with app.app_context():
         db.create_all()
+        
+        # Run database migrations for existing databases
+        run_migrations(app)
         
         # Auto-seed default users if database is empty
         from models.models import User, OfficeHours

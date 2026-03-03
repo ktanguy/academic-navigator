@@ -333,8 +333,10 @@ def review_ticket(current_user, ticket_id):
     
     ticket = Ticket.query.get_or_404(ticket_id)
     
-    if not ticket.needs_review:
-        return jsonify({'error': 'This ticket does not require review'}), 400
+    # Allow review if needs_review is True OR if confidence is low (for backwards compatibility)
+    ai_confidence = ticket.ai_confidence or 0
+    if not ticket.needs_review and ai_confidence >= 0.70:
+        return jsonify({'error': 'This ticket does not require review (confidence >= 70%)'}), 400
     
     data = request.get_json()
     
@@ -393,7 +395,17 @@ def get_tickets_needing_review(current_user):
     if current_user.role not in ['facilitator', 'admin']:
         return jsonify({'error': 'Access denied'}), 403
     
-    tickets = Ticket.query.filter_by(needs_review=True).order_by(Ticket.created_at.desc()).all()
+    # Get tickets with needs_review=True OR low confidence (< 0.70)
+    tickets = Ticket.query.filter(
+        (Ticket.needs_review == True) | 
+        (Ticket.ai_confidence < 0.70) |
+        (Ticket.ai_confidence == None)
+    ).filter(
+        Ticket.status != 'closed'
+    ).order_by(Ticket.created_at.desc()).all()
+    
+    # Filter out tickets that have already been reviewed
+    tickets = [t for t in tickets if t.reviewed_by is None]
     
     return jsonify({
         'tickets': [t.to_dict() for t in tickets],
