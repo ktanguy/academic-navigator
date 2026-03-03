@@ -77,9 +77,52 @@ def create_app():
     app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
     app.register_blueprint(office_hours_bp, url_prefix='/api/office-hours')
     
-    # Create tables
+    # Create tables and seed default users if needed
     with app.app_context():
         db.create_all()
+        
+        # Auto-seed default users if database is empty
+        from models.models import User
+        if User.query.count() == 0:
+            print("[INFO] Database is empty, seeding default users...")
+            import bcrypt
+            password_hash = bcrypt.hashpw('password123'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            # Create default admin
+            admin = User(
+                email='admin@alu.edu',
+                password_hash=password_hash,
+                name='System Administrator',
+                role='admin',
+                department='Administration'
+            )
+            db.session.add(admin)
+            
+            # Create default facilitator
+            facilitator = User(
+                email='facilitator@alu.edu',
+                password_hash=password_hash,
+                name='Jolly Umulisa',
+                role='facilitator',
+                department='Academic Affairs'
+            )
+            db.session.add(facilitator)
+            
+            # Create default student
+            student = User(
+                email='student@alu.edu',
+                password_hash=password_hash,
+                name='Test Student',
+                role='student',
+                department='Computer Science'
+            )
+            db.session.add(student)
+            
+            db.session.commit()
+            print("[INFO] Default users created:")
+            print("  - admin@alu.edu / password123 (Admin)")
+            print("  - facilitator@alu.edu / password123 (Facilitator)")
+            print("  - student@alu.edu / password123 (Student)")
     
     # Health check route
     @app.route('/api/health')
