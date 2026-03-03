@@ -166,8 +166,8 @@ const Booking = () => {
         try {
           // Use the office hours API to get real availability
           const response = await officeHoursApi.getAvailableSlots(selectedFacilitator, selectedDate);
-          setAvailableSlots(response.available_slots);
-          setBookedSlots(response.booked_slots);
+          setAvailableSlots(response.available_slots || []);
+          setBookedSlots(response.booked_slots || []);
         } catch (error) {
           console.error("Failed to fetch available slots:", error);
           // Fall back to demo time slots
@@ -179,6 +179,10 @@ const Booking = () => {
         } finally {
           setIsLoadingSlots(false);
         }
+      } else {
+        // Reset slots when no facilitator or date selected
+        setAvailableSlots([]);
+        setBookedSlots([]);
       }
     };
     fetchSlots();

@@ -77,7 +77,7 @@ def create_app():
         db.create_all()
         
         # Auto-seed default users if database is empty
-        from models.models import User
+        from models.models import User, OfficeHours
         if User.query.count() == 0:
             print("[INFO] Database is empty, seeding default users...")
             import bcrypt
@@ -114,10 +114,27 @@ def create_app():
             db.session.add(student)
             
             db.session.commit()
+            
+            # Add default office hours for facilitator (Monday-Friday, 9AM-5PM)
+            for day in range(5):  # Monday=0 to Friday=4
+                office_hour = OfficeHours(
+                    facilitator_id=facilitator.id,
+                    day_of_week=day,
+                    start_time='09:00',
+                    end_time='17:00',
+                    is_available=True,
+                    slot_duration=30,
+                    location='Office 101, Academic Building'
+                )
+                db.session.add(office_hour)
+            
+            db.session.commit()
+            
             print("[INFO] Default users created:")
             print("  - admin@alu.edu / password123 (Admin)")
             print("  - facilitator@alu.edu / password123 (Facilitator)")
             print("  - student@alu.edu / password123 (Student)")
+            print("[INFO] Default office hours created for facilitator (Mon-Fri 9AM-5PM)")
     
     # Health check route
     @app.route('/api/health')
