@@ -67,15 +67,15 @@ const Auth = () => {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: authLoading, login, register, logout } = useAuth();
 
-  // Redirect authenticated users to their dashboard
+  // Redirect already-authenticated users (e.g., if they navigate to /auth while logged in)
   useEffect(() => {
-    if (!authLoading && isAuthenticated && user) {
+    if (!authLoading && isAuthenticated && user && !isLoading) {
       const redirectPath = user.role === 'admin' ? '/admin' 
         : user.role === 'facilitator' ? '/facilitator' 
         : '/student';
       navigate(redirectPath, { replace: true });
     }
-  }, [authLoading, isAuthenticated, user, navigate]);
+  }, [authLoading, isAuthenticated, user, navigate, isLoading]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -95,10 +95,12 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (isLoading) return;
+    
     setErrors({});
     setIsLoading(true);
-
-    let redirectTo: string | null = null;
 
     try {
       if (isLogin) {
@@ -129,14 +131,13 @@ const Auth = () => {
           description: "You have successfully logged in.",
         });
 
-        // Set redirect path based on user role
-        if (user.role === 'admin') {
-          redirectTo = "/admin";
-        } else if (user.role === 'facilitator') {
-          redirectTo = "/facilitator";
-        } else {
-          redirectTo = "/student";
-        }
+        // Navigate immediately based on user role
+        const redirectPath = user.role === 'admin' ? '/admin' 
+          : user.role === 'facilitator' ? '/facilitator' 
+          : '/student';
+        console.log("Navigating to:", redirectPath);
+        navigate(redirectPath, { replace: true });
+        return; // Exit early, don't run finally
       } else {
         const result = signupSchema.safeParse(formData);
 
@@ -182,12 +183,6 @@ const Auth = () => {
       });
     } finally {
       setIsLoading(false);
-    }
-
-    // Navigate after state updates are complete
-    if (redirectTo) {
-      console.log("Navigating to:", redirectTo);
-      navigate(redirectTo);
     }
   };
 
