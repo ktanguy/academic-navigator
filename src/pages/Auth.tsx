@@ -22,8 +22,8 @@ const signupSchema = z.object({
 });
 
 const AuthPageWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand via-teal-50 to-cyan-50 dark:from-brand-dark dark:via-gray-800 dark:to-gray-900">
-    <div className="w-full max-w-md rounded-2xl bg-card/95 shadow-xl dark:shadow-2xl dark:shadow-black/20 p-8 border border-border">
+  <div className="gradient-page min-h-screen flex items-center justify-center">
+    <div className="w-full max-w-md rounded-2xl bg-card/95 shadow-xl dark:shadow-2xl dark:shadow-black/20 p-8 border border-border card-vibrant">
       {children}
     </div>
   </div>
