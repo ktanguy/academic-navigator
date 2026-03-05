@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Check,
   Upload,
-  Calendar,
+  Calendar as CalendarIcon,
   Clock,
   Video,
   MapPin,
@@ -42,6 +42,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { appointmentsApi, usersApi, User, sendGmailNotification, officeHoursApi, AvailableSlot } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
+import { Calendar } from "@/components/ui/calendar";
 
 const meetingReasons = [
   { id: "homework", label: "Homework Help", icon: BookOpen, description: "Get help with assignments" },
@@ -78,32 +79,7 @@ const timeSlots = [
   { time: "3:30 PM", available: false },
 ];
 
-// Generate dynamic week days starting from today
-const generateWeekDays = () => {
-  const days = [];
-  const today = new Date();
-  
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    
-    const dayOfWeek = date.getDay();
-    // Weekend days are not available
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    
-    days.push({
-      date: date.toISOString().split('T')[0], // YYYY-MM-DD format for API
-      displayDate: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), // "Jan 29" format for display
-      day: date.toLocaleDateString('en-US', { weekday: 'short' }), // "Wed" format
-      available: !isWeekend,
-    });
-  }
-  
-  return days;
-};
-
 const Booking = () => {
-  const weekDays = generateWeekDays();
   const [searchParams] = useSearchParams();
   const teacherId = searchParams.get("teacher");
   const navigate = useNavigate();
@@ -141,6 +117,7 @@ const Booking = () => {
     file: null as File | null,
   });
   const [isBooked, setIsBooked] = useState(false);
+  const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
 
   // Fetch facilitators on mount
   useEffect(() => {
@@ -187,6 +164,14 @@ const Booking = () => {
     };
     fetchSlots();
   }, [selectedFacilitator, selectedDate]);
+
+  useEffect(() => {
+    if (calendarDate) {
+      setSelectedDate(calendarDate.toISOString().split("T")[0]);
+    } else {
+      setSelectedDate("");
+    }
+  }, [calendarDate]);
 
   const handleNext = async () => {
     if (step < 4) {
@@ -582,30 +567,20 @@ const Booking = () => {
                   {/* Date Selection */}
                   <div className="mb-6">
                     <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
-                      <Calendar className="h-4 w-4" />
+                      <CalendarIcon className="h-4 w-4" />
                       Select Date
                     </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                      {weekDays.map((day) => (
-                        <motion.button
-                          key={day.date}
-                          whileHover={{ y: -2 }}
-                          whileTap={{ scale: 0.98 }}
-                          disabled={!day.available}
-                          onClick={() => setSelectedDate(day.date)}
-                          className={`flex min-w-[80px] flex-col items-center rounded-xl p-4 transition-colors ${
-                            !day.available
-                              ? "cursor-not-allowed bg-muted/50 text-muted-foreground opacity-50"
-                              : selectedDate === day.date
-                              ? "bg-primary text-primary-foreground shadow-elevated"
-                              : "bg-card shadow-card hover:shadow-elevated"
-                          }`}
-                        >
-                          <span className="text-xs">{day.day}</span>
-                          <span className="mt-1 font-semibold">{day.displayDate}</span>
-                        </motion.button>
-                      ))}
-                    </div>
+                    <Calendar
+                      mode="single"
+                      selected={calendarDate}
+                      onSelect={(date) => setCalendarDate(date as Date)}
+                      disabled={(date) => {
+                        // Disable weekends (Saturday=6, Sunday=0)
+                        const day = date.getDay();
+                        return day === 0 || day === 6;
+                      }}
+                      fromDate={new Date()}
+                    />
                   </div>
 
                   {/* Time Selection */}
