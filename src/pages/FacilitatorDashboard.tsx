@@ -20,6 +20,7 @@ import {
   LucideIcon,
   Filter,
   Building2,
+  Send,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -301,6 +302,8 @@ const FacilitatorDashboard = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [displayRequests, setDisplayRequests] = useState<DisplayRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [replyText, setReplyText] = useState("");
+  const [isSendingReply, setIsSendingReply] = useState(false);
   const [stats, setStats] = useState({
     activeRequests: 0,
     aiResolved: 0,
@@ -379,13 +382,9 @@ const FacilitatorDashboard = () => {
     }
     
     try {
-      // Update ticket status via API
-      await ticketsApi.update(selectedRequest!.id, { 
-        status: "escalated",
-        category: selectedDestination 
-      });
-      
       const destination = escalationDestinations.find(d => d.id === selectedDestination);
+      const reason = escalationNotes || `Escalated to ${destination?.name || selectedDestination}`;
+      await ticketsApi.escalate(selectedRequest!.id, reason);
       setEscalatedIds((prev) => [...prev, selectedRequest!.id]);
       setEscalateOpen(false);
       toast({
@@ -417,6 +416,20 @@ const FacilitatorDashboard = () => {
       });
     }
   }, [toast]);
+
+  const handleSendReply = async () => {
+    if (!selectedRequest || !replyText.trim()) return;
+    setIsSendingReply(true);
+    try {
+      await ticketsApi.addResponse(selectedRequest.id, replyText.trim());
+      setReplyText("");
+      toast({ title: "Reply sent", description: "Your response has been sent to the student." });
+    } catch (error) {
+      toast({ title: "Failed to send", description: error instanceof Error ? error.message : "Could not send reply.", variant: "destructive" });
+    } finally {
+      setIsSendingReply(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -1065,13 +1078,36 @@ const FacilitatorDashboard = () => {
                   </div>
                 </div>
 
+                {/* Reply Section */}
+                {!resolvedIds.includes(selectedRequest.id) && !escalatedIds.includes(selectedRequest.id) && (
+                  <div className="border-t border-border pt-4 mt-2">
+                    <label className="text-sm font-medium">Reply to student</label>
+                    <div className="mt-2 flex gap-2">
+                      <textarea
+                        placeholder="Type your response..."
+                        rows={2}
+                        className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                      />
+                      <Button
+                        className="shrink-0"
+                        disabled={!replyText.trim() || isSendingReply}
+                        onClick={handleSendReply}
+                      >
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 <DialogFooter className="gap-2 sm:gap-0">
                   <Button variant="ghost" onClick={() => setViewOpen(false)}>
                     Close
                   </Button>
                   {!resolvedIds.includes(selectedRequest.id) && !escalatedIds.includes(selectedRequest.id) && (
                     <>
-                      <Button 
+                      <Button
                         variant="outline"
                         onClick={() => {
                           setViewOpen(false);

@@ -218,6 +218,8 @@ const HelpDesk = () => {
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [userTickets, setUserTickets] = useState<Ticket[]>([]);
   const [isLoadingTickets, setIsLoadingTickets] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [isSendingReply, setIsSendingReply] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const [aiResult, setAiResult] = useState({
@@ -245,6 +247,21 @@ const HelpDesk = () => {
       console.error("Failed to fetch tickets:", error);
     } finally {
       setIsLoadingTickets(false);
+    }
+  };
+
+  const handleSendReply = async (ticketId: number) => {
+    if (!replyText.trim()) return;
+    setIsSendingReply(true);
+    try {
+      await ticketsApi.addResponse(ticketId, replyText.trim());
+      setReplyText("");
+      toast({ title: "Reply sent", description: "Your message has been added to the ticket." });
+      await fetchUserTickets();
+    } catch (error) {
+      toast({ title: "Failed to send", description: error instanceof Error ? error.message : "Could not send reply.", variant: "destructive" });
+    } finally {
+      setIsSendingReply(false);
     }
   };
 
@@ -1046,8 +1063,14 @@ const HelpDesk = () => {
                       placeholder="Type your message..."
                       rows={2}
                       className="flex-1"
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
                     />
-                    <Button className="shrink-0">
+                    <Button
+                      className="shrink-0"
+                      disabled={!replyText.trim() || isSendingReply}
+                      onClick={() => selectedTicket && handleSendReply(selectedTicket.id)}
+                    >
                       <Send className="h-4 w-4" />
                     </Button>
                   </div>

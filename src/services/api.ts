@@ -261,7 +261,7 @@ export const ticketsApi = {
     ticketId: number,
     message: string
   ): Promise<{ message: string; response: TicketResponse }> => {
-    return apiRequest(`/tickets/${ticketId}/respond`, {
+    return apiRequest(`/tickets/${ticketId}/responses`, {
       method: 'POST',
       body: JSON.stringify({ message }),
     });

@@ -293,7 +293,6 @@ def notify_ticket_needs_review(ticket, ai_category, ai_confidence):
         # Send email to admin
         send_email(
             to_email=admin.email,
-            to_name=admin.name,
             subject=f"Ticket #{ticket.ticket_number} Needs Manual Review",
             body=f"""A new ticket requires your manual review due to low AI classification confidence.
 
@@ -344,7 +343,6 @@ def notify_ticket_reviewed(ticket, reviewer):
     if student:
         send_email(
             to_email=student.email,
-            to_name=student.name,
             subject=f"Ticket #{ticket.ticket_number} Has Been Reviewed",
             body=f"""Good news! Your support ticket has been reviewed.
 
