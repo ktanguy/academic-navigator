@@ -12,6 +12,9 @@ def seed_database():
     app = create_app()
     
     with app.app_context():
+        # Ensure all tables are created from models
+        db.create_all()
+        
         # Clear existing data
         print("Clearing existing data...")
         TicketResponse.query.delete()
@@ -27,12 +30,19 @@ def seed_database():
         
         # Admin
         admin = User(
-            email='admin@university.edu',
+            email='t.kwizera@alustudent.com',
             password_hash=password_hash,
             name='System Administrator',
             role='admin',
             department='Administration'
         )
+        
+        # Main Admin for ALU (only add if not present)
+        main_admin = User.query.filter_by(email='t.kwizera@alustudent.com').first()
+        if not main_admin:
+            db.session.add(admin)
+        else:
+            admin = main_admin
         
         # Facilitators
         facilitators = [
@@ -51,7 +61,6 @@ def seed_database():
             User(email='alex.johnson@university.edu', password_hash=password_hash, name='Alex Johnson', role='student', department='Software Engineering'),
         ]
         
-        db.session.add(admin)
         for f in facilitators:
             db.session.add(f)
         for s in students:
