@@ -43,6 +43,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { appointmentsApi, usersApi, User, sendGmailNotification, officeHoursApi, AvailableSlot } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar } from "@/components/ui/calendar";
+import { startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 
 const meetingReasons = [
   { id: "homework", label: "Homework Help", icon: BookOpen, description: "Get help with assignments" },
@@ -109,7 +110,7 @@ const Booking = () => {
     studentId: "",
     subject: "",
     courseCode: "",
-    description: "",
+    description: "", // <-- add this line
     priorAttempts: "",
     preferredLanguage: "",
     accessibilityNeeds: false,
@@ -118,6 +119,9 @@ const Booking = () => {
   });
   const [isBooked, setIsBooked] = useState(false);
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(undefined);
+  const [enabledDates, setEnabledDates] = useState<Date[]>([]);
+  // Compute slot counts for each enabled date in the current month
+  const [slotCounts, setSlotCounts] = useState<Record<string, number>>({});
 
   // Fetch facilitators on mount
   useEffect(() => {
@@ -172,6 +176,53 @@ const Booking = () => {
       setSelectedDate("");
     }
   }, [calendarDate]);
+
+  // Fetch facilitator office hours for the visible month
+  useEffect(() => {
+    const fetchEnabledDates = async () => {
+      if (!selectedFacilitator) return;
+      // Get office hours for this facilitator
+      const response = await officeHoursApi.getByFacilitator(selectedFacilitator);
+      const officeHours = response.office_hours || [];
+      // Get all days in the current month
+      const today = new Date();
+      const start = startOfMonth(today);
+      const end = endOfMonth(today);
+      const allDays = eachDayOfInterval({ start, end });
+      // Enable only days where office hours exist for that weekday
+      const officeDays = new Set(officeHours.filter(oh => oh.is_available).map(oh => oh.day_of_week));
+      const enabled = allDays.filter(day => officeDays.has(day.getDay()) && day >= today);
+      setEnabledDates(enabled);
+    };
+    fetchEnabledDates();
+  }, [selectedFacilitator]);
+
+  // Compute slot counts for each enabled date in the current month
+  useEffect(() => {
+    const fetchSlotCounts = async () => {
+      if (!selectedFacilitator || enabledDates.length === 0) return;
+      const today = new Date();
+      const start = startOfMonth(today);
+      const end = endOfMonth(today);
+      const allDays = eachDayOfInterval({ start, end });
+      const counts: Record<string, number> = {};
+      for (const day of allDays) {
+        // Only check enabled days
+        if (enabledDates.some(d => d.toDateString() === day.toDateString())) {
+          const dateStr = day.toISOString().split('T')[0];
+          try {
+            const resp = await officeHoursApi.getAvailableSlots(selectedFacilitator, dateStr);
+            counts[dateStr] = (resp.available_slots || []).length;
+          } catch {
+            counts[dateStr] = 0;
+          }
+        }
+      }
+      setSlotCounts(counts);
+    };
+    fetchSlotCounts();
+    // Only run when enabledDates or selectedFacilitator changes
+  }, [selectedFacilitator, enabledDates]);
 
   const handleNext = async () => {
     if (step < 4) {
@@ -373,6 +424,7 @@ const Booking = () => {
   };
 
   if (isBooked) {
+    const googleMeetLink = selectedMode === "virtual" ? "https://meet.google.com/" : null; // Placeholder, replace with real link if available
     return (
       <div className="flex min-h-screen flex-col">
         <Header />
@@ -410,6 +462,20 @@ const Booking = () => {
                   <span className="text-muted-foreground">Topic</span>
                   <span className="font-medium text-foreground">{formData.subject}</span>
                 </div>
+                {/* Google Meet Link for Virtual Meetings */}
+                {selectedMode === "virtual" && (
+                  <div className="mt-5 flex flex-col items-start">
+                    <span className="text-muted-foreground mb-1">Google Meet Link</span>
+                    <a
+                      href={googleMeetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline break-all"
+                    >
+                      {googleMeetLink}
+                    </a>
+                  </div>
+                )}
               </div>
               <div className="mt-6 flex gap-3">
                 <Button variant="outline" className="flex-1" asChild>
@@ -565,22 +631,29 @@ const Booking = () => {
                   </h2>
 
                   {/* Date Selection */}
-                  <div className="mb-6">
+                  <div className="mb-6 flex flex-col items-center">
                     <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
                       <CalendarIcon className="h-4 w-4" />
-                      Select Date
+                      <span>Select Date</span>
                     </div>
-                    <Calendar
-                      mode="single"
-                      selected={calendarDate}
-                      onSelect={(date) => setCalendarDate(date as Date)}
-                      disabled={(date) => {
-                        // Disable weekends (Saturday=6, Sunday=0)
-                        const day = date.getDay();
-                        return day === 0 || day === 6;
-                      }}
-                      fromDate={new Date()}
-                    />
+                    <div className="rounded-xl bg-card p-4 shadow-lg border w-full max-w-md">
+                      <Calendar
+                        mode="single"
+                        selected={calendarDate}
+                        onSelect={(date) => setCalendarDate(date as Date)}
+                        disabled={(date) => {
+                          // Only enable dates in enabledDates
+                          return !enabledDates.some(d => d.toDateString() === date.toDateString());
+                        }}
+                        fromDate={new Date()}
+                        className="text-base"
+                        style={{ fontSize: '1.1rem' }}
+                        slotCounts={slotCounts}
+                      />
+                    </div>
+                    <div className="mt-2 text-xs text-muted-foreground text-center max-w-md">
+                      Only dates with available office hours can be selected. If a date is not clickable, the facilitator has not set hours for that day.
+                    </div>
                   </div>
 
                   {/* Time Selection */}

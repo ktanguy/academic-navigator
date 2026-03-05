@@ -1,13 +1,33 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
+import type { DayContentProps } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  slotCounts?: Record<string, number>; // e.g., { '2026-03-05': 3 }
+};
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+function Calendar({ className, classNames, showOutsideDays = true, slotCounts = {}, ...props }: CalendarProps) {
+  // Custom day content to show a dot/number for available slots
+  const renderDay = (dayProps: DayContentProps) => {
+    const date = dayProps.date;
+    const dateKey = date.toISOString().split('T')[0];
+    const count = slotCounts[dateKey];
+    return (
+      <div className="relative flex flex-col items-center justify-center h-full w-full">
+        <span>{date.getDate()}</span>
+        {count > 0 && (
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-xs rounded-full bg-success text-white px-1 min-w-[1.2em]">
+            {count}
+          </span>
+        )}
+      </div>
+    );
+  };
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -44,6 +64,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+        DayContent: renderDay,
       }}
       {...props}
     />
