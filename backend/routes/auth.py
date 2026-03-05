@@ -69,7 +69,7 @@ def register():
         email=data['email'],
         password_hash=password_hash,
         name=data['name'],
-        role=data.get('role', 'student'),
+        role='student',
         department=data.get('department')
     )
     

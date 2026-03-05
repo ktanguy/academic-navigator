@@ -639,11 +639,20 @@ const AdminPanel = () => {
     toast({ title: "User Added", description: `${user.name} has been added and will receive an invitation email.` });
   };
 
-  const handleEditUser = () => {
+  const handleEditUser = async () => {
     if (!selectedUser) return;
-    setUsers(users.map(u => u.id === selectedUser.id ? selectedUser : u));
-    setEditUserOpen(false);
-    toast({ title: "User Updated", description: `${selectedUser.name}'s profile has been updated.` });
+    try {
+      await usersApi.update(selectedUser.id, {
+        name: selectedUser.name,
+        department: selectedUser.department,
+        role: selectedUser.role.toLowerCase(),
+      });
+      setUsers(users.map(u => u.id === selectedUser.id ? selectedUser : u));
+      setEditUserOpen(false);
+      toast({ title: "User Updated", description: `${selectedUser.name}'s role has been updated to ${selectedUser.role}.` });
+    } catch (error) {
+      toast({ title: "Error", description: error instanceof Error ? error.message : "Failed to update user.", variant: "destructive" });
+    }
   };
 
   const handleDeleteUser = () => {
@@ -1687,6 +1696,7 @@ const AdminPanel = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="Student">Student</SelectItem>
                     <SelectItem value="Facilitator">Facilitator</SelectItem>
                     <SelectItem value="Admin">Admin</SelectItem>
                     <SelectItem value="Finance">Finance</SelectItem>

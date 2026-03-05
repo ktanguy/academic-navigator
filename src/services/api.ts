@@ -365,10 +365,10 @@ export const usersApi = {
 
   update: async (
     id: number,
-    data: Partial<Pick<User, 'name' | 'department' | 'avatar_url'>>
+    data: Partial<Pick<User, 'name' | 'department' | 'avatar_url' | 'role'>>
   ): Promise<{ message: string; user: User }> => {
     return apiRequest(`/users/${id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   },
