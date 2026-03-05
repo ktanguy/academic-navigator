@@ -22,17 +22,22 @@ def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
+        print(f"[DEBUG] /me Authorization header: {token}")
         if not token:
+            print("[ERROR] Token is missing")
             return jsonify({'error': 'Token is missing'}), 401
         try:
             token = token.replace('Bearer ', '')
             data = jwt.decode(token, get_secret_key(), algorithms=['HS256'])
             current_user = User.query.get(data['user_id'])
             if not current_user:
+                print("[ERROR] User not found for token")
                 return jsonify({'error': 'User not found'}), 401
         except jwt.ExpiredSignatureError:
+            print("[ERROR] Token has expired")
             return jsonify({'error': 'Token has expired'}), 401
-        except jwt.InvalidTokenError:
+        except jwt.InvalidTokenError as e:
+            print(f"[ERROR] Invalid token: {e}")
             return jsonify({'error': 'Invalid token'}), 401
         return f(current_user, *args, **kwargs)
     return decorated
@@ -116,6 +121,7 @@ def login():
 @auth_bp.route('/me', methods=['GET'])
 @token_required
 def get_current_user(current_user):
+    print(f"[DEBUG] /me returning user: {current_user.email if current_user else None}")
     return jsonify({'user': current_user.to_dict()})
 
 
