@@ -1,17 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Users, Shield } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { fadeInUp, defaultTransition, buttonMotionProps } from "@/components/ui/motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,32 +19,10 @@ const signupSchema = z.object({
   name: z.string().trim().min(2, { message: "Name must be at least 2 characters" }).max(100),
   email: z.string().trim().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  role: z.enum(["student", "facilitator", "admin"], { required_error: "Please select a role" }),
 });
 
-type UserRole = "student" | "facilitator" | "admin";
-
-const roleInfo = {
-  student: {
-    icon: User,
-    label: "Student",
-    description: "Access appointments, tickets, and staff directory",
-  },
-  facilitator: {
-    icon: Users,
-    label: "Facilitator",
-    description: "Manage requests, office hours, and student support",
-  },
-  admin: {
-    icon: Shield,
-    label: "Administrator",
-    description: "Full platform access and analytics",
-  },
-};
-
-// --- Theme wrapper for Auth page ---
 const AuthPageWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand via-teal-50 to-cyan-50 dark:from-brand-dark dark:via-gray-800 dark:to-gray-900">
     <div className="w-full max-w-md rounded-2xl bg-card/95 shadow-xl dark:shadow-2xl dark:shadow-black/20 p-8 border border-border">
       {children}
     </div>
@@ -67,7 +38,6 @@ const Auth = () => {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: authLoading, login, register, logout } = useAuth();
 
-  // Redirect already-authenticated users (e.g., if they navigate to /auth while logged in)
   useEffect(() => {
     if (!authLoading && isAuthenticated && user && !isLoading) {
       const redirectPath = user.role === 'admin' ? '/admin' 
@@ -77,17 +47,14 @@ const Auth = () => {
     }
   }, [authLoading, isAuthenticated, user, navigate, isLoading]);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "" as UserRole | "",
   });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -96,7 +63,6 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Prevent double submission
     if (isLoading) return;
     
     setErrors({});
@@ -121,7 +87,6 @@ const Auth = () => {
           return;
         }
 
-        // Call real login API
         const user = await login(formData.email, formData.password);
         
         console.log("Login successful, user:", user);
@@ -131,13 +96,12 @@ const Auth = () => {
           description: "You have successfully logged in.",
         });
 
-        // Navigate immediately based on user role
         const redirectPath = user.role === 'admin' ? '/admin' 
           : user.role === 'facilitator' ? '/facilitator' 
           : '/student';
         console.log("Navigating to:", redirectPath);
         navigate(redirectPath, { replace: true });
-        return; // Exit early, don't run finally
+        return;
       } else {
         const result = signupSchema.safeParse(formData);
 
@@ -153,15 +117,12 @@ const Auth = () => {
           return;
         }
 
-        // Call real register API
         await register({
           email: formData.email,
           password: formData.password,
           name: formData.name,
-          role: formData.role,
         });
 
-        // Log out immediately so user has to log in
         await logout();
 
         toast({
@@ -169,10 +130,8 @@ const Auth = () => {
           description: "Please sign in with your new credentials.",
         });
 
-        // Switch to login mode instead of redirecting
         setIsLogin(true);
-        setFormData({ name: "", email: formData.email, password: "", role: "" });
-        // Don't redirect - stay on auth page
+        setFormData({ name: "", email: formData.email, password: "" });
       }
     } catch (error) {
       console.error("Auth error:", error);
@@ -186,7 +145,6 @@ const Auth = () => {
     }
   };
 
-  // Show loading while checking authentication
   if (authLoading) {
     return (
       <AuthPageWrapper>
@@ -200,7 +158,6 @@ const Auth = () => {
   return (
     <AuthPageWrapper>
       <div className="mx-auto w-full max-w-md">
-        {/* Mobile Logo */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -210,7 +167,6 @@ const Auth = () => {
           <span className="text-lg font-semibold text-foreground">UniCenter</span>
         </motion.div>
 
-        {/* Form Header */}
         <motion.div
           variants={fadeInUp}
           initial="initial"
@@ -228,7 +184,6 @@ const Auth = () => {
           </p>
         </motion.div>
 
-        {/* Form */}
         <motion.form
           variants={fadeInUp}
           initial="initial"
@@ -313,51 +268,6 @@ const Auth = () => {
             )}
           </div>
 
-          <AnimatePresence mode="wait">
-            {!isLogin && (
-              <motion.div
-                key="role"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-2"
-              >
-                <Label>Select your role</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) => handleInputChange("role", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(roleInfo).map(([key, info]) => (
-                      <SelectItem key={key} value={key}>
-                        <div className="flex items-center gap-2">
-                          <info.icon className="h-4 w-4" />
-                          <span>{info.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formData.role && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-sm text-muted-foreground"
-                  >
-                    {roleInfo[formData.role as UserRole]?.description}
-                  </motion.p>
-                )}
-                {errors.role && (
-                  <p className="text-sm text-destructive">{errors.role}</p>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {isLogin && (
             <div className="flex justify-end">
               <button
@@ -395,7 +305,6 @@ const Auth = () => {
           </motion.div>
         </motion.form>
 
-        {/* Toggle */}
         <motion.div
           variants={fadeInUp}
           initial="initial"

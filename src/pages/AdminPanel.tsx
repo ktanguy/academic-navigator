@@ -941,7 +941,6 @@ const AdminPanel = () => {
                         <p className="text-sm font-semibold text-foreground mt-1">{classifierInfo?.fallback || "keyword-based"}</p>
                       </div>
                       <div className="rounded-lg bg-secondary/50 p-4">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">API Endpoint</p>
                         <p className="text-xs font-mono text-muted-foreground mt-1 truncate">{classifierInfo?.api_url?.replace('https://', '') || "N/A"}</p>
                       </div>
                     </div>
@@ -1606,6 +1605,14 @@ const AdminPanel = () => {
                 <SelectContent>
                   <SelectItem value="Facilitator">Facilitator</SelectItem>
                   <SelectItem value="Admin">Admin</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
+                  <SelectItem value="Nurse">Nurse</SelectItem>
+                  <SelectItem value="Registrar">Registrar</SelectItem>
+                  <SelectItem value="IT">IT</SelectItem>
+                  <SelectItem value="Counselor">Counselor</SelectItem>
+                  <SelectItem value="Librarian">Librarian</SelectItem>
+                  <SelectItem value="Coach">Coach</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1682,6 +1689,14 @@ const AdminPanel = () => {
                   <SelectContent>
                     <SelectItem value="Facilitator">Facilitator</SelectItem>
                     <SelectItem value="Admin">Admin</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Nurse">Nurse</SelectItem>
+                    <SelectItem value="Registrar">Registrar</SelectItem>
+                    <SelectItem value="IT">IT</SelectItem>
+                    <SelectItem value="Counselor">Counselor</SelectItem>
+                    <SelectItem value="Librarian">Librarian</SelectItem>
+                    <SelectItem value="Coach">Coach</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
