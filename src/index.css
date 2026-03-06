@@ -32,11 +32,8 @@
     --accent: 207 90% 59%;
     --accent-foreground: 0 0% 100%;
 
-    --vibrant: 262 83% 58%;
+    --vibrant: 231 77% 22%;
     --vibrant-foreground: 0 0% 100%;
-
-    --highlight: 338 85% 58%;
-    --highlight-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -67,7 +64,7 @@
     --chart-2: 262 83% 58%;
     --chart-3: 142 76% 45%;
     --chart-4: 38 92% 50%;
-    --chart-5: 338 85% 58%;
+    --chart-5: 231 77% 22%;
   }
 
   .dark {
@@ -92,11 +89,8 @@
     --accent: 217 91% 60%;
     --accent-foreground: 222 47% 6%;
 
-    --vibrant: 262 83% 65%;
+    --vibrant: 231 77% 65%;
     --vibrant-foreground: 222 47% 6%;
-
-    --highlight: 338 85% 65%;
-    --highlight-foreground: 222 47% 6%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -125,7 +119,7 @@
     --chart-2: 262 83% 65%;
     --chart-3: 142 71% 55%;
     --chart-4: 38 92% 60%;
-    --chart-5: 338 85% 65%;
+    --chart-5: 231 77% 55%;
   }
 }
 
@@ -233,14 +227,9 @@
     @apply bg-gradient-to-br from-primary/90 to-primary/70;
   }
 
-  /* Vibrant gradient — purple → blue */
+  /* Vibrant gradient — #0D1A63 → bright blue */
   .gradient-vibrant {
     background: linear-gradient(135deg, hsl(var(--vibrant)) 0%, hsl(var(--accent)) 100%);
-  }
-
-  /* Highlight gradient — pink → purple */
-  .gradient-highlight {
-    background: linear-gradient(135deg, hsl(var(--highlight)) 0%, hsl(var(--vibrant)) 100%);
   }
 
   /* Colorful page background for auth / landing */
@@ -261,10 +250,6 @@
   /* Glowing colored border on cards */
   .card-vibrant {
     border-top: 3px solid hsl(var(--vibrant));
-  }
-
-  .card-highlight {
-    border-top: 3px solid hsl(var(--highlight));
   }
 
   .card-accent {

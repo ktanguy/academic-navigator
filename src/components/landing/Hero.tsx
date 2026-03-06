@@ -74,7 +74,7 @@ const HeroPhoneMockup = () => (
         {[
           { icon: MessageSquare, label: "Ticket", color: "gradient-vibrant" },
           { icon: Calendar, label: "Book", color: "bg-success" },
-          { icon: Star, label: "Directory", color: "gradient-highlight" },
+          { icon: Star, label: "Directory", color: "bg-accent" },
         ].map((action, i) => (
           <motion.div
             key={i}
@@ -140,12 +140,12 @@ export const Hero = () => {
   return (
     <section className="relative overflow-hidden py-20 md:py-28">
       {/* Background gradient */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-vibrant/5 to-background dark:from-primary/10 dark:via-vibrant/10 dark:to-background" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-vibrant/5 via-accent/5 to-background dark:from-vibrant/10 dark:via-accent/10 dark:to-background" />
 
       {/* Decorative elements */}
       <div className="pointer-events-none absolute -right-40 -top-40 h-80 w-80 rounded-full bg-vibrant/15 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-highlight/15 blur-3xl" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/8 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-accent/15 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 -translate-y-1/2 rounded-full bg-vibrant/8 blur-3xl" />
       
       <div className="container relative">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -158,7 +158,7 @@ export const Hero = () => {
           >
             <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
               Your academic success,{" "}
-              <span className="bg-gradient-to-r from-vibrant via-accent to-highlight bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-vibrant to-accent bg-clip-text text-transparent">
                 simplified.
               </span>
             </h1>
@@ -219,7 +219,7 @@ export const Hero = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-            className="relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-vibrant/10 via-accent/10 to-highlight/10 py-12 dark:from-vibrant/20 dark:via-accent/15 dark:to-highlight/20"
+            className="relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-vibrant/10 to-accent/10 py-12 dark:from-vibrant/20 dark:to-accent/20"
           >
             <HeroPhoneMockup />
           </motion.div>

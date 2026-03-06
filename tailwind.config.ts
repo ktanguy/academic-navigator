@@ -49,10 +49,6 @@ export default {
           DEFAULT: "hsl(var(--vibrant))",
           foreground: "hsl(var(--vibrant-foreground))",
         },
-        highlight: {
-          DEFAULT: "hsl(var(--highlight))",
-          foreground: "hsl(var(--highlight-foreground))",
-        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
