@@ -70,10 +70,17 @@ def update_user(current_user, user_id):
         user.department = data['department']
     if 'avatar_url' in data:
         user.avatar_url = data['avatar_url']
-    
-    # Only admins can change roles
-    if 'role' in data and current_user.role == 'admin':
-        user.role = data['role']
+
+    # Only admins can change roles and emails
+    if current_user.role == 'admin':
+        if 'role' in data:
+            user.role = data['role']
+        if 'email' in data and data['email']:
+            new_email = data['email'].strip().lower()
+            existing = User.query.filter(User.email == new_email, User.id != user_id).first()
+            if existing:
+                return jsonify({'error': 'Email is already in use by another account'}), 400
+            user.email = new_email
     
     db.session.commit()
     

@@ -644,12 +644,13 @@ const AdminPanel = () => {
     try {
       await usersApi.update(selectedUser.id, {
         name: selectedUser.name,
+        email: selectedUser.email,
         department: selectedUser.department,
         role: selectedUser.role.toLowerCase(),
       });
       setUsers(users.map(u => u.id === selectedUser.id ? selectedUser : u));
       setEditUserOpen(false);
-      toast({ title: "User Updated", description: `${selectedUser.name}'s role has been updated to ${selectedUser.role}.` });
+      toast({ title: "User Updated", description: `${selectedUser.name} has been updated.` });
     } catch (error) {
       toast({ title: "Error", description: error instanceof Error ? error.message : "Failed to update user.", variant: "destructive" });
     }

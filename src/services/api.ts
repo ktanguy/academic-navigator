@@ -365,7 +365,7 @@ export const usersApi = {
 
   update: async (
     id: number,
-    data: Partial<Pick<User, 'name' | 'department' | 'avatar_url' | 'role'>>
+    data: Partial<Pick<User, 'name' | 'email' | 'department' | 'avatar_url' | 'role'>>
   ): Promise<{ message: string; user: User }> => {
     return apiRequest(`/users/${id}`, {
       method: 'PATCH',
