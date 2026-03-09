@@ -127,7 +127,7 @@ def create_html_email(title: str, message: str, action_url: str = None, action_t
         action_button = f'''
         <tr>
             <td style="padding: 20px 0;">
-                <a href="{action_url}" style="background-color: #1CA97A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">{action_text}</a>
+                <a href="{action_url}" style="background-color: #0D1A63; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">{action_text}</a>
             </td>
         </tr>
         '''
@@ -146,7 +146,7 @@ def create_html_email(title: str, message: str, action_url: str = None, action_t
                     <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         <!-- Header -->
                         <tr>
-                            <td style="background: linear-gradient(135deg, #1CA97A 0%, #0E7C61 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                            <td style="background: linear-gradient(135deg, #0D1A63 0%, #1a2f8a 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
                                 <h1 style="color: white; margin: 0; font-size: 24px;">Academic Navigator</h1>
                                 <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Student Support Platform</p>
                             </td>
@@ -285,6 +285,79 @@ Academic Navigator Team
         action_text="View Ticket"
     )
     return send_email(facilitator_email, subject, body, html)
+
+
+def send_appointment_confirmed_email(student_email: str, student_name: str, facilitator_name: str, date: str, time: str):
+    """Send email to student when their appointment is confirmed."""
+    subject = f"Appointment Confirmed — {date} at {time}"
+    body = f"""Hi {student_name},
+
+Your appointment has been confirmed.
+
+Details:
+- Date: {date}
+- Time: {time}
+- With: {facilitator_name}
+
+See you then!
+
+Academic Navigator Team
+"""
+    html = create_html_email(
+        title="Appointment Confirmed",
+        message=f"Your appointment with <strong>{facilitator_name}</strong> on <strong>{date}</strong> at <strong>{time}</strong> has been confirmed.",
+        action_url=f"{APP_BASE_URL}/student",
+        action_text="View Appointment"
+    )
+    return send_email(student_email, subject, body, html)
+
+
+def send_appointment_cancelled_email(recipient_email: str, recipient_name: str, date: str, time: str, cancelled_by: str):
+    """Send email when an appointment is cancelled."""
+    subject = f"Appointment Cancelled — {date} at {time}"
+    body = f"""Hi {recipient_name},
+
+An appointment scheduled for {date} at {time} has been cancelled by {cancelled_by}.
+
+If you have any questions, please reach out through Academic Navigator.
+
+Academic Navigator Team
+"""
+    html = create_html_email(
+        title="Appointment Cancelled",
+        message=f"The appointment on <strong>{date}</strong> at <strong>{time}</strong> has been cancelled by {cancelled_by}.",
+        action_url=f"{APP_BASE_URL}/student",
+        action_text="View My Appointments"
+    )
+    return send_email(recipient_email, subject, body, html)
+
+
+def send_ticket_response_email(recipient_email: str, recipient_name: str, ticket_number: str, ticket_subject: str, responder_name: str, message_preview: str):
+    """Send email when someone replies to a ticket."""
+    subject = f"New reply on Ticket #{ticket_number}"
+    body = f"""Hi {recipient_name},
+
+{responder_name} replied to your ticket.
+
+Ticket: {ticket_subject}
+Message: {message_preview}
+
+Log in to Academic Navigator to view the full conversation and respond.
+
+Academic Navigator Team
+"""
+    html = create_html_email(
+        title=f"New Reply on Ticket #{ticket_number}",
+        message=(
+            f"<strong>{responder_name}</strong> replied to your ticket "
+            f"<strong>&ldquo;{ticket_subject}&rdquo;</strong>:<br><br>"
+            f"<em style='color:#555;'>&ldquo;{message_preview[:200]}"
+            f"{'...' if len(message_preview) > 200 else ''}&rdquo;</em>"
+        ),
+        action_url=f"{APP_BASE_URL}/helpdesk",
+        action_text="View Conversation"
+    )
+    return send_email(recipient_email, subject, body, html)
 
 
 def get_email_config_status() -> dict:

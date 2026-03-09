@@ -6,9 +6,12 @@ import logging
 from models.models import Notification, User, db
 from services.email_service import (
     send_appointment_booked_email,
+    send_appointment_confirmed_email,
+    send_appointment_cancelled_email,
     send_ticket_escalated_email,
     send_ticket_resolved_email,
     send_ticket_assigned_email,
+    send_ticket_response_email,
     send_email
 )
 
@@ -59,7 +62,8 @@ def notify_appointment_confirmed(appointment):
     Notifies the student that their appointment was confirmed.
     """
     facilitator = User.query.get(appointment.facilitator_id)
-    
+    student = User.query.get(appointment.student_id)
+
     notification = Notification(
         user_id=appointment.student_id,
         title="Appointment Confirmed",
@@ -68,10 +72,20 @@ def notify_appointment_confirmed(appointment):
         reference_id=appointment.id,
         reference_type="appointment"
     )
-    
+
     db.session.add(notification)
     db.session.commit()
-    
+
+    # Email the student
+    if student and facilitator:
+        send_appointment_confirmed_email(
+            student_email=student.email,
+            student_name=student.name,
+            facilitator_name=facilitator.name,
+            date=appointment.date.strftime('%B %d, %Y'),
+            time=appointment.time_slot
+        )
+
     return notification
 
 
@@ -79,18 +93,23 @@ def notify_appointment_cancelled(appointment, cancelled_by_user):
     """
     Send notification when an appointment is cancelled.
     """
-    # Notify the other party
+    date_str = appointment.date.strftime('%B %d, %Y')
+
     if cancelled_by_user.id == appointment.student_id:
-        # Student cancelled, notify facilitator
+        # Student cancelled — notify facilitator
         recipient_id = appointment.facilitator_id
+        recipient = User.query.get(appointment.facilitator_id)
         student = User.query.get(appointment.student_id)
-        message = f"{student.name if student else 'A student'} has cancelled their appointment on {appointment.date.strftime('%B %d, %Y')} at {appointment.time_slot}."
+        message = f"{student.name if student else 'A student'} has cancelled their appointment on {date_str} at {appointment.time_slot}."
+        cancelled_by_name = student.name if student else 'The student'
     else:
-        # Facilitator cancelled, notify student
+        # Facilitator cancelled — notify student
         recipient_id = appointment.student_id
+        recipient = User.query.get(appointment.student_id)
         facilitator = User.query.get(appointment.facilitator_id)
-        message = f"Your appointment with {facilitator.name if facilitator else 'the facilitator'} on {appointment.date.strftime('%B %d, %Y')} at {appointment.time_slot} has been cancelled."
-    
+        message = f"Your appointment with {facilitator.name if facilitator else 'the facilitator'} on {date_str} at {appointment.time_slot} has been cancelled."
+        cancelled_by_name = facilitator.name if facilitator else 'Your facilitator'
+
     notification = Notification(
         user_id=recipient_id,
         title="Appointment Cancelled",
@@ -99,10 +118,20 @@ def notify_appointment_cancelled(appointment, cancelled_by_user):
         reference_id=appointment.id,
         reference_type="appointment"
     )
-    
+
     db.session.add(notification)
     db.session.commit()
-    
+
+    # Email the other party
+    if recipient:
+        send_appointment_cancelled_email(
+            recipient_email=recipient.email,
+            recipient_name=recipient.name,
+            date=date_str,
+            time=appointment.time_slot,
+            cancelled_by=cancelled_by_name
+        )
+
     return notification
 
 
@@ -232,6 +261,70 @@ def notify_ticket_assigned(ticket, facilitator):
     )
     
     return notification
+
+
+def notify_ticket_response(ticket, response, responder):
+    """
+    Notify the appropriate party when a reply is added to a ticket.
+    - If facilitator/admin replies → notify the student
+    - If student replies → notify the assigned facilitator
+    """
+    from models.models import TicketResponse
+
+    notifications = []
+    message_preview = response.message[:150] + ('...' if len(response.message) > 150 else '')
+
+    if responder.role in ['facilitator', 'admin']:
+        # Notify the student
+        student = User.query.get(ticket.user_id)
+        if student and student.id != responder.id:
+            notification = Notification(
+                user_id=student.id,
+                title=f"New reply on your ticket #{ticket.ticket_number}",
+                message=f"{responder.name} replied: {message_preview}",
+                notification_type="ticket_response",
+                reference_id=ticket.id,
+                reference_type="ticket"
+            )
+            db.session.add(notification)
+            notifications.append(notification)
+            db.session.commit()
+
+            send_ticket_response_email(
+                recipient_email=student.email,
+                recipient_name=student.name,
+                ticket_number=ticket.ticket_number,
+                ticket_subject=ticket.subject,
+                responder_name=responder.name,
+                message_preview=response.message
+            )
+    else:
+        # Student replied — notify the assigned facilitator
+        if ticket.assigned_to:
+            facilitator = User.query.get(ticket.assigned_to)
+            if facilitator and facilitator.id != responder.id:
+                notification = Notification(
+                    user_id=facilitator.id,
+                    title=f"Student replied on ticket #{ticket.ticket_number}",
+                    message=f"{responder.name} replied: {message_preview}",
+                    notification_type="ticket_response",
+                    reference_id=ticket.id,
+                    reference_type="ticket"
+                )
+                db.session.add(notification)
+                notifications.append(notification)
+                db.session.commit()
+
+                send_ticket_response_email(
+                    recipient_email=facilitator.email,
+                    recipient_name=facilitator.name,
+                    ticket_number=ticket.ticket_number,
+                    ticket_subject=ticket.subject,
+                    responder_name=responder.name,
+                    message_preview=response.message
+                )
+
+    return notifications
 
 
 def get_user_notifications(user_id, unread_only=False, limit=50):

@@ -14,7 +14,8 @@ from services.notification_service import (
     notify_ticket_resolved,
     notify_ticket_assigned,
     notify_ticket_needs_review,
-    notify_ticket_reviewed
+    notify_ticket_reviewed,
+    notify_ticket_response
 )
 
 tickets_bp = Blueprint('tickets', __name__)
@@ -276,10 +277,13 @@ def add_response(current_user, ticket_id):
     # Update ticket status if facilitator responds
     if current_user.role in ['facilitator', 'admin'] and ticket.status == 'open':
         ticket.status = 'in-progress'
-    
+
     db.session.add(response)
     db.session.commit()
-    
+
+    # Notify the other party about the new reply
+    notify_ticket_response(ticket, response, current_user)
+
     return jsonify({
         'message': 'Response added',
         'response': response.to_dict()
