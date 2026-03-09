@@ -79,10 +79,10 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors duration-300 border-b border-border" style={{borderBottomImage: 'none', boxShadow: '0 1px 0 0 hsl(262 83% 58% / 0.15)'}}>
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors duration-300 border-b border-border">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-4">
-          <span className="text-xl font-bold tracking-tight select-none bg-gradient-to-r from-vibrant to-accent bg-clip-text text-transparent">
+          <span className="text-xl font-bold tracking-tight select-none text-[#0D1A63] dark:text-foreground">
             UniCenter
           </span>
         </div>

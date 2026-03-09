@@ -1,19 +1,12 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import {
   Users,
   MessageSquare,
   Calendar,
-  Clock,
-  CheckCircle2,
-  TrendingUp,
-  ArrowRight,
   GraduationCap,
   BookOpen,
   Lightbulb,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 // Floating card data with icons and colors - using dark mode compatible classes
 const floatingCards = [
@@ -90,15 +83,6 @@ const FloatingCard = ({ card }: { card: typeof floatingCards[0] }) => {
 };
 
 export const Stats = () => {
-  const [email, setEmail] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle newsletter signup
-    console.log("Newsletter signup:", email);
-    setEmail("");
-  };
-
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#F6FCFA] via-[#E6F1ED] to-[#D6F5EF] dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-24 md:py-32 lg:py-40">
       {/* Floating Cards */}
@@ -109,6 +93,15 @@ export const Stats = () => {
       {/* Center Content */}
       <div className="container relative z-10">
         <div className="mx-auto max-w-2xl text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4"
+          >
+            By the numbers
+          </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -116,47 +109,8 @@ export const Stats = () => {
             transition={{ duration: 0.6 }}
             className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl"
           >
-            Connecting
-            <br />
-            <span className="text-primary">Students & Support</span>
+            Support that<br />moves fast.
           </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-6 text-lg text-muted-foreground"
-          >
-            Stay in the loop as we build the future of academic support. Join our
-            newsletter for early updates, insights, and product launches.
-          </motion.p>
-
-          {/* Email Signup Form */}
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            onSubmit={handleSubmit}
-            className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
-          >
-            <Input
-              type="email"
-              placeholder="info@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-12 w-full max-w-sm rounded-lg border-border bg-background px-4 text-foreground placeholder:text-muted-foreground sm:w-80"
-              required
-            />
-            <Button
-              type="submit"
-              size="lg"
-              className="h-12 w-12 rounded-lg bg-primary hover:bg-primary/90 p-0"
-            >
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </motion.form>
 
           {/* Stats row below */}
           <motion.div

@@ -156,15 +156,25 @@ export const Hero = () => {
             variants={fadeInUp}
             transition={defaultTransition}
           >
-            <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
-              Your academic success,{" "}
-              <span className="bg-gradient-to-r from-vibrant to-accent bg-clip-text text-transparent">
-                simplified.
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-foreground">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
               </span>
-            </h1>
+              ALU Student Support — Live
+            </div>
 
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground md:text-xl">
-              Find facilitators, book appointments, submit support tickets with AI-powered categorization, and track your requests — all in one integrated platform built for students and institutions.
+            <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
+              Stop chasing{" "}
+              <br className="hidden sm:block" />
+              your facilitator.
+            </h1>
+            <p className="mt-3 text-2xl font-semibold text-muted-foreground md:text-3xl">
+              Get answers instead.
+            </p>
+
+            <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg max-w-lg">
+              Submit support tickets, book appointments, and track every request — all routed automatically to the right person by AI.
             </p>
 
             <motion.div
@@ -195,20 +205,16 @@ export const Hero = () => {
               animate="animate"
               variants={fadeInUp}
               transition={{ ...defaultTransition, delay: 0.3 }}
-              className="mt-12 flex gap-8 border-t border-border pt-8"
+              className="mt-12 flex flex-wrap gap-6 border-t border-border pt-8"
             >
               {[
-                { value: "85%+", label: "AI Accuracy" },
-                { value: "<3s", label: "Response Time" },
-                { value: "5", label: "Categories" },
-              ].map((stat, i) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-2xl font-bold text-foreground md:text-3xl">
-                    {stat.value}
-                  </div>
-                  <div className="mt-1 text-sm text-muted-foreground">
-                    {stat.label}
-                  </div>
+                { value: "85%+", label: "AI accuracy" },
+                { value: "< 3s", label: "classification time" },
+                { value: "5", label: "departments covered" },
+              ].map((stat) => (
+                <div key={stat.label} className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-foreground tabular-nums">{stat.value}</span>
+                  <span className="text-sm text-muted-foreground">{stat.label}</span>
                 </div>
               ))}
             </motion.div>

@@ -29,7 +29,6 @@ import {
   fadeInUp,
   defaultTransition,
 } from "@/components/ui/motion";
-import { Button } from "@/components/ui/button";
 
 // Phone mockup base component
 const PhoneFrame = ({ children }: { children: React.ReactNode }) => {
@@ -324,6 +323,7 @@ const StaffDirectoryMockup = () => (
 
 // Feature Section Component
 interface FeatureSectionProps {
+  step: string;
   badge: string;
   title: string;
   description: string;
@@ -331,9 +331,10 @@ interface FeatureSectionProps {
   linkHref: string;
   mockup: React.ReactNode;
   reverse?: boolean;
+  mockupBg?: string;
 }
 
-const FeatureSection = ({ badge, title, description, linkText, linkHref, mockup, reverse }: FeatureSectionProps) => (
+const FeatureSection = ({ step, badge, title, description, linkText, linkHref, mockup, reverse, mockupBg = "bg-secondary/50 dark:bg-secondary/30" }: FeatureSectionProps) => (
   <div className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-16 ${reverse ? 'lg:grid-flow-dense' : ''}`}>
     <motion.div
       initial="initial"
@@ -343,22 +344,22 @@ const FeatureSection = ({ badge, title, description, linkText, linkHref, mockup,
       transition={defaultTransition}
       className={reverse ? 'lg:col-start-2' : ''}
     >
-      <span className="inline-block rounded-full border border-border bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary uppercase tracking-wide">
-        {badge}
-      </span>
-      <h2 className="mt-6 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+      <div className="flex items-center gap-3 mb-5">
+        <span className="text-xs font-bold text-muted-foreground/50 tabular-nums">{step}</span>
+        <span className="h-px flex-1 max-w-[32px] bg-border" />
+        <span className="text-xs font-semibold uppercase tracking-widest text-primary">{badge}</span>
+      </div>
+      <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-[2.75rem] leading-tight">
         {title}
       </h2>
-      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+      <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
         {description}
       </p>
       <div className="mt-8">
-        <Button size="lg" variant="outline" className="group" asChild>
-          <Link to={linkHref}>
-            {linkText}
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-        </Button>
+        <Link to={linkHref} className="group inline-flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-border hover:decoration-primary">
+          {linkText}
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
       </div>
     </motion.div>
 
@@ -367,7 +368,7 @@ const FeatureSection = ({ badge, title, description, linkText, linkHref, mockup,
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 py-12 ${reverse ? 'lg:col-start-1' : ''}`}
+      className={`relative flex items-center justify-center rounded-2xl ${mockupBg} py-12 ${reverse ? 'lg:col-start-1' : ''}`}
     >
       {mockup}
     </motion.div>
@@ -378,67 +379,73 @@ export const Features = () => {
   return (
     <section className="py-20 md:py-28">
       <div className="container space-y-24 md:space-y-32">
-        {/* Section 1: AI Classification */}
         <FeatureSection
+          step="01"
           badge="AI Classification"
-          title="Intelligent ticket categorization powered by AI."
-          description="AI-powered ticket categorization achieving 85%+ accuracy across 5 academic categories. DistilBERT analyzes your request in real-time and routes it to the right department automatically."
-          linkText="Try Help Desk"
+          title="Your ticket goes to the right person. Every time."
+          description="DistilBERT reads your request and routes it across 5 academic departments with 85%+ accuracy — no dropdowns, no guessing, no wrong inboxes."
+          linkText="Try the Help Desk"
           linkHref="/helpdesk"
           mockup={<AIClassificationMockup />}
+          mockupBg="bg-[#0D1A63]/5 dark:bg-[#0D1A63]/20"
         />
 
-        {/* Section 2: Smart Booking */}
         <FeatureSection
+          step="02"
           badge="Smart Booking"
-          title="Book appointments with context-aware scheduling."
-          description="Dynamic appointment booking with context-aware forms that collect relevant information upfront for efficient resolution. See real-time availability and book with one click."
-          linkText="Book Now"
+          title="See who's free and book in one tap."
+          description="Real-time availability, context-aware forms, and instant confirmation. No more emailing back and forth to find a time that works."
+          linkText="Book an appointment"
           linkHref="/booking"
           mockup={<SmartBookingMockup />}
           reverse
+          mockupBg="bg-success/5 dark:bg-success/10"
         />
 
-        {/* Section 3: Institutional Analytics */}
         <FeatureSection
-          badge="Institutional Analytics"
-          title="Real-time insights into support patterns."
-          description="Real-time dashboard showing support patterns, facilitator workload, and AI classification performance. Make data-driven decisions to improve student support."
-          linkText="View Analytics"
+          step="03"
+          badge="Analytics"
+          title="See what's working — and what isn't."
+          description="Live dashboards show ticket volume, resolution rates, and AI confidence by department. Built for coordinators who make decisions based on evidence."
+          linkText="View the dashboard"
           linkHref="/admin"
           mockup={<AnalyticsMockup />}
+          mockupBg="bg-accent/5 dark:bg-accent/10"
         />
 
-        {/* Section 4: Cost-Effective Design */}
         <FeatureSection
-          badge="Cost-Effective Design"
-          title="Enterprise features on a free-tier budget."
-          description="Built on free-tier infrastructure — Hugging Face, Google Colab, and Render — suitable for resource-constrained institutions. No expensive licenses or servers required."
-          linkText="Learn More"
+          step="04"
+          badge="Infrastructure"
+          title="Built on free-tier tools that actually scale."
+          description="Hugging Face for AI, Google Colab for training, Render for hosting. No expensive licenses. No infrastructure lock-in. Ready to deploy anywhere."
+          linkText="How it's built"
           linkHref="/helpdesk"
           mockup={<CostEffectiveMockup />}
           reverse
+          mockupBg="bg-warning/5 dark:bg-warning/10"
         />
 
-        {/* Section 5: Smart Escalation */}
         <FeatureSection
-          badge="Smart Escalation"
-          title="Automatic routing with confidence thresholds."
-          description="Automatic routing with 70% confidence threshold — high-confidence tickets auto-assign, low-confidence ones flag for human review. Never miss an edge case."
-          linkText="See How It Works"
+          step="05"
+          badge="Routing"
+          title="Low confidence? A human reviews it."
+          description="Tickets above 70% confidence are auto-assigned. Below that, they're flagged for manual review. Nothing slips through the cracks."
+          linkText="See how routing works"
           linkHref="/helpdesk"
           mockup={<SmartEscalationMockup />}
+          mockupBg="bg-destructive/5 dark:bg-destructive/10"
         />
 
-        {/* Section 6: Staff Directory */}
         <FeatureSection
-          badge="Staff Directory"
-          title="Find and connect with facilitators instantly."
-          description="Centralized facilitator directory with office hours, department info, and one-click appointment booking. Know exactly who can help and when they're available."
-          linkText="Browse Directory"
+          step="06"
+          badge="Directory"
+          title="Know who to talk to before you send a ticket."
+          description="Browse facilitators by department, see their office hours, and book directly. No more guessing which professor handles what."
+          linkText="Browse the directory"
           linkHref="/directory"
           mockup={<StaffDirectoryMockup />}
           reverse
+          mockupBg="bg-primary/5 dark:bg-primary/10"
         />
       </div>
     </section>

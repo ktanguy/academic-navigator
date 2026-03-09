@@ -70,11 +70,12 @@ export const Testimonials = () => {
           transition={defaultTransition}
           className="mx-auto max-w-2xl text-center"
         >
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Student voices</p>
           <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-            What Students Say
+            Real problems. Real resolutions.
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Hear from students who use Academic Navigator every day.
+          <p className="mt-4 text-base text-muted-foreground">
+            From grade appeals to capstone guidance — here's what students actually experienced.
           </p>
         </motion.div>
 

@@ -24,7 +24,7 @@ const HowItWorksPhoneMockup = () => {
       <div className="relative rounded-[3rem] border-[14px] border-gray-800 bg-gray-900 shadow-2xl">
         <div className="relative overflow-hidden rounded-[2rem] bg-white">
           {/* Status bar */}
-          <div className="flex items-center justify-between bg-teal-600 px-6 py-2 text-white">
+          <div className="flex items-center justify-between px-6 py-2 text-white" style={{backgroundColor: '#0D1A63'}}>
             <span className="text-xs font-medium">9:41</span>
             <div className="flex items-center gap-1">
               <div className="flex gap-0.5">
@@ -43,7 +43,7 @@ const HowItWorksPhoneMockup = () => {
           </div>
 
           {/* Header */}
-          <div className="flex items-center gap-3 bg-teal-600 px-4 pb-4 pt-2 text-white">
+          <div className="flex items-center gap-3 px-4 pb-4 pt-2 text-white" style={{backgroundColor: '#0D1A63'}}>
             <ArrowLeft className="h-5 w-5" />
             <span className="font-medium">Submit Support Ticket</span>
           </div>
@@ -53,15 +53,15 @@ const HowItWorksPhoneMockup = () => {
             {/* Category Selection */}
             <div className="mb-4 rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-100">
-                  <BookOpen className="h-5 w-5 text-teal-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <BookOpen className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-gray-900">Academic Affairs</p>
                   <p className="text-xs text-gray-500">Dr. Sarah Chen • Available</p>
                 </div>
               </div>
-              <p className="mt-2 text-right text-xs text-teal-600">Change facilitator</p>
+              <p className="mt-2 text-right text-xs" style={{color: '#0D1A63'}}>Change facilitator</p>
             </div>
 
             {/* Subject */}
@@ -93,7 +93,7 @@ const HowItWorksPhoneMockup = () => {
             </motion.div>
 
             {/* Submit Button */}
-            <div className="rounded-full bg-teal-600 py-3 text-center">
+            <div className="rounded-full py-3 text-center" style={{backgroundColor: '#0D1A63'}}>
               <span className="text-sm font-semibold text-white">Submit Ticket</span>
             </div>
           </div>
