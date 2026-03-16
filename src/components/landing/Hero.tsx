@@ -156,25 +156,17 @@ export const Hero = () => {
             variants={fadeInUp}
             transition={defaultTransition}
           >
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-foreground">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
-              </span>
-              ALU Student Support — Live
-            </div>
-
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
-              Stop chasing{" "}
+              Academic support,{" "}
               <br className="hidden sm:block" />
-              your facilitator.
+              the smart way.
             </h1>
             <p className="mt-3 text-2xl font-semibold text-muted-foreground md:text-3xl">
-              Get answers instead.
+              From question to resolution — fast.
             </p>
 
             <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg max-w-lg">
-              Submit support tickets, book appointments, and track every request — all routed automatically to the right person by AI.
+              Raise tickets, schedule sessions with facilitators, and follow up on every request — all in one place, powered by AI routing.
             </p>
 
             <motion.div

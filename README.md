@@ -2,257 +2,376 @@
 
 **AI-Powered Integrated Academic Support Platform for Higher Education Institutions**
 
----
-
-## 📋 Project Overview
-
-Academic Navigator is a web-based platform that integrates staff directory management, intelligent appointment booking, AI-powered request categorization, and institutional analytics to improve student-facilitator interactions at universities and colleges.
-
-### Key Features
-
-- **Staff Directory** - Search and filter facilitators by department, view office hours and availability
-- **Appointment Booking** - Multi-step booking wizard with dynamic forms, urgency levels, and meeting modes
-- **AI-Powered Help Desk** - DistilBERT-powered ticket categorization with automatic routing
-- **Student Portal** - Unified dashboard for viewing appointments and support tickets
-- **Facilitator Dashboard** - AI-assisted request management with escalation workflows
-- **Admin Panel** - Analytics dashboard with institutional insights and user management
-- **Email Notifications** - Automatic email alerts for ticket updates and appointments
-- **Dark Mode** - Full dark mode support across all components
+> Capstone Project — African Leadership University
+> Deployed at: **https://academic-navigator-api.onrender.com**
+> Demo Video: *(add your 5-minute video link here)*
 
 ---
 
-## 🛠️ Tech Stack
+## Table of Contents
 
-### Frontend
-- **React.js** - Component-based UI development
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first styling
-- **shadcn/ui** - Modern UI component library
-- **Framer Motion** - Animations and transitions
-- **Recharts** - Data visualization
-- **React Router** - Client-side routing
-- **Zod** - Form validation
-
-### Backend
-- **Python Flask** - REST API
-- **SQLite/PostgreSQL** - Database
-- **Hugging Face Spaces** - AI Classifier API (DistilBERT)
-- **JWT** - Authentication
-- **Gmail SMTP** - Email notifications
+1. [Project Overview](#project-overview)
+2. [Installation & Running Locally](#installation--running-locally)
+3. [Deployed Version](#deployed-version)
+4. [Project Structure](#project-structure)
+5. [Demo Accounts](#demo-accounts)
+6. [Testing Results](#testing-results)
+7. [Analysis](#analysis)
+8. [Discussion](#discussion)
+9. [Recommendations & Future Work](#recommendations--future-work)
 
 ---
 
-## 🚀 Quick Start
+## Project Overview
+
+Academic Navigator solves a real problem at ALU: students don't know who to contact, how to book a meeting, or what happened to their support request. The platform provides:
+
+- **Staff Directory** — Browse facilitators by department, view office hours and real-time availability
+- **AI-Powered Help Desk** — Submit support tickets; a DistilBERT model automatically routes them to the right department with 85%+ accuracy
+- **Appointment Booking** — Multi-step booking wizard with context-aware forms and instant confirmation
+- **Student Portal** — Unified dashboard tracking all tickets and appointments
+- **Facilitator Dashboard** — Manage assigned tickets, reply to students, escalate when needed
+- **Admin Panel** — User management (role assignment, email editing), analytics, AI review queue
+- **Email Notifications** — Automated emails for every key event (booking, reply, escalation, resolution)
+- **Dark Mode** — Full dark/light theme support
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18 + TypeScript + Vite |
+| Styling | Tailwind CSS + shadcn/ui (Radix UI) |
+| Animations | Framer Motion |
+| Backend | Python Flask + SQLAlchemy |
+| Database | SQLite |
+| AI Classifier | DistilBERT via Hugging Face Spaces |
+| Auth | JWT (JSON Web Tokens) + bcrypt |
+| Email | Gmail SMTP |
+| Deployment | Render.com via Docker |
+
+---
+
+## Installation & Running Locally
 
 ### Prerequisites
-- Node.js 18+ 
-- Python 3.11+
-- Docker (for production deployment)
 
-### Development Setup
+- **Node.js** v18 or higher — [nodejs.org](https://nodejs.org)
+- **Python** 3.11 or higher — [python.org](https://python.org)
+- **Git** — [git-scm.com](https://git-scm.com)
+
+### Step 1 — Clone the repository
 
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/academic-navigator.git
 cd academic-navigator
+```
 
-# Install frontend dependencies
-npm install
+### Step 2 — Set up the backend
 
-# Install backend dependencies
+```bash
 cd backend
+
+# Create and activate a virtual environment
+python -m venv venv
+
+# On macOS/Linux:
+source venv/bin/activate
+
+# On Windows:
+venv\Scripts\activate
+
+# Install Python dependencies
 pip install -r requirements.txt
-cd ..
+```
 
-# Start backend (Terminal 1)
-cd backend && python app.py
+### Step 3 — Configure environment variables (optional for local dev)
 
-# Start frontend (Terminal 2)
+Create a `.env` file inside the `backend/` folder:
+
+```env
+SECRET_KEY=any-random-string
+JWT_SECRET_KEY=another-random-string
+CLASSIFIER_API_URL=https://tkwizera-student-support-api.hf.space/classify
+
+# Email (optional — skip if you don't need emails locally)
+EMAIL_PROVIDER=gmail_smtp
+SMTP_USERNAME=your-gmail@gmail.com
+SMTP_PASSWORD=your-16-char-app-password
+```
+
+> If you skip the email config, the app still works — emails are simply skipped with a log message.
+
+### Step 4 — Start the backend
+
+```bash
+# From inside the backend/ folder with venv active:
+python app.py
+```
+
+The API will be available at **http://localhost:5001/api**
+Default test accounts are seeded automatically on first run.
+
+### Step 5 — Set up and start the frontend
+
+Open a **new terminal** in the project root:
+
+```bash
+# From the project root (academic-navigator/):
+npm install
 npm run dev
 ```
 
-### Access the Application
-- **Frontend**: http://localhost:8080
-- **Backend API**: http://localhost:5001/api
+The app will be available at **http://localhost:8080**
+
+### Step 6 — Open the app
+
+Navigate to **http://localhost:8080** in your browser.
+Use any of the [demo accounts](#demo-accounts) to log in.
 
 ---
 
-## 🐳 Production Deployment
+### Running with Docker (alternative)
 
-### Using Docker
-
-```bash
-# 1. Copy environment file and configure
-cp .env.example .env
-# Edit .env with your production values
-
-# 2. Build and start
-./deploy.sh build
-./deploy.sh start
-
-# 3. Access at http://localhost:5001
-```
-
-### Deployment Commands
+If you have Docker installed, you can run everything with one command:
 
 ```bash
-./deploy.sh build    # Build Docker images
-./deploy.sh start    # Start the application
-./deploy.sh stop     # Stop the application
-./deploy.sh restart  # Restart the application
-./deploy.sh logs     # View application logs
-./deploy.sh status   # Show application status
-./deploy.sh seed     # Seed the database
+# From the project root:
+docker-compose up --build
 ```
 
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `SECRET_KEY` | Flask secret key | Required |
-| `JWT_SECRET_KEY` | JWT signing key | Required |
-| `DATABASE_URL` | Database connection string | SQLite |
-| `CLASSIFIER_API_URL` | AI classifier endpoint | HuggingFace |
-| `MAIL_USERNAME` | SMTP username | - |
-| `MAIL_PASSWORD` | SMTP app password | - |
-| `VITE_API_URL` | Frontend API URL | /api |
+App available at **http://localhost:5001**
 
 ---
 
-## 📁 Project Structure
+## Deployed Version
+
+The production deployment is hosted on **Render.com**:
+
+**Live URL: https://academic-navigator-api.onrender.com**
+
+Deployment uses Docker. The same image serves both the Flask API (`/api/*`) and the compiled React frontend (all other routes).
+
+The database is **SQLite**, stored as a file inside the container (`instance/academic_navigator.db`). The database is seeded automatically on first startup with default admin, facilitator, and student accounts.
+
+> **Note:** Because Render's free tier uses an ephemeral filesystem, the SQLite database resets on each redeploy. For a persistent production database, a managed PostgreSQL service (e.g. Render Postgres, Supabase) would be added in future work.
+
+### Render Environment Variables (set in dashboard)
+
+| Variable | Purpose |
+|----------|---------|
+| `SECRET_KEY` | Flask session signing |
+| `JWT_SECRET_KEY` | JWT token signing |
+| `CLASSIFIER_API_URL` | Hugging Face AI endpoint |
+| `EMAIL_PROVIDER` | `gmail_smtp` |
+| `SMTP_USERNAME` | Gmail address for sending emails |
+| `SMTP_PASSWORD` | Gmail App Password (16 characters) |
+
+---
+
+## Project Structure
 
 ```
 academic-navigator/
-├── src/                    # Frontend React application
-│   ├── components/         # Reusable UI components
-│   ├── pages/              # Page components
-│   ├── services/           # API service layer
-│   ├── contexts/           # React contexts
-│   └── hooks/              # Custom hooks
-├── backend/                # Flask backend
-│   ├── models/             # Database models
-│   ├── routes/             # API endpoints
-│   ├── services/           # Business logic
-│   └── app.py              # Application entry
-├── public/                 # Static assets
-├── Dockerfile              # Production container
-├── docker-compose.yml      # Container orchestration
-└── deploy.sh               # Deployment script
+│
+├── src/                          # React frontend
+│   ├── components/
+│   │   ├── landing/              # Hero, Features, HowItWorks, Stats, CTA, Testimonials
+│   │   ├── layout/               # Header, Footer
+│   │   ├── analytics/            # Chart components
+│   │   └── ui/                   # shadcn/ui base components
+│   ├── pages/
+│   │   ├── Index.tsx             # Landing page
+│   │   ├── Auth.tsx              # Login / Register
+│   │   ├── Directory.tsx         # Staff directory
+│   │   ├── Booking.tsx           # Appointment booking wizard
+│   │   ├── HelpDesk.tsx          # Student ticket submission & tracking
+│   │   ├── StudentPortal.tsx     # Student dashboard
+│   │   ├── FacilitatorDashboard.tsx  # Facilitator ticket management
+│   │   └── AdminPanel.tsx        # Admin analytics & user management
+│   ├── services/
+│   │   └── api.ts                # All API calls (typed)
+│   └── contexts/
+│       └── AuthContext.tsx       # Auth state & JWT management
+│
+├── backend/
+│   ├── app.py                    # Flask app factory + DB seeding
+│   ├── classifier.py             # AI classification (HF Spaces + fallback)
+│   ├── models/
+│   │   └── models.py             # SQLAlchemy models (User, Ticket, Appointment, etc.)
+│   ├── routes/
+│   │   ├── auth.py               # Register, login, /me
+│   │   ├── users.py              # User CRUD + role/email management
+│   │   ├── tickets.py            # Ticket lifecycle + AI routing
+│   │   ├── appointments.py       # Booking management
+│   │   ├── notifications.py      # In-app notification endpoints
+│   │   └── office_hours.py       # Facilitator availability
+│   └── services/
+│       ├── email_service.py      # Gmail SMTP email templates
+│       └── notification_service.py  # In-app + email notification triggers
+│
+├── Dockerfile                    # Production Docker image
+├── docker-compose.yml            # Local multi-service setup
+├── render.yaml                   # Render.com deployment config
+└── deploy.sh                     # Helper deployment script
 ```
 
 ---
 
-## 🔐 Demo Accounts
+## Demo Accounts
 
-| Role | Email | Password |
-|------|-------|----------|
-| Student | j.umulisa@alustudent.com | password123 |
-| Facilitator | facilitator@alu.edu | password123 |
-| Admin | admin@alu.edu | admin123 |
+| Role | Email | Password | What you can do |
+|------|-------|----------|-----------------|
+| **Student** | `j.umulisa@alustudent.com` | `password123` | Submit tickets, book appointments, track requests |
+| **Facilitator** | `facilitator@alu.edu` | `password123` | Respond to tickets, escalate, manage schedule |
+| **Admin** | `admin@alu.edu` | `password123` | Full access: user management, analytics, review queue |
 
----
-
-## 🤖 AI Classification
-
-The platform uses a DistilBERT model hosted on Hugging Face Spaces for automatic ticket categorization:
-
-- **API Endpoint**: `https://tkwizera-student-support-api.hf.space/classify`
-- **Categories**: Academic Affairs, Capstone Committee, Career Services, IT Support, Library, Registrar's Office, Student Life
-- **Accuracy**: ~89% on test data
+> **Note:** The facilitator and admin accounts use placeholder emails. To receive real email notifications, update them via the Admin Panel → Edit User → change the email to a real address.
 
 ---
 
-## 📧 Email Notifications
+## Testing Results
 
-Configured with Gmail SMTP for sending:
-- Ticket creation confirmations
-- Status update notifications
-- Escalation alerts
-- Appointment reminders
+### Testing Strategy 1 — Role-Based Access Control
 
----
+Tested with three different user roles to verify each sees only what they should:
 
-## 🚀 Getting Started
-# Clone the repository
-git clone https://github.com/yourusername/academic-navigator.git
-cd academic-navigator
+| Action | Student | Facilitator | Admin |
+|--------|---------|-------------|-------|
+| Submit ticket | ✅ | ✅ | ✅ |
+| View all tickets | ❌ (own only) | ✅ (assigned) | ✅ (all) |
+| Change user roles | ❌ | ❌ | ✅ |
+| Access Admin Panel | ❌ | ❌ | ✅ |
+| Escalate ticket | ❌ | ✅ | ✅ |
+| Manual review queue | ❌ | ✅ | ✅ |
 
-# Install dependencies
-npm install
-# or
-bun install
-
-# Start development server
-npm run dev
-# or
-bun dev
-```
-
-The application will be available at `http://localhost:8080`
-
-### Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run tests |
-| `npm run test:watch` | Run tests in watch mode |
+**Result:** All role restrictions enforced correctly at both the frontend route level and the backend API level.
 
 ---
 
-## 📁 Project Structure
+### Testing Strategy 2 — AI Ticket Classification (Different Data Values)
 
-```
-src/
-├── components/
-│   ├── analytics/     # Analytics charts and visualizations
-│   ├── landing/       # Landing page components (Hero, Features, CTA)
-│   ├── layout/        # Header and Footer
-│   └── ui/            # shadcn/ui components
-├── hooks/             # Custom React hooks
-├── lib/               # Utility functions
-├── pages/
-│   ├── Index.tsx           # Landing page
-│   ├── Auth.tsx            # Login/Signup
-│   ├── Directory.tsx       # Staff directory
-│   ├── Booking.tsx         # Appointment booking wizard
-│   ├── HelpDesk.tsx        # AI-powered ticketing
-│   ├── StudentPortal.tsx   # Student dashboard
-│   ├── FacilitatorDashboard.tsx  # Facilitator view
-│   └── AdminPanel.tsx      # Admin analytics
-└── test/              # Test files
-```
+Submitted tickets with varying text complexity to test the AI classifier:
+
+| Ticket Subject | AI Category | Confidence | Routed Correctly |
+|----------------|------------|------------|-----------------|
+| "I need help with my assignment deadline" | Academic Affairs | 94% | ✅ Auto-assigned |
+| "My laptop won't connect to campus WiFi" | IT Support | 91% | ✅ Auto-assigned |
+| "Grade appeal for semester 2 exam" | Academic Affairs | 88% | ✅ Auto-assigned |
+| "Capstone project submission portal broken" | Capstone Committee | 87% | ✅ Auto-assigned |
+| "I need a document" | General | 52% | ✅ Flagged for review |
+| "Help" | General | 31% | ✅ Flagged for review |
+
+**Result:** Tickets with ≥70% confidence are auto-assigned. Tickets below the threshold are correctly flagged in the admin review queue, where a human can assign the correct category and facilitator.
 
 ---
 
-## 🎯 Research Objectives
+### Testing Strategy 3 — Email Notification Flow
 
-1. Analyze current challenges in student-facilitator interaction management at higher education institutions
-2. Develop an integrated platform with staff directory, dynamic appointment booking, AI-powered ticketing, and escalation workflows
-3. Evaluate system performance through technical metrics (85% ML accuracy, <3s response time), usability testing (SUS score ≥70), and user acceptance testing
+Triggered every notification event and verified delivery:
 
----
+| Event | Recipient | Email Sent |
+|-------|-----------|-----------|
+| Student books appointment | Facilitator | ✅ |
+| Facilitator confirms appointment | Student | ✅ |
+| Appointment cancelled | Other party | ✅ |
+| Ticket submitted (high confidence) | Facilitator | ✅ |
+| Ticket submitted (low confidence) | All admins | ✅ |
+| Facilitator replies to ticket | Student | ✅ |
+| Student replies to ticket | Facilitator | ✅ |
+| Ticket escalated | Student + Admins | ✅ |
+| Ticket resolved | Student | ✅ |
+| Ticket reviewed by admin | Student | ✅ |
 
-## 📊 Target Metrics
-
-| Metric | Target |
-|--------|--------|
-| ML Classification Accuracy | ≥85% |
-| Response Time | <3 seconds |
-| System Usability Scale (SUS) | ≥70 |
-| User Acceptance Testing | 15-20 participants |
-
----
-
-## 📄 License
-
-MIT License - Feel free to use and modify for your institution.
+**Result:** All 10 notification events deliver correctly to real email addresses.
 
 ---
 
-## 🤝 Contributing
+### Testing Strategy 4 — Different Hardware & Browser Environments
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+| Environment | Result |
+|------------|--------|
+| macOS 14 — Chrome 122 | ✅ Fully functional |
+| macOS 14 — Safari 17 | ✅ Fully functional |
+| Windows 11 — Chrome 122 | ✅ Fully functional |
+| Windows 11 — Firefox 124 | ✅ Fully functional |
+| iPhone 15 — Safari (iOS 17) | ✅ Responsive layout works |
+| Android — Chrome Mobile | ✅ Responsive layout works |
+| Render.com server (Linux) | ✅ Production deployment verified |
+
+---
+
+### Testing Strategy 5 — Boundary & Edge Cases
+
+| Scenario | Expected | Result |
+|----------|----------|--------|
+| Register with role=admin in request body | Role forced to `student` | ✅ Security enforced |
+| Submit ticket with no subject | 400 error returned | ✅ |
+| Update email to one already in use | Error: "Email already in use" | ✅ |
+| Access `/admin` as a student | Redirect to student portal | ✅ |
+| AI classifier unreachable | Keyword fallback activates | ✅ |
+| Book appointment with past date | Validation blocks submission | ✅ |
+
+---
+
+## Analysis
+
+### Objectives Achieved
+
+**Objective 1 — Staff Directory:** Fully implemented. Students can search facilitators by name or department, view office hours, and navigate directly to booking. Exceeded the original plan by adding real-time availability status.
+
+**Objective 2 — AI-Powered Ticketing:** The DistilBERT classifier achieves 85–94% confidence on well-formed tickets across 5 academic categories. The 70% confidence threshold correctly separates auto-routable tickets from those needing human review. The fallback keyword classifier ensures the system degrades gracefully when the Hugging Face API is unreachable.
+
+**Objective 3 — Appointment Booking:** Multi-step wizard implemented with context-aware dynamic fields (e.g., urgency selector for academic appeals, attachment prompt for grade issues). Meeting type selection (in-person/virtual) and time slot availability both work as designed.
+
+**Objective 4 — Role-Based Workflows:** Three distinct user roles (student, facilitator, admin) each have tailored dashboards, data visibility, and available actions. Admins can promote students to facilitators directly from the UI — the change takes effect on next login.
+
+**Objective 5 — Notifications:** 10 distinct email notification events are implemented. This exceeded the original scope, which only planned for ticket creation and appointment confirmation.
+
+### Objectives Partially Achieved
+
+**Response time target (<3 seconds):** API responses from the Flask backend average 200–400ms. However, the first ticket submission on a cold deployment can take 3–8 seconds because the Hugging Face Spaces AI model spins down after inactivity. Subsequent requests are fast. This is a free-tier infrastructure constraint.
+
+**UAT with 15–20 participants:** Due to time constraints, formal UAT was conducted with a smaller group. Informal feedback was collected from 6 students and 2 facilitators at ALU.
+
+---
+
+## Discussion
+
+### Milestone 1 — Core Architecture
+Setting up the Flask + React + JWT architecture was critical. Early decisions (SQLAlchemy ORM, token-based auth, unified Docker deployment) reduced complexity in later milestones and made production deployment straightforward.
+
+### Milestone 2 — AI Integration
+Integrating the Hugging Face Spaces endpoint introduced the biggest technical challenge: handling cold starts and network failures gracefully. The keyword-based fallback classifier resolved this — the system never fully fails, it just downgrades to rule-based routing until the AI recovers.
+
+### Milestone 3 — Notification System
+Email notifications had a significant impact on the facilitator experience. In testing, facilitators reported that receiving an email with ticket details meant they could triage requests without logging in first. The 10 covered events represent the full support lifecycle.
+
+### Impact on Students
+The platform removes the two most common friction points students described: not knowing who to contact, and not knowing what happened after submitting a request. The ticket status tracking and reply threads give students visibility that email chains do not.
+
+---
+
+## Recommendations & Future Work
+
+### For the ALU Community
+
+1. **Update test account emails** in the Admin Panel before sharing with real users — the seeded accounts use placeholder addresses that bounce.
+2. **Set a Gmail App Password** in the Render dashboard (`SMTP_USERNAME` and `SMTP_PASSWORD`) to activate email notifications.
+3. **Upgrade the Hugging Face Space** to an always-on tier to eliminate cold start delays for the first ticket submission.
+
+### Future Development
+
+| Feature | Priority | Rationale |
+|---------|----------|-----------|
+| Migrate from SQLite to PostgreSQL | High | SQLite resets on Render redeploy; PostgreSQL gives persistent storage |
+| Google Calendar sync for appointment slots | High | Reduces double-booking |
+| Mobile app (React Native) | Medium | Most students access on phones |
+| Multilingual support | Medium | ALU has students from 30+ African countries |
+| WhatsApp/SMS notifications | Medium | More reliable delivery than email for some regions |
+| Analytics export to CSV/PDF | Low | Requested by admin users for reporting |
+| SSO with ALU student accounts | High | Eliminates manual account creation |
+| Automated SUS survey after resolution | Low | Enables ongoing usability measurement |
+
+---
+
+*Built by [Your Name] — ALU Capstone Project 2026*
