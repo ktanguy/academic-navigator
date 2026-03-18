@@ -1,8 +1,8 @@
 # Academic Navigator
 
 > Deployed at: **https://academic-navigator-api.onrender.com**
-> Demo Video: *(add your 5-minute video link here)*
-> GitHub: *(add your repo link here)*
+> Demo Video: https://drive.google.com/file/d/14PkG5pPGYJmlN9GnoplAW3vvR_b-_sfs/view?usp=sharing
+> GitHub: https://github.com/ktanguy/academic-navigator
 
 ---
 
