@@ -474,4 +474,3 @@ High = confidence ≥ 70% (auto-routed). Low = confidence < 70% (sent to review 
 
 ---
 
-*Built by [Your Name] — Capstone Project 2026*
