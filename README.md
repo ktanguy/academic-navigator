@@ -389,12 +389,12 @@ This section maps each use case to its implementation: the actor, inputs accepte
 
 | Action | Student | Facilitator | Admin |
 |--------|---------|-------------|-------|
-| Submit ticket | ✅ | ✅ | ✅ |
-| View all tickets | ❌ own only | ✅ assigned | ✅ all |
-| Change user roles | ❌ | ❌ | ✅ |
-| Access Admin Panel | ❌ | ❌ | ✅ |
-| Escalate ticket | ❌ | ✅ | ✅ |
-| Manual review queue | ❌ | ✅ | ✅ |
+| Submit ticket | Yes | Yes | Yes |
+| View all tickets | Own only | Assigned | All |
+| Change user roles | No | No | Yes |
+| Access Admin Panel | No | No | Yes |
+| Escalate ticket | No | Yes | Yes |
+| Manual review queue | No | Yes | Yes |
 
 All role restrictions enforced at both frontend route level and backend API level.
 
@@ -404,12 +404,12 @@ All role restrictions enforced at both frontend route level and backend API leve
 
 | Ticket Subject | AI Category | Confidence | Result |
 |----------------|------------|------------|--------|
-| "I need help with my assignment deadline" | Academic Affairs | High | ✅ Auto-assigned |
-| "My laptop won't connect to campus WiFi" | IT Support | High | ✅ Auto-assigned |
-| "Grade appeal for semester 2 exam" | Academic Affairs | High | ✅ Auto-assigned |
-| "Capstone project submission portal broken" | Capstone Committee | High | ✅ Auto-assigned |
-| "I need a document" | General | Low | ✅ Flagged for review |
-| "Help" | General | Low | ✅ Flagged for review |
+| "I need help with my assignment deadline" | Academic Affairs | High | Auto-assigned |
+| "My laptop won't connect to campus WiFi" | IT Support | High | Auto-assigned |
+| "Grade appeal for semester 2 exam" | Academic Affairs | High | Auto-assigned |
+| "Capstone project submission portal broken" | Capstone Committee | High | Auto-assigned |
+| "I need a document" | General | Low | Flagged for review |
+| "Help" | General | Low | Flagged for review |
 
 High = confidence ≥ 70% (auto-routed). Low = confidence < 70% (sent to review queue).
 
@@ -419,16 +419,16 @@ High = confidence ≥ 70% (auto-routed). Low = confidence < 70% (sent to review 
 
 | Event | Recipient | Delivered |
 |-------|-----------|-----------|
-| Student books appointment | Facilitator | ✅ |
-| Facilitator confirms | Student | ✅ |
-| Appointment cancelled | Other party | ✅ |
-| Ticket submitted (high confidence) | Facilitator | ✅ |
-| Ticket submitted (low confidence) | All admins | ✅ |
-| Facilitator replies | Student | ✅ |
-| Student replies | Facilitator | ✅ |
-| Ticket escalated | Student + Admins | ✅ |
-| Ticket resolved | Student | ✅ |
-| Ticket reviewed by admin | Student | ✅ |
+| Student books appointment | Facilitator | Delivered |
+| Facilitator confirms | Student | Delivered |
+| Appointment cancelled | Other party | Delivered |
+| Ticket submitted (high confidence) | Facilitator | Delivered |
+| Ticket submitted (low confidence) | All admins | Delivered |
+| Facilitator replies | Student | Delivered |
+| Student replies | Facilitator | Delivered |
+| Ticket escalated | Student + Admins | Delivered |
+| Ticket resolved | Student | Delivered |
+| Ticket reviewed by admin | Student | Delivered |
 
 ---
 
@@ -436,13 +436,13 @@ High = confidence ≥ 70% (auto-routed). Low = confidence < 70% (sent to review 
 
 | Environment | Result |
 |------------|--------|
-| macOS 14 — Chrome 122 | ✅ Fully functional |
-| macOS 14 — Safari 17 | ✅ Fully functional |
-| Windows 11 — Chrome 122 | ✅ Fully functional |
-| Windows 11 — Firefox 124 | ✅ Fully functional |
-| iPhone 15 — Safari (iOS 17) | ✅ Responsive layout works |
-| Android — Chrome Mobile | ✅ Responsive layout works |
-| Render.com (Linux/Docker) | ✅ Production deployment verified |
+| macOS 14 — Chrome 122 | Fully functional |
+| macOS 14 — Safari 17 | Fully functional |
+| Windows 11 — Chrome 122 | Fully functional |
+| Windows 11 — Firefox 124 | Fully functional |
+| iPhone 15 — Safari (iOS 17) | Responsive layout works |
+| Android — Chrome Mobile | Responsive layout works |
+| Render.com (Linux/Docker) | Production deployment verified |
 
 ---
 
@@ -450,12 +450,12 @@ High = confidence ≥ 70% (auto-routed). Low = confidence < 70% (sent to review 
 
 | Scenario | Expected | Result |
 |----------|----------|--------|
-| Register with `role=admin` in request body | Role forced to `student` | ✅ |
-| Submit ticket with no subject | 400 error returned | ✅ |
-| Update email to one already in use | "Email already in use" error | ✅ |
-| Access `/admin` route as a student | Redirect to student portal | ✅ |
-| AI classifier unreachable | Keyword fallback activates | ✅ |
-| Book appointment with past date | Validation blocks submission | ✅ |
+| Register with `role=admin` in request body | Role forced to `student` | Passed |
+| Submit ticket with no subject | 400 error returned | Passed |
+| Update email to one already in use | "Email already in use" error | Passed |
+| Access `/admin` route as a student | Redirect to student portal | Passed |
+| AI classifier unreachable | Keyword fallback activates | Passed |
+| Book appointment with past date | Validation blocks submission | Passed |
 
 ---
 
