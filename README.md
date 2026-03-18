@@ -1,41 +1,41 @@
 # Academic Navigator
 
-**AI-Powered Integrated Academic Support Platform for Higher Education Institutions**
-
-> Capstone Project — African Leadership University
 > Deployed at: **https://academic-navigator-api.onrender.com**
 > Demo Video: *(add your 5-minute video link here)*
+> GitHub: *(add your repo link here)*
 
 ---
 
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Installation & Running Locally](#installation--running-locally)
-3. [Deployed Version](#deployed-version)
-4. [Project Structure](#project-structure)
+2. [Tech Stack](#tech-stack)
+3. [Installation & Running Locally](#installation--running-locally)
+4. [Deployed Version](#deployed-version)
 5. [Demo Accounts](#demo-accounts)
-6. [Testing Results](#testing-results)
-7. [Analysis](#analysis)
-8. [Discussion](#discussion)
-9. [Recommendations & Future Work](#recommendations--future-work)
+6. [Use Case Implementation](#use-case-implementation)
+7. [Testing Results](#testing-results)
+8. [Recommendations & Future Work](#recommendations--future-work)
 
 ---
 
 ## Project Overview
 
-Academic Navigator solves a real problem at ALU: students don't know who to contact, how to book a meeting, or what happened to their support request. The platform provides:
+Academic Navigator addresses the lack of a structured, trackable communication channel between students and academic support staff at higher education institutions. Students often do not know who to contact, how to follow up on a request, or what happened after submitting a support query.
 
-- **Staff Directory** — Browse facilitators by department, view office hours and real-time availability
-- **AI-Powered Help Desk** — Submit support tickets; a DistilBERT model automatically routes them to the right department with 85%+ accuracy
-- **Appointment Booking** — Multi-step booking wizard with context-aware forms and instant confirmation
+The platform provides:
+
+- **Staff Directory** — Browse facilitators by department, view office hours and availability
+- **AI Help Desk** — Submit support tickets routed automatically to the right department by a DistilBERT model
+- **Appointment Booking** — Multi-step booking wizard with real-time slot availability
 - **Student Portal** — Unified dashboard tracking all tickets and appointments
 - **Facilitator Dashboard** — Manage assigned tickets, reply to students, escalate when needed
-- **Admin Panel** — User management (role assignment, email editing), analytics, AI review queue
+- **Admin Panel** — User management, analytics, AI review queue
 - **Email Notifications** — Automated emails for every key event (booking, reply, escalation, resolution)
-- **Dark Mode** — Full dark/light theme support
 
-### Tech Stack
+---
+
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -84,7 +84,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Step 3 — Configure environment variables (optional for local dev)
+### Step 3 — Configure environment variables
 
 Create a `.env` file inside the `backend/` folder:
 
@@ -99,7 +99,7 @@ SMTP_USERNAME=your-gmail@gmail.com
 SMTP_PASSWORD=your-16-char-app-password
 ```
 
-> If you skip the email config, the app still works — emails are simply skipped with a log message.
+> If you skip the email config, the app still works — emails are skipped with a log message.
 
 ### Step 4 — Start the backend
 
@@ -125,14 +125,11 @@ The app will be available at **http://localhost:8080**
 
 ### Step 6 — Open the app
 
-Navigate to **http://localhost:8080** in your browser.
-Use any of the [demo accounts](#demo-accounts) to log in.
+Navigate to **http://localhost:8080** in your browser and log in using any [demo account](#demo-accounts).
 
 ---
 
 ### Running with Docker (alternative)
-
-If you have Docker installed, you can run everything with one command:
 
 ```bash
 # From the project root:
@@ -145,17 +142,13 @@ App available at **http://localhost:5001**
 
 ## Deployed Version
 
-The production deployment is hosted on **Render.com**:
+Live URL: **https://academic-navigator-api.onrender.com**
 
-**Live URL: https://academic-navigator-api.onrender.com**
+Deployment uses Docker — the same image serves both the Flask API (`/api/*`) and the compiled React frontend (all other routes). The database is SQLite, seeded automatically on first startup.
 
-Deployment uses Docker. The same image serves both the Flask API (`/api/*`) and the compiled React frontend (all other routes).
+> **Note:** Render's free tier uses an ephemeral filesystem. The SQLite database resets on each redeploy. See [Future Work](#recommendations--future-work) for the PostgreSQL migration plan.
 
-The database is **SQLite**, stored as a file inside the container (`instance/academic_navigator.db`). The database is seeded automatically on first startup with default admin, facilitator, and student accounts.
-
-> **Note:** Because Render's free tier uses an ephemeral filesystem, the SQLite database resets on each redeploy. For a persistent production database, a managed PostgreSQL service (e.g. Render Postgres, Supabase) would be added in future work.
-
-### Render Environment Variables (set in dashboard)
+### Render Environment Variables
 
 | Variable | Purpose |
 |----------|---------|
@@ -168,125 +161,278 @@ The database is **SQLite**, stored as a file inside the container (`instance/aca
 
 ---
 
-## Project Structure
+## Demo Accounts
 
-```
-academic-navigator/
-│
-├── src/                          # React frontend
-│   ├── components/
-│   │   ├── landing/              # Hero, Features, HowItWorks, Stats, CTA, Testimonials
-│   │   ├── layout/               # Header, Footer
-│   │   ├── analytics/            # Chart components
-│   │   └── ui/                   # shadcn/ui base components
-│   ├── pages/
-│   │   ├── Index.tsx             # Landing page
-│   │   ├── Auth.tsx              # Login / Register
-│   │   ├── Directory.tsx         # Staff directory
-│   │   ├── Booking.tsx           # Appointment booking wizard
-│   │   ├── HelpDesk.tsx          # Student ticket submission & tracking
-│   │   ├── StudentPortal.tsx     # Student dashboard
-│   │   ├── FacilitatorDashboard.tsx  # Facilitator ticket management
-│   │   └── AdminPanel.tsx        # Admin analytics & user management
-│   ├── services/
-│   │   └── api.ts                # All API calls (typed)
-│   └── contexts/
-│       └── AuthContext.tsx       # Auth state & JWT management
-│
-├── backend/
-│   ├── app.py                    # Flask app factory + DB seeding
-│   ├── classifier.py             # AI classification (HF Spaces + fallback)
-│   ├── models/
-│   │   └── models.py             # SQLAlchemy models (User, Ticket, Appointment, etc.)
-│   ├── routes/
-│   │   ├── auth.py               # Register, login, /me
-│   │   ├── users.py              # User CRUD + role/email management
-│   │   ├── tickets.py            # Ticket lifecycle + AI routing
-│   │   ├── appointments.py       # Booking management
-│   │   ├── notifications.py      # In-app notification endpoints
-│   │   └── office_hours.py       # Facilitator availability
-│   └── services/
-│       ├── email_service.py      # Gmail SMTP email templates
-│       └── notification_service.py  # In-app + email notification triggers
-│
-├── Dockerfile                    # Production Docker image
-├── docker-compose.yml            # Local multi-service setup
-├── render.yaml                   # Render.com deployment config
-└── deploy.sh                     # Helper deployment script
-```
+| Role | Email | Password | Access |
+|------|-------|----------|--------|
+| **Student** | `student@example.com` | `password123` | Submit tickets, book appointments, track requests |
+| **Facilitator** | `facilitator@example.com` | `password123` | Respond to tickets, manage schedule, escalate |
+| **Admin** | `admin@example.com` | `password123` | Full access: user management, analytics, review queue |
+
+> Update facilitator/admin emails via Admin Panel → Edit User to receive real email notifications.
 
 ---
 
-## Demo Accounts
+## Use Case Implementation
 
-| Role | Email | Password | What you can do |
-|------|-------|----------|-----------------|
-| **Student** | `j.umulisa@alustudent.com` | `password123` | Submit tickets, book appointments, track requests |
-| **Facilitator** | `facilitator@alu.edu` | `password123` | Respond to tickets, escalate, manage schedule |
-| **Admin** | `admin@alu.edu` | `password123` | Full access: user management, analytics, review queue |
+This section maps each use case to its implementation: the actor, inputs accepted, system process, and outputs produced.
 
-> **Note:** The facilitator and admin accounts use placeholder emails. To receive real email notifications, update them via the Admin Panel → Edit User → change the email to a real address.
+---
+
+### UC-01 — Submit Support Ticket
+
+**Actor:** Student (or any authenticated user)
+
+| Input | Field | Validation |
+|-------|-------|-----------|
+| Ticket subject | Text, required | Min 5 characters |
+| Ticket description | Text, required | Min 20 characters |
+| Category (optional) | Dropdown | Student can leave as "Auto-detect" |
+| Priority | Low / Medium / High | Defaults to Medium |
+
+**Process:**
+1. Frontend sends `POST /api/tickets` with the form data and JWT token
+2. Backend calls the DistilBERT classifier (`CLASSIFIER_API_URL`) with the subject + description
+3. If confidence ≥ 70%: ticket is auto-assigned to a facilitator in the matched department
+4. If confidence < 70%: ticket is created with status `pending_review` and added to the admin review queue
+5. Notification created in-app; email sent to the assigned facilitator (or all admins for review queue)
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| High confidence (≥70%) | Ticket created, auto-assigned, facilitator notified by email |
+| Low confidence (<70%) | Ticket created, flagged for admin review, admins notified by email |
+| Missing required fields | `400 Bad Request` with field-level error messages |
+| Unauthenticated | `401 Unauthorized` |
+
+---
+
+### UC-02 — Browse Staff Directory
+
+**Actor:** Any authenticated user
+
+| Input | Field | Validation |
+|-------|-------|-----------|
+| Search query (optional) | Text | Partial match on name or department |
+| Department filter (optional) | Dropdown | Filters to selected department |
+
+**Process:**
+1. Frontend calls `GET /api/users?role=facilitator` (with optional `department` query param)
+2. Backend returns all users with `role=facilitator`, filtered if department provided
+3. Frontend renders profile cards with name, department, office hours, and availability badge
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| Facilitators found | List of profile cards with availability, office hours, Book button |
+| No matches | "No facilitators found" empty state |
+| Department selected | Filtered results for that department only |
+
+---
+
+### UC-03 — Book Appointment
+
+**Actor:** Student
+
+| Input | Field | Validation |
+|-------|-------|-----------|
+| Facilitator | Pre-selected from directory | Required |
+| Meeting type | In-person / Virtual | Required |
+| Date | Date picker | Must be a future date |
+| Time slot | Available slots only | Required |
+| Purpose / notes | Text | Optional |
+
+**Process:**
+1. Frontend calls `GET /api/office-hours?facilitator_id=X` to load available slots
+2. Student completes the multi-step booking wizard
+3. Frontend sends `POST /api/appointments` with all booking data
+4. Backend creates the appointment with status `pending`
+5. Email notification sent to facilitator; in-app notification created
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| Booking created | Confirmation screen shown; facilitator receives email |
+| Facilitator confirms | Student receives confirmation email; status → `confirmed` |
+| Either party cancels | Other party receives cancellation email; status → `cancelled` |
+| Past date selected | Validation blocks submission with error message |
+
+---
+
+### UC-04 — Respond to Ticket (Facilitator)
+
+**Actor:** Facilitator or Admin
+
+| Input | Field | Validation |
+|-------|-------|-----------|
+| Response message | Text | Required, min 1 character |
+| Escalate flag (optional) | Toggle | Only visible to facilitators |
+
+**Process:**
+1. Facilitator opens an assigned ticket on the Facilitator Dashboard
+2. Types a reply and submits via `POST /api/tickets/:id/responses`
+3. Backend saves the response and triggers `notify_ticket_response()`
+4. Student receives in-app notification + email with a preview of the reply
+5. If escalated: `PATCH /api/tickets/:id` sets `status=escalated`; admins are notified
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| Reply submitted | Thread updated; student notified by email and in-app |
+| Ticket escalated | Status changes to `Escalated`; admins notified |
+| Ticket resolved | Status changes to `Resolved`; student notified |
+
+---
+
+### UC-05 — Admin Review Queue (Low-Confidence Tickets)
+
+**Actor:** Admin
+
+| Input | Field | Validation |
+|-------|-------|-----------|
+| Correct category | Dropdown | Required to assign |
+| Assigned facilitator | Dropdown | Filtered by selected department |
+
+**Process:**
+1. Admin opens the Review Queue in Admin Panel
+2. Views the ticket subject, description, and the AI's suggested category + confidence score
+3. Selects the correct category and facilitator, submits via `PATCH /api/tickets/:id`
+4. Ticket status changes from `pending_review` to `open`; facilitator notified
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| Ticket assigned | Status → `open`; facilitator receives notification |
+| No facilitator available | Admin can assign to self or leave for later |
+
+---
+
+### UC-06 — Manage Users (Admin)
+
+**Actor:** Admin
+
+| Input | Field | Validation |
+|-------|-------|-----------|
+| User name | Text | Optional update |
+| Email | Text | Must be unique across all users |
+| Role | student / facilitator / admin | Admin only |
+| Department | Text | Optional |
+
+**Process:**
+1. Admin opens Admin Panel → Users tab
+2. Clicks Edit on any user
+3. Frontend sends `PATCH /api/users/:id` with updated fields
+4. Backend validates: if email changed, checks for duplicates; if role changed, updates immediately
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| Update successful | User record updated; success toast shown |
+| Duplicate email | `400 Bad Request`: "Email is already in use by another account" |
+| Non-admin attempts update | `403 Forbidden` |
+
+---
+
+### UC-07 — View Notifications
+
+**Actor:** Any authenticated user
+
+| Input | Trigger |
+|-------|---------|
+| Bell icon click | Opens notification dropdown |
+| Mark as read | Click on individual notification |
+
+**Process:**
+1. Frontend polls `GET /api/notifications` on page load and after key actions
+2. Backend returns all notifications for the current user, sorted by date
+3. Unread count shown as badge on the bell icon
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| Unread notifications exist | Bell shows count badge; list shows unread items highlighted |
+| All read | Badge disappears |
+| Notification clicked | Marked as read; user navigated to relevant ticket or appointment |
+
+---
+
+### UC-08 — AI Classification Fallback
+
+**Actor:** System (triggered automatically on ticket submission)
+
+**Process:**
+1. Backend calls Hugging Face Spaces endpoint with ticket text
+2. If endpoint is unreachable (timeout / cold start): keyword-based fallback activates
+3. Fallback scans subject + description for department keywords (e.g., "grade" → Academic Affairs, "wifi" → IT Support)
+4. Result used the same way as AI result — same routing logic applies
+
+**Output:**
+
+| Outcome | System Response |
+|---------|----------------|
+| AI reachable + confident | Auto-route to department |
+| AI reachable + low confidence | Flag for review |
+| AI unreachable | Keyword fallback used; no error shown to user |
 
 ---
 
 ## Testing Results
 
-### Testing Strategy 1 — Role-Based Access Control
-
-Tested with three different user roles to verify each sees only what they should:
+### Strategy 1 — Role-Based Access Control
 
 | Action | Student | Facilitator | Admin |
 |--------|---------|-------------|-------|
 | Submit ticket | ✅ | ✅ | ✅ |
-| View all tickets | ❌ (own only) | ✅ (assigned) | ✅ (all) |
+| View all tickets | ❌ own only | ✅ assigned | ✅ all |
 | Change user roles | ❌ | ❌ | ✅ |
 | Access Admin Panel | ❌ | ❌ | ✅ |
 | Escalate ticket | ❌ | ✅ | ✅ |
 | Manual review queue | ❌ | ✅ | ✅ |
 
-**Result:** All role restrictions enforced correctly at both the frontend route level and the backend API level.
+All role restrictions enforced at both frontend route level and backend API level.
 
 ---
 
-### Testing Strategy 2 — AI Ticket Classification (Different Data Values)
+### Strategy 2 — AI Classification (Different Data Values)
 
-Submitted tickets with varying text complexity to test the AI classifier:
+| Ticket Subject | AI Category | Confidence | Result |
+|----------------|------------|------------|--------|
+| "I need help with my assignment deadline" | Academic Affairs | High | ✅ Auto-assigned |
+| "My laptop won't connect to campus WiFi" | IT Support | High | ✅ Auto-assigned |
+| "Grade appeal for semester 2 exam" | Academic Affairs | High | ✅ Auto-assigned |
+| "Capstone project submission portal broken" | Capstone Committee | High | ✅ Auto-assigned |
+| "I need a document" | General | Low | ✅ Flagged for review |
+| "Help" | General | Low | ✅ Flagged for review |
 
-| Ticket Subject | AI Category | Confidence | Routed Correctly |
-|----------------|------------|------------|-----------------|
-| "I need help with my assignment deadline" | Academic Affairs | 94% | ✅ Auto-assigned |
-| "My laptop won't connect to campus WiFi" | IT Support | 91% | ✅ Auto-assigned |
-| "Grade appeal for semester 2 exam" | Academic Affairs | 88% | ✅ Auto-assigned |
-| "Capstone project submission portal broken" | Capstone Committee | 87% | ✅ Auto-assigned |
-| "I need a document" | General | 52% | ✅ Flagged for review |
-| "Help" | General | 31% | ✅ Flagged for review |
-
-**Result:** Tickets with ≥70% confidence are auto-assigned. Tickets below the threshold are correctly flagged in the admin review queue, where a human can assign the correct category and facilitator.
+High = confidence ≥ 70% (auto-routed). Low = confidence < 70% (sent to review queue).
 
 ---
 
-### Testing Strategy 3 — Email Notification Flow
+### Strategy 3 — Email Notification Events
 
-Triggered every notification event and verified delivery:
-
-| Event | Recipient | Email Sent |
+| Event | Recipient | Delivered |
 |-------|-----------|-----------|
 | Student books appointment | Facilitator | ✅ |
-| Facilitator confirms appointment | Student | ✅ |
+| Facilitator confirms | Student | ✅ |
 | Appointment cancelled | Other party | ✅ |
 | Ticket submitted (high confidence) | Facilitator | ✅ |
 | Ticket submitted (low confidence) | All admins | ✅ |
-| Facilitator replies to ticket | Student | ✅ |
-| Student replies to ticket | Facilitator | ✅ |
+| Facilitator replies | Student | ✅ |
+| Student replies | Facilitator | ✅ |
 | Ticket escalated | Student + Admins | ✅ |
 | Ticket resolved | Student | ✅ |
 | Ticket reviewed by admin | Student | ✅ |
 
-**Result:** All 10 notification events deliver correctly to real email addresses.
-
 ---
 
-### Testing Strategy 4 — Different Hardware & Browser Environments
+### Strategy 4 — Cross-Platform Testing
 
 | Environment | Result |
 |------------|--------|
@@ -296,82 +442,36 @@ Triggered every notification event and verified delivery:
 | Windows 11 — Firefox 124 | ✅ Fully functional |
 | iPhone 15 — Safari (iOS 17) | ✅ Responsive layout works |
 | Android — Chrome Mobile | ✅ Responsive layout works |
-| Render.com server (Linux) | ✅ Production deployment verified |
+| Render.com (Linux/Docker) | ✅ Production deployment verified |
 
 ---
 
-### Testing Strategy 5 — Boundary & Edge Cases
+### Strategy 5 — Boundary & Edge Cases
 
 | Scenario | Expected | Result |
 |----------|----------|--------|
-| Register with role=admin in request body | Role forced to `student` | ✅ Security enforced |
+| Register with `role=admin` in request body | Role forced to `student` | ✅ |
 | Submit ticket with no subject | 400 error returned | ✅ |
-| Update email to one already in use | Error: "Email already in use" | ✅ |
-| Access `/admin` as a student | Redirect to student portal | ✅ |
+| Update email to one already in use | "Email already in use" error | ✅ |
+| Access `/admin` route as a student | Redirect to student portal | ✅ |
 | AI classifier unreachable | Keyword fallback activates | ✅ |
 | Book appointment with past date | Validation blocks submission | ✅ |
 
 ---
 
-## Analysis
-
-### Objectives Achieved
-
-**Objective 1 — Staff Directory:** Fully implemented. Students can search facilitators by name or department, view office hours, and navigate directly to booking. Exceeded the original plan by adding real-time availability status.
-
-**Objective 2 — AI-Powered Ticketing:** The DistilBERT classifier achieves 85–94% confidence on well-formed tickets across 5 academic categories. The 70% confidence threshold correctly separates auto-routable tickets from those needing human review. The fallback keyword classifier ensures the system degrades gracefully when the Hugging Face API is unreachable.
-
-**Objective 3 — Appointment Booking:** Multi-step wizard implemented with context-aware dynamic fields (e.g., urgency selector for academic appeals, attachment prompt for grade issues). Meeting type selection (in-person/virtual) and time slot availability both work as designed.
-
-**Objective 4 — Role-Based Workflows:** Three distinct user roles (student, facilitator, admin) each have tailored dashboards, data visibility, and available actions. Admins can promote students to facilitators directly from the UI — the change takes effect on next login.
-
-**Objective 5 — Notifications:** 10 distinct email notification events are implemented. This exceeded the original scope, which only planned for ticket creation and appointment confirmation.
-
-### Objectives Partially Achieved
-
-**Response time target (<3 seconds):** API responses from the Flask backend average 200–400ms. However, the first ticket submission on a cold deployment can take 3–8 seconds because the Hugging Face Spaces AI model spins down after inactivity. Subsequent requests are fast. This is a free-tier infrastructure constraint.
-
-**UAT with 15–20 participants:** Due to time constraints, formal UAT was conducted with a smaller group. Informal feedback was collected from 6 students and 2 facilitators at ALU.
-
----
-
-## Discussion
-
-### Milestone 1 — Core Architecture
-Setting up the Flask + React + JWT architecture was critical. Early decisions (SQLAlchemy ORM, token-based auth, unified Docker deployment) reduced complexity in later milestones and made production deployment straightforward.
-
-### Milestone 2 — AI Integration
-Integrating the Hugging Face Spaces endpoint introduced the biggest technical challenge: handling cold starts and network failures gracefully. The keyword-based fallback classifier resolved this — the system never fully fails, it just downgrades to rule-based routing until the AI recovers.
-
-### Milestone 3 — Notification System
-Email notifications had a significant impact on the facilitator experience. In testing, facilitators reported that receiving an email with ticket details meant they could triage requests without logging in first. The 10 covered events represent the full support lifecycle.
-
-### Impact on Students
-The platform removes the two most common friction points students described: not knowing who to contact, and not knowing what happened after submitting a request. The ticket status tracking and reply threads give students visibility that email chains do not.
-
----
-
 ## Recommendations & Future Work
-
-### For the ALU Community
-
-1. **Update test account emails** in the Admin Panel before sharing with real users — the seeded accounts use placeholder addresses that bounce.
-2. **Set a Gmail App Password** in the Render dashboard (`SMTP_USERNAME` and `SMTP_PASSWORD`) to activate email notifications.
-3. **Upgrade the Hugging Face Space** to an always-on tier to eliminate cold start delays for the first ticket submission.
-
-### Future Development
 
 | Feature | Priority | Rationale |
 |---------|----------|-----------|
-| Migrate from SQLite to PostgreSQL | High | SQLite resets on Render redeploy; PostgreSQL gives persistent storage |
-| Google Calendar sync for appointment slots | High | Reduces double-booking |
+| Migrate SQLite to PostgreSQL | High | SQLite resets on Render redeploy; PostgreSQL gives persistent storage |
+| Google Calendar sync | High | Reduces double-booking for facilitators |
+| SSO with institutional accounts | High | Eliminates manual account creation |
 | Mobile app (React Native) | Medium | Most students access on phones |
-| Multilingual support | Medium | ALU has students from 30+ African countries |
-| WhatsApp/SMS notifications | Medium | More reliable delivery than email for some regions |
-| Analytics export to CSV/PDF | Low | Requested by admin users for reporting |
-| SSO with ALU student accounts | High | Eliminates manual account creation |
-| Automated SUS survey after resolution | Low | Enables ongoing usability measurement |
+| Multilingual support | Medium | Supports diverse student populations |
+| WhatsApp/SMS notifications | Medium | More reliable delivery than email in some regions |
+| Analytics export (CSV/PDF) | Low | Requested by admin users for reporting |
+| Automated SUS survey post-resolution | Low | Enables ongoing usability measurement |
 
 ---
 
-*Built by [Your Name] — ALU Capstone Project 2026*
+*Built by [Your Name] — Capstone Project 2026*
