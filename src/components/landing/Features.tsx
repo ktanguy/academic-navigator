@@ -1,27 +1,16 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  MessageSquare,
   Calendar,
-  BarChart3,
-  Shield,
-  Zap,
-  Users,
   Search,
   BookOpen,
-  GraduationCap,
-  FileText,
   Clock,
   CheckCircle2,
   Brain,
-  TrendingUp,
   ArrowRight,
   Mail,
-  Phone,
-  MapPin,
   AlertTriangle,
   ArrowUpRight,
-  DollarSign,
   Server,
   Cloud,
 } from "lucide-react";
@@ -65,9 +54,7 @@ const PhoneFrame = ({ children }: { children: React.ReactNode }) => {
 const AIClassificationMockup = () => (
   <PhoneFrame>
     <div className="px-4 pb-6 pt-2">
-      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-        <Brain className="h-4 w-4 text-primary" />
-      </div>
+      <p className="mb-0.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground/50">Help Desk</p>
       <h3 className="text-lg font-bold text-foreground">AI Classification</h3>
       <p className="mb-3 mt-1 text-xs text-muted-foreground">Real-time ticket analysis</p>
       
@@ -104,9 +91,7 @@ const AIClassificationMockup = () => (
 const SmartBookingMockup = () => (
   <PhoneFrame>
     <div className="px-4 pb-6 pt-2">
-      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-        <Calendar className="h-4 w-4 text-primary" />
-      </div>
+      <p className="mb-0.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground/50">Booking</p>
       <h3 className="text-lg font-bold text-foreground">Book Appointment</h3>
       
       <p className="mb-2 mt-3 text-xs font-medium text-muted-foreground">Available Slots</p>
@@ -150,9 +135,7 @@ const SmartBookingMockup = () => (
 const AnalyticsMockup = () => (
   <PhoneFrame>
     <div className="px-4 pb-6 pt-2">
-      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-        <BarChart3 className="h-4 w-4 text-primary" />
-      </div>
+      <p className="mb-0.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground/50">Admin</p>
       <h3 className="text-lg font-bold text-foreground">Analytics</h3>
       
       <div className="mt-3 grid grid-cols-2 gap-2">
@@ -192,9 +175,7 @@ const AnalyticsMockup = () => (
 const CostEffectiveMockup = () => (
   <PhoneFrame>
     <div className="px-4 pb-6 pt-2">
-      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-        <DollarSign className="h-4 w-4 text-primary" />
-      </div>
+      <p className="mb-0.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground/50">Stack</p>
       <h3 className="text-lg font-bold text-foreground">Infrastructure</h3>
       <p className="mb-3 mt-1 text-xs text-muted-foreground">Free-tier powered</p>
       
@@ -229,9 +210,7 @@ const CostEffectiveMockup = () => (
 const SmartEscalationMockup = () => (
   <PhoneFrame>
     <div className="px-4 pb-6 pt-2">
-      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-        <Zap className="h-4 w-4 text-primary" />
-      </div>
+      <p className="mb-0.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground/50">Routing</p>
       <h3 className="text-lg font-bold text-foreground">Smart Routing</h3>
       
       <div className="mt-3 rounded-xl border border-success/30 bg-success/10 p-3">
@@ -274,9 +253,7 @@ const SmartEscalationMockup = () => (
 const StaffDirectoryMockup = () => (
   <PhoneFrame>
     <div className="px-4 pb-6 pt-2">
-      <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-        <Users className="h-4 w-4 text-primary" />
-      </div>
+      <p className="mb-0.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground/50">Directory</p>
       <h3 className="text-lg font-bold text-foreground">Staff Directory</h3>
       
       <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2">

@@ -158,23 +158,21 @@ export const HowItWorks = () => {
             {/* Feature bullets */}
             <div className="mt-8 space-y-4">
               {[
-                { icon: Search, text: "Find facilitators by department or expertise" },
-                { icon: MessageSquare, text: "AI automatically routes your ticket" },
-                { icon: Clock, text: "Track progress in real-time" },
-                { icon: CheckCircle2, text: "Get timely responses and resolutions" },
-              ].map((item, i) => (
+                "Find facilitators by department or expertise",
+                "AI automatically routes your ticket",
+                "Track progress in real-time",
+                "Get timely responses and resolutions",
+              ].map((text, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + i * 0.1 }}
-                  className="flex items-center gap-3"
+                  className="flex items-start gap-3"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 dark:bg-primary/20">
-                    <item.icon className="h-4 w-4 text-white dark:text-primary" />
-                  </div>
-                  <span className="text-white/90 dark:text-foreground">{item.text}</span>
+                  <span className="mt-0.5 text-xs font-bold text-white/40 dark:text-muted-foreground tabular-nums w-5 shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-white/90 dark:text-foreground">{text}</span>
                 </motion.div>
               ))}
             </div>
