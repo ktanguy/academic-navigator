@@ -459,6 +459,23 @@ High = confidence ≥ 70% (auto-routed). Low = confidence < 70% (sent to review 
 
 ---
 
+### Strategy 6 — API Response Time (Performance Testing)
+
+Tested against the live deployed instance on Render.com. Each endpoint was called 5 times and the average end-to-end response time recorded.
+
+| Endpoint | Average Response Time | Target | Result |
+|----------|-----------------------|--------|--------|
+| `/api/auth/login` | 1290ms | < 2000ms | Passed |
+| `/api/classify` | 703ms | < 2000ms | Passed |
+| `/api/users` (directory) | 695ms | < 2000ms | Passed |
+| `/api/appointments` | 711ms | < 2000ms | Passed |
+| `/api/tickets` | 830ms | < 2000ms | Passed |
+| `/api/analytics` | 735ms | < 2000ms | Passed |
+
+> **Note:** Login response time is higher (~1.3s) due to bcrypt password hashing, which is intentionally slow for security. All other endpoints respond under 850ms. Response times reflect the Render.com free tier, which shares infrastructure and may vary under load.
+
+---
+
 ## Recommendations & Future Work
 
 | Feature | Priority | Rationale |
