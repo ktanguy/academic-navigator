@@ -14,6 +14,7 @@ import Auth from "./pages/Auth";
 import Directory from "./pages/Directory";
 import Booking from "./pages/Booking";
 import HelpDesk from "./pages/HelpDesk";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/directory" element={<Directory />} />
               <Route path="/helpdesk" element={<HelpDesk />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
               
               {/* Student routes - accessible by students, facilitators, and admins */}
               <Route path="/student" element={
