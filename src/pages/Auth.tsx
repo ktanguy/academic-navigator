@@ -150,7 +150,7 @@ const Auth = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mt-4 text-white/60 text-lg leading-relaxed max-w-sm"
           >
-            Raise tickets, book sessions, and get answers — all in one place.
+            Raise tickets, book sessions, and get answers. All in one place.
           </motion.p>
 
           {/* Feature list */}

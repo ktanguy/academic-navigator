@@ -1132,7 +1132,7 @@ const AdminPanel = () => {
                           <span className="font-medium text-foreground">Auto-Assigned (≥70%)</span>
                         </div>
                         <p className="mt-2 text-sm text-muted-foreground">
-                          Confidence ≥70% — ticket is auto-categorized and routed to the appropriate facilitator.
+                          Confidence ≥70%: ticket is auto-categorized and routed to the appropriate facilitator.
                         </p>
                       </div>
                       <div className="rounded-lg bg-destructive/10 p-4">
@@ -1141,7 +1141,7 @@ const AdminPanel = () => {
                           <span className="font-medium text-foreground">Flagged for Review (&lt;70%)</span>
                         </div>
                         <p className="mt-2 text-sm text-muted-foreground">
-                          Confidence &lt;70% — ticket is flagged for manual categorization by a facilitator.
+                          Confidence &lt;70%: ticket is flagged for manual categorization by a facilitator.
                         </p>
                       </div>
                     </div>

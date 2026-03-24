@@ -360,7 +360,7 @@ export const Features = () => {
           step="01"
           badge="AI Classification"
           title="Your ticket goes to the right person. Every time."
-          description="DistilBERT reads your request and routes it across 5 academic departments with 85%+ accuracy — no dropdowns, no guessing, no wrong inboxes."
+          description="DistilBERT reads your request and routes it across 5 academic departments with 85%+ accuracy. No dropdowns, no guessing, no wrong inboxes."
           linkText="Try the Help Desk"
           linkHref="/helpdesk"
           mockup={<AIClassificationMockup />}
@@ -382,7 +382,7 @@ export const Features = () => {
         <FeatureSection
           step="03"
           badge="Analytics"
-          title="See what's working — and what isn't."
+          title="See what's working and what isn't."
           description="Live dashboards show ticket volume, resolution rates, and AI confidence by department. Built for coordinators who make decisions based on evidence."
           linkText="View the dashboard"
           linkHref="/admin"

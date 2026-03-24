@@ -75,7 +75,7 @@ export const Testimonials = () => {
             Real problems. Real resolutions.
           </h2>
           <p className="mt-4 text-base text-muted-foreground">
-            From grade appeals to capstone guidance — here's what students actually experienced.
+            From grade appeals to capstone guidance. Here's what students actually experienced.
           </p>
         </motion.div>
 

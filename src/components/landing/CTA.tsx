@@ -19,7 +19,7 @@ export const CTA = () => {
             Your questions<br />deserve real answers.
           </h2>
           <p className="mt-6 text-white/65 text-lg leading-relaxed max-w-lg">
-            Browse facilitators who can help, or submit a ticket and let AI route it to the right department — instantly.
+            Browse facilitators who can help, or submit a ticket and let AI route it to the right department instantly.
           </p>
           <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center">
             <a

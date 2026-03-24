@@ -24,7 +24,7 @@ const PrivacyPolicy = () => {
               <p>
                 Academic Navigator ("the Platform") is a student support system built for higher education
                 institutions. It helps students raise support tickets, book appointments with facilitators,
-                and receive timely assistance — powered by AI-assisted routing.
+                and receive timely assistance, powered by AI-assisted routing.
               </p>
               <p className="mt-3">
                 By creating an account or using any feature of this Platform, you agree to the terms described
@@ -37,10 +37,10 @@ const PrivacyPolicy = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3">2. Data We Collect</h2>
               <p>We collect only what is necessary to provide the service:</p>
               <ul className="mt-3 space-y-2 list-disc list-inside">
-                <li><span className="text-foreground font-medium">Account information</span> — your name, email address, and role (student / facilitator / admin)</li>
-                <li><span className="text-foreground font-medium">Ticket content</span> — the subject and description of support requests you submit</li>
-                <li><span className="text-foreground font-medium">Appointment details</span> — meeting dates, times, and the reason for the meeting</li>
-                <li><span className="text-foreground font-medium">Usage data</span> — which pages you visit and actions you take within the Platform</li>
+                <li><span className="text-foreground font-medium">Account information</span>: your name, email address, and role (student / facilitator / admin)</li>
+                <li><span className="text-foreground font-medium">Ticket content</span>: the subject and description of support requests you submit</li>
+                <li><span className="text-foreground font-medium">Appointment details</span>: meeting dates, times, and the reason for the meeting</li>
+                <li><span className="text-foreground font-medium">Usage data</span>: which pages you visit and actions you take within the Platform</li>
               </ul>
               <p className="mt-3">We do not collect payment information, location data, or any data beyond what is needed for the Platform to function.</p>
             </section>
@@ -57,8 +57,7 @@ const PrivacyPolicy = () => {
               </ul>
               <p className="mt-3">
                 Your ticket text is sent to a third-party AI model (hosted on Hugging Face Spaces) for
-                classification purposes only. No personal identifying information is included in that request —
-                only the ticket subject and description.
+                classification purposes only. Only the ticket subject and description are sent.
               </p>
             </section>
 
@@ -71,7 +70,7 @@ const PrivacyPolicy = () => {
               </p>
               <p className="mt-3">
                 If the AI's confidence is below 70%, your ticket is flagged for human review before being
-                assigned — ensuring that low-confidence decisions are always checked by a person.
+                assigned, ensuring that low-confidence decisions are always checked by a person.
               </p>
               <p className="mt-3">
                 The AI does not make decisions about your academic standing, grades, or any outcomes.
@@ -95,7 +94,7 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">6. Data Storage & Security</h2>
               <ul className="space-y-2 list-disc list-inside">
-                <li>Passwords are never stored in plain text — they are hashed using bcrypt before saving</li>
+                <li>Passwords are never stored in plain text. They are hashed using bcrypt before saving.</li>
                 <li>All sessions use JWT tokens that expire after 7 days</li>
                 <li>All data is stored on secure servers provided by Render.com</li>
                 <li>HTTPS is enforced on all connections to the Platform</li>
@@ -138,7 +137,7 @@ const PrivacyPolicy = () => {
               <h2 className="text-lg font-semibold text-foreground mb-3">9. Cookies & Local Storage</h2>
               <p>
                 The Platform stores your login token and user profile in your browser's local storage.
-                This is required for the app to function — without it, you would be logged out on every
+                This is required for the app to function. Without it, you would be logged out on every
                 page refresh. No third-party tracking cookies are used.
               </p>
             </section>

@@ -162,11 +162,11 @@ export const Hero = () => {
               the smart way.
             </h1>
             <p className="mt-3 text-2xl font-semibold text-muted-foreground md:text-3xl">
-              From question to resolution — fast.
+              From question to resolution. Fast.
             </p>
 
             <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg max-w-lg">
-              Raise tickets, schedule sessions with facilitators, and follow up on every request — all in one place, powered by AI routing.
+              Raise tickets, schedule sessions with facilitators, and follow up on every request. All in one place, powered by AI routing.
             </p>
 
             <motion.div
