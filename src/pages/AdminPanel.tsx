@@ -674,10 +674,198 @@ const AdminPanel = () => {
   };
 
   const handleExportReport = () => {
-    toast({ 
-      title: "Report Exported", 
-      description: "Analytics report has been exported as PDF and will download shortly." 
-    });
+    const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const totalTickets = ticketStats?.total || allTickets.length || 0;
+    const openTickets = ticketStats?.by_status?.open || 0;
+    const inProgressTickets = ticketStats?.by_status?.['in-progress'] || 0;
+    const closedTickets = (ticketStats?.by_status?.closed || 0) + (ticketStats?.by_status?.resolved || 0);
+    const needsReview = ticketStats?.by_status?.['needs-review'] || 0;
+    const escalatedTickets = ticketStats?.by_status?.escalated || 0;
+    const resolutionRate = totalTickets > 0 ? Math.round((closedTickets / totalTickets) * 100) : 0;
+
+    // Sort categories by volume to find top problems
+    const topCategories = [...categoryChartData].sort((a, b) => b.count - a.count);
+    const topProblem = topCategories[0];
+
+    // Generate smart recommendations based on real data
+    const recommendations: string[] = [];
+    if (topProblem) recommendations.push(`Focus additional support resources on <strong>${topProblem.name}</strong> — it accounts for the highest ticket volume (${topProblem.count} tickets).`);
+    if (needsReview > 2) recommendations.push(`There are <strong>${needsReview} tickets</strong> waiting for manual review. Consider assigning a dedicated admin to clear the review queue.`);
+    if (escalatedTickets > 0) recommendations.push(`<strong>${escalatedTickets} ticket(s)</strong> were escalated. Review whether the AI routing for those categories needs to be improved.`);
+    if (resolutionRate < 60) recommendations.push(`Resolution rate is <strong>${resolutionRate}%</strong>. Consider increasing facilitator capacity or response time targets.`);
+    if (resolutionRate >= 60) recommendations.push(`Resolution rate of <strong>${resolutionRate}%</strong> is healthy. Maintain current facilitator response standards.`);
+    const highConfidenceEntry = classificationChartData.find(d => d.name.includes('High'));
+    if (highConfidenceEntry && highConfidenceEntry.value < 70) recommendations.push(`AI auto-assignment rate is below 70%. Consider retraining the classifier with more ticket examples.`);
+
+    // Build category rows
+    const categoryRows = topCategories.map((cat, i) => `
+      <tr style="background:${i % 2 === 0 ? '#f9fafb' : '#fff'}">
+        <td style="padding:10px 14px;font-weight:600;color:#111">#${i + 1} &nbsp; ${cat.name}</td>
+        <td style="padding:10px 14px;text-align:center">
+          <span style="background:#0D1A63;color:#fff;padding:3px 10px;border-radius:12px;font-size:13px">${cat.count} tickets</span>
+        </td>
+        <td style="padding:10px 14px;text-align:center;color:#555">${cat.aiAccuracy || 'N/A'}%</td>
+        <td style="padding:10px 14px">
+          <div style="background:#e5e7eb;border-radius:6px;height:8px;width:100%">
+            <div style="background:#0D1A63;border-radius:6px;height:8px;width:${Math.round((cat.count / (topProblem?.count || 1)) * 100)}%"></div>
+          </div>
+        </td>
+      </tr>`).join('');
+
+    // Build facilitator rows
+    const facilitatorRows = workloadChartData.map((f, i) => `
+      <tr style="background:${i % 2 === 0 ? '#f9fafb' : '#fff'}">
+        <td style="padding:10px 14px;font-weight:600;color:#111">${f.name}</td>
+        <td style="padding:10px 14px;text-align:center">${f.tickets}</td>
+        <td style="padding:10px 14px;text-align:center">${f.appointments}</td>
+        <td style="padding:10px 14px;text-align:center;color:#555">${f.tickets + f.appointments}</td>
+      </tr>`).join('');
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Academic Support Analytics Report — ${today}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111; background: #fff; }
+    .page { max-width: 900px; margin: 0 auto; padding: 48px 40px; }
+    .header { background: #0D1A63; color: #fff; padding: 36px 40px; border-radius: 10px; margin-bottom: 36px; }
+    .header h1 { font-size: 26px; font-weight: 700; }
+    .header p { margin-top: 6px; color: rgba(255,255,255,0.7); font-size: 14px; }
+    .header .meta { margin-top: 20px; display: flex; gap: 32px; }
+    .header .meta div { font-size: 13px; color: rgba(255,255,255,0.6); }
+    .header .meta strong { display: block; color: #fff; font-size: 15px; margin-top: 2px; }
+    .section { margin-bottom: 36px; }
+    .section h2 { font-size: 17px; font-weight: 700; color: #0D1A63; border-left: 4px solid #0D1A63; padding-left: 12px; margin-bottom: 16px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .kpi { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; text-align: center; }
+    .kpi .value { font-size: 28px; font-weight: 700; color: #0D1A63; }
+    .kpi .label { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+    th { background: #0D1A63; color: #fff; padding: 11px 14px; text-align: left; font-weight: 600; font-size: 13px; }
+    th:not(:first-child) { text-align: center; }
+    .alert { background: #fef3cd; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 4px; font-size: 14px; color: #92400e; margin-bottom: 8px; }
+    .rec { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 12px 16px; border-radius: 4px; font-size: 14px; color: #166534; margin-bottom: 8px; }
+    .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .status-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; text-align: center; }
+    .status-box .v { font-size: 22px; font-weight: 700; color: #0D1A63; }
+    .status-box .l { font-size: 12px; color: #6b7280; margin-top: 3px; }
+    .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af; text-align: center; }
+    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Academic Support Analytics Report</h1>
+    <p>Generated automatically from live platform data</p>
+    <div class="meta">
+      <div><div>Report Date</div><strong>${today}</strong></div>
+      <div><div>Total Tickets</div><strong>${totalTickets}</strong></div>
+      <div><div>Resolution Rate</div><strong>${resolutionRate}%</strong></div>
+      <div><div>Needs Attention</div><strong>${needsReview + escalatedTickets} items</strong></div>
+    </div>
+  </div>
+
+  <!-- KEY METRICS -->
+  <div class="section">
+    <h2>Key Metrics</h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="value">${totalTickets}</div><div class="label">Total Tickets</div></div>
+      <div class="kpi"><div class="value">${openTickets + inProgressTickets}</div><div class="label">Active Tickets</div></div>
+      <div class="kpi"><div class="value">${closedTickets}</div><div class="label">Resolved</div></div>
+      <div class="kpi"><div class="value">${resolutionRate}%</div><div class="label">Resolution Rate</div></div>
+    </div>
+  </div>
+
+  <!-- TICKET STATUS -->
+  <div class="section">
+    <h2>Ticket Status Breakdown</h2>
+    <div class="status-grid">
+      <div class="status-box"><div class="v">${openTickets}</div><div class="l">Open</div></div>
+      <div class="status-box"><div class="v">${inProgressTickets}</div><div class="l">In Progress</div></div>
+      <div class="status-box"><div class="v">${closedTickets}</div><div class="l">Resolved / Closed</div></div>
+      <div class="status-box"><div class="v" style="color:#f59e0b">${needsReview}</div><div class="l">Needs Review</div></div>
+      <div class="status-box"><div class="v" style="color:#ef4444">${escalatedTickets}</div><div class="l">Escalated</div></div>
+      <div class="status-box"><div class="v">${ticketStats?.by_status?.answered || 0}</div><div class="l">Answered</div></div>
+    </div>
+  </div>
+
+  <!-- TOP ISSUES -->
+  <div class="section">
+    <h2>Top Issues — Most Common Student Problems</h2>
+    ${topCategories.length === 0 ? '<p style="color:#6b7280;font-size:14px">No ticket data available yet.</p>' : `
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Volume</th>
+          <th>AI Accuracy</th>
+          <th style="width:200px">Relative Volume</th>
+        </tr>
+      </thead>
+      <tbody>${categoryRows}</tbody>
+    </table>
+    ${topProblem ? `<div class="alert" style="margin-top:12px">Most pressing issue: <strong>${topProblem.name}</strong> accounts for the largest share of support requests. Prioritise this area.</div>` : ''}`}
+  </div>
+
+  <!-- FACILITATOR WORKLOAD -->
+  ${workloadChartData.length > 0 ? `
+  <div class="section">
+    <h2>Facilitator Workload</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Facilitator</th>
+          <th>Tickets</th>
+          <th>Appointments</th>
+          <th>Total Load</th>
+        </tr>
+      </thead>
+      <tbody>${facilitatorRows}</tbody>
+    </table>
+  </div>` : ''}
+
+  <!-- AI CLASSIFICATION -->
+  <div class="section">
+    <h2>AI Classification Summary</h2>
+    <table>
+      <thead>
+        <tr><th>Classification</th><th>Percentage</th></tr>
+      </thead>
+      <tbody>
+        ${classificationChartData.map((d, i) => `
+        <tr style="background:${i % 2 === 0 ? '#f9fafb' : '#fff'}">
+          <td style="padding:10px 14px;font-weight:500">${d.name}</td>
+          <td style="padding:10px 14px;text-align:center;font-weight:700;color:#0D1A63">${d.value}%</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div class="section">
+    <h2>Recommendations</h2>
+    ${recommendations.map(r => `<div class="rec">${r}</div>`).join('')}
+  </div>
+
+  <div class="footer">
+    Academic Navigator &nbsp;|&nbsp; Auto-generated report &nbsp;|&nbsp; ${today}
+  </div>
+</div>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      setTimeout(() => win.print(), 500);
+    }
   };
 
   const handleSaveSettings = () => {
