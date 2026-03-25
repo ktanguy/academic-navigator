@@ -69,20 +69,10 @@ def find_best_facilitator(category: str):
     # Finds the right facilitator to assign a new ticket to.
     #
     # How it decides (in order):
-    #   1. First try a specific demo facilitator (for consistent demos)
-    #   2. Look for facilitators in the matching department with the fewest open tickets
+    #   1. Look for facilitators in the matching department with the fewest open tickets
     #      (this spreads the work evenly — no one gets overloaded)
-    #   3. If no one in that department, pick any facilitator with the fewest tickets
-    #   4. If there are no facilitators at all, return nothing (ticket stays unassigned)
-    from sqlalchemy import func
-
-    # For demo purposes: always try this specific facilitator first
-    jolly = User.query.filter_by(
-        role='facilitator',
-        email='j.umulisa@alustudent.com'
-    ).first()
-    if jolly:
-        return jolly
+    #   2. If no one in that department, pick any facilitator with the fewest tickets
+    #   3. If there are no facilitators at all, return nothing (ticket stays unassigned)
 
     department = get_department_for_category(category)
 

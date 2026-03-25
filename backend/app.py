@@ -236,6 +236,43 @@ def create_app():
             print("  - student@alu.edu / password123 (Student)")
             print("[INFO] Default office hours created for facilitator (Mon-Fri 9AM-5PM)")
 
+        # Ensure each department has a facilitator account.
+        # This runs on every startup — safe because it checks before creating.
+        # These are the demo accounts used for routing in the defense.
+        import bcrypt as _bcrypt
+        _pw = _bcrypt.hashpw('password123'.encode('utf-8'), _bcrypt.gensalt()).decode('utf-8')
+
+        dept_facilitators = [
+            {'email': 'academic@navigator.edu',  'name': 'Academic Affairs Facilitator',  'department': 'Academic Affairs'},
+            {'email': 'it@navigator.edu',         'name': 'IT Support Facilitator',         'department': 'IT Support'},
+            {'email': 'registrar@navigator.edu',  'name': 'Registrar Office Facilitator',   'department': "Registrar's Office"},
+            {'email': 'capstone@navigator.edu',   'name': 'Capstone Committee Facilitator', 'department': 'Capstone Committee'},
+        ]
+
+        for fd in dept_facilitators:
+            if not User.query.filter_by(email=fd['email']).first():
+                fac = User(
+                    email=fd['email'],
+                    password_hash=_pw,
+                    name=fd['name'],
+                    role='facilitator',
+                    department=fd['department']
+                )
+                db.session.add(fac)
+                db.session.commit()
+                for day in range(5):
+                    db.session.add(OfficeHours(
+                        facilitator_id=fac.id,
+                        day_of_week=day,
+                        start_time='09:00',
+                        end_time='17:00',
+                        is_available=True,
+                        slot_duration=30,
+                        location='Office, Academic Building'
+                    ))
+                db.session.commit()
+                print(f"[INFO] Created facilitator: {fd['name']} ({fd['department']})")
+
         # Also check if any facilitator added later never got office hours.
         # If they don't have any, give them the default Mon-Fri schedule.
         facilitators_without_hours = User.query.filter_by(role='facilitator').all()
