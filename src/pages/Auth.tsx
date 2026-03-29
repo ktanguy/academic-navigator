@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, TicketCheck, CalendarCheck, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,10 +40,12 @@ const features = [
 ];
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const [isLogin, setIsLogin] = useState(searchParams.get('signup') !== 'true');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [agreedToPolicy, setAgreedToPolicy] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading: authLoading, login, register, logout } = useAuth();
@@ -86,6 +88,11 @@ const Auth = () => {
         navigate(redirectPath, { replace: true });
         return;
       } else {
+        if (!agreedToPolicy) {
+          setErrors({ policy: "You must agree to the Privacy Policy and Terms of Use to create an account." });
+          setIsLoading(false);
+          return;
+        }
         const result = signupSchema.safeParse(formData);
         if (!result.success) {
           const fieldErrors: Record<string, string> = {};
@@ -294,25 +301,39 @@ const Auth = () => {
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
 
-            {/* Privacy policy notice — signup only */}
+            {/* Privacy policy checkbox — signup only */}
             <AnimatePresence>
               {!isLogin && (
-                <motion.p
+                <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="text-xs text-muted-foreground"
+                  className="space-y-1"
                 >
-                  By creating an account, you agree to our{" "}
-                  <Link to="/privacy" className="text-primary underline hover:text-primary/80">
-                    Privacy Policy
-                  </Link>{" "}
-                  and{" "}
-                  <Link to="/privacy" className="text-primary underline hover:text-primary/80">
-                    Terms of Use
-                  </Link>.
-                </motion.p>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={agreedToPolicy}
+                      onChange={(e) => {
+                        setAgreedToPolicy(e.target.checked);
+                        if (errors.policy) setErrors((prev) => ({ ...prev, policy: "" }));
+                      }}
+                      className="mt-0.5 h-4 w-4 rounded border-border accent-primary"
+                    />
+                    <span className="text-xs text-muted-foreground leading-relaxed">
+                      I have read and agree to the{" "}
+                      <Link to="/privacy" className="text-primary underline hover:text-primary/80">
+                        Privacy Policy
+                      </Link>{" "}
+                      and{" "}
+                      <Link to="/privacy" className="text-primary underline hover:text-primary/80">
+                        Terms of Use
+                      </Link>.
+                    </span>
+                  </label>
+                  {errors.policy && <p className="text-sm text-destructive">{errors.policy}</p>}
+                </motion.div>
               )}
             </AnimatePresence>
 

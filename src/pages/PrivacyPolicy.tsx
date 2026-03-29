@@ -1,8 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Button } from "@/components/ui/button";
 
 const PrivacyPolicy = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -166,11 +169,14 @@ const PrivacyPolicy = () => {
 
           </div>
 
-          {/* Back link */}
-          <div className="mt-16 pt-8 border-t border-border">
+          {/* Actions */}
+          <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               ← Back to Home
             </Link>
+            <Button onClick={() => navigate('/auth?signup=true')} className="w-full sm:w-auto">
+              I Accept — Create an Account
+            </Button>
           </div>
 
         </div>
