@@ -194,7 +194,7 @@ def create_app():
 
             # Facilitator account — handles assigned tickets, manages appointments
             facilitator = User(
-                email='facilitator@alu.edu',
+                email='j.umulisa@alustudent.com',
                 password_hash=password_hash,
                 name='Jolly Umulisa',
                 role='facilitator',
@@ -243,10 +243,10 @@ def create_app():
         _pw = _bcrypt.hashpw('password123'.encode('utf-8'), _bcrypt.gensalt()).decode('utf-8')
 
         dept_facilitators = [
-            {'email': 'academic@navigator.edu',  'name': 'Academic Affairs Facilitator',  'department': 'Academic Affairs'},
-            {'email': 'it@navigator.edu',         'name': 'IT Support Facilitator',         'department': 'IT Support'},
-            {'email': 'registrar@navigator.edu',  'name': 'Registrar Office Facilitator',   'department': "Registrar's Office"},
-            {'email': 'capstone@navigator.edu',   'name': 'Capstone Committee Facilitator', 'department': 'Capstone Committee'},
+            {'email': 'j.umulisa@alustudent.com',    'name': 'Jolly Umulisa',       'department': 'Academic Affairs'},
+            {'email': 'it.support@alustudent.com',   'name': 'Patrick Nkurunziza',  'department': 'IT Support'},
+            {'email': 'registrar@alustudent.com',    'name': 'Grace Uwimana',       'department': "Registrar's Office"},
+            {'email': 'capstone@alustudent.com',     'name': 'Eric Habimana',       'department': 'Capstone Committee'},
         ]
 
         for fd in dept_facilitators:

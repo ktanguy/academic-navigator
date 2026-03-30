@@ -122,6 +122,33 @@ def find_best_facilitator(category: str):
     return best_facilitator
 
 
+def find_best_facilitator_by_department(department: str):
+    # Same logic as find_best_facilitator but takes a department name directly.
+    # Used by escalation so the ticket lands with the right person in the new department.
+    facilitators_in_dept = User.query.filter_by(
+        role='facilitator',
+        department=department
+    ).all()
+
+    if not facilitators_in_dept:
+        return None
+
+    best_facilitator = None
+    min_tickets = float('inf')
+
+    for f in facilitators_in_dept:
+        open_count = Ticket.query.filter(
+            Ticket.assigned_to == f.id,
+            Ticket.status.in_(['open', 'in-progress'])
+        ).count()
+
+        if open_count < min_tickets:
+            min_tickets = open_count
+            best_facilitator = f
+
+    return best_facilitator
+
+
 def generate_ticket_number():
     # Creates a human-friendly ticket ID like TKT-001, TKT-002, etc.
     # Uses the last ticket's ID to figure out what number comes next.
@@ -425,10 +452,17 @@ def escalate_ticket(current_user, ticket_id):
     ticket.status = 'escalated'
     ticket.department = new_department
 
+    # Re-assign to a facilitator in the new department
+    # so the right person actually receives the escalated ticket
+    new_facilitator = find_best_facilitator_by_department(new_department)
+    if new_facilitator:
+        ticket.assigned_to = new_facilitator.id
+
     # Add a system note to the ticket thread so everyone can see why it was moved
+    assigned_note = f" Reassigned to {new_facilitator.name}." if new_facilitator else " No facilitator found in that department — ticket is unassigned."
     response = TicketResponse(
         ticket_id=ticket_id,
-        message=f"Ticket escalated to {new_department}. Reason: {reason}",
+        message=f"Ticket escalated to {new_department}. Reason: {reason}.{assigned_note}",
         is_system=True
     )
 
