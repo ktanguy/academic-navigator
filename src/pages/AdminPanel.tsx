@@ -214,63 +214,55 @@ const departmentStats = [
 
 // Department options for user assignment
 const departments = [
-  { id: "academic-affairs", name: "Academic Affairs", icon: BookOpen, color: "text-blue-500" },
-  { id: "student-life", name: "Student Life", icon: Home, color: "text-green-500" },
-  { id: "dean-of-students", name: "Dean of Students", icon: UserCog, color: "text-purple-500" },
-  { id: "health-services", name: "Health Services", icon: HeartPulse, color: "text-red-500" },
-  { id: "it-support", name: "IT Support", icon: Monitor, color: "text-cyan-500" },
-  { id: "registrar", name: "Registrar's Office", icon: FileText, color: "text-orange-500" },
-  { id: "capstone-committee", name: "Capstone Committee", icon: GraduationCap, color: "text-indigo-500" },
+  { id: "Academic Affairs", name: "Academic Affairs", icon: BookOpen, color: "text-blue-500" },
+  { id: "Student Life", name: "Student Life", icon: Home, color: "text-green-500" },
+  { id: "Dean of Students", name: "Dean of Students", icon: UserCog, color: "text-purple-500" },
+  { id: "Health Services", name: "Health Services", icon: HeartPulse, color: "text-red-500" },
+  { id: "IT Support", name: "IT Support", icon: Monitor, color: "text-cyan-500" },
+  { id: "Registrar's Office", name: "Registrar's Office", icon: FileText, color: "text-orange-500" },
+  { id: "Capstone Committee", name: "Capstone Committee", icon: GraduationCap, color: "text-indigo-500" },
 ];
 
 // Initial users data
 const initialUsers = [
   {
     id: 1,
-    name: "Dr. Sarah Chen",
-    email: "s.chen@alu.edu",
+    name: "Jolly Umulisa",
+    email: "j.umulisa@alustudent.com",
     role: "Facilitator",
-    department: "academic-affairs",
+    department: "Academic Affairs",
     status: "Active",
   },
   {
     id: 2,
-    name: "Mark Johnson",
-    email: "m.johnson@alu.edu",
+    name: "Patrick Nkurunziza",
+    email: "it.support@alustudent.com",
     role: "Facilitator",
-    department: "student-life",
+    department: "IT Support",
     status: "Active",
   },
   {
     id: 3,
-    name: "Emily Rodriguez",
-    email: "e.rodriguez@alu.edu",
+    name: "System Administrator",
+    email: "admin@alu.edu",
     role: "Admin",
-    department: "dean-of-students",
+    department: "Administration",
     status: "Active",
   },
   {
     id: 4,
-    name: "James Wilson",
-    email: "j.wilson@alu.edu",
+    name: "Eric Habimana",
+    email: "capstone@alustudent.com",
     role: "Facilitator",
-    department: "capstone-committee",
-    status: "Pending",
-  },
-  {
-    id: 5,
-    name: "Nurse Patricia",
-    email: "p.nurse@alu.edu",
-    role: "Facilitator",
-    department: "health-services",
+    department: "Capstone Committee",
     status: "Active",
   },
   {
-    id: 6,
-    name: "Tech Support Team",
-    email: "it.support@alu.edu",
+    id: 5,
+    name: "Grace Uwimana",
+    email: "registrar@alustudent.com",
     role: "Facilitator",
-    department: "it-support",
+    department: "Registrar's Office",
     status: "Active",
   },
 ];
@@ -1407,7 +1399,7 @@ const AdminPanel = () => {
                       </div>
                     ) : (
                       filteredUsers.map((user, index) => {
-                        const dept = departments.find(d => d.id === user.department);
+                        const dept = departments.find(d => d.id === user.department || d.name === user.department);
                         const DeptIcon = dept?.icon || Users;
                         return (
                           <motion.div
