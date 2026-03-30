@@ -176,9 +176,14 @@ def get_tickets(current_user):
         tickets = Ticket.query.filter_by(user_id=current_user.id).order_by(Ticket.created_at.desc()).all()
 
     elif current_user.role == 'facilitator':
-        # Show tickets assigned to this facilitator OR not assigned to anyone yet
+        # Show tickets:
+        #   1. Directly assigned to this facilitator
+        #   2. Not assigned to anyone yet
+        #   3. Escalated to this facilitator's department (so they see it even if not yet reassigned)
         tickets = Ticket.query.filter(
-            (Ticket.assigned_to == current_user.id) | (Ticket.assigned_to == None)
+            (Ticket.assigned_to == current_user.id) |
+            (Ticket.assigned_to == None) |
+            ((Ticket.department == current_user.department) & (Ticket.status == 'escalated'))
         ).order_by(Ticket.created_at.desc()).all()
 
     else:
