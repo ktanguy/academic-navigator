@@ -1124,7 +1124,7 @@ const AdminPanel = () => {
                       </div>
                       <div className="rounded-lg bg-secondary/50 p-4">
                         <p className="text-xs text-muted-foreground uppercase tracking-wide">Categories</p>
-                        <p className="text-sm font-semibold text-foreground mt-1">{classifierInfo?.categories?.length || 6} Active</p>
+                        <p className="text-sm font-semibold text-foreground mt-1">{classifierInfo?.categories?.filter(c => c !== 'general')?.length || 5} Active</p>
                       </div>
                       <div className="rounded-lg bg-secondary/50 p-4">
                         <p className="text-xs text-muted-foreground uppercase tracking-wide">Fallback</p>
@@ -1140,7 +1140,7 @@ const AdminPanel = () => {
                   <StaggerContainer className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {[
                       { label: "Total Classifications", value: ticketStats?.total?.toString() || "0", change: "All tickets processed" },
-                      { label: "Categories", value: Object.keys(ticketStats?.by_category || {}).length.toString(), change: classifierInfo?.categories?.join(", ") || "Loading..." },
+                      { label: "Categories", value: "5", change: classifierInfo?.categories?.filter(c => c !== 'general')?.join(", ") || "assignment, grades, capstone, administrative, technical" },
                       { label: "Open Tickets", value: ticketStats?.by_status?.['open']?.toString() || "0", change: "Awaiting response" },
                       { label: "Resolved", value: ((ticketStats?.by_status?.['closed'] || 0) + (ticketStats?.by_status?.['resolved'] || 0)).toString(), change: "Successfully closed" },
                     ].map((stat, index) => (

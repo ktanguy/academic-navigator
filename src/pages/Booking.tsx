@@ -177,51 +177,49 @@ const Booking = () => {
     }
   }, [calendarDate]);
 
-  // Fetch facilitator office hours for the visible month
+  // Fetch facilitator office hours and enable dates for the next 3 months
   useEffect(() => {
     const fetchEnabledDates = async () => {
       if (!selectedFacilitator) return;
-      // Get office hours for this facilitator
       const response = await officeHoursApi.getByFacilitator(selectedFacilitator);
       const officeHours = response.office_hours || [];
-      // Get all days in the current month
+
+      // Build range: today → 3 months ahead
       const today = new Date();
-      const start = startOfMonth(today);
-      const end = endOfMonth(today);
-      const allDays = eachDayOfInterval({ start, end });
-      // Enable only days where office hours exist for that weekday
+      const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const threeMonthsAhead = new Date(today.getFullYear(), today.getMonth() + 3, today.getDate());
+      const allDays = eachDayOfInterval({ start: todayMidnight, end: threeMonthsAhead });
+
+      // Backend uses Python weekday: 0=Mon … 6=Sun
+      // JS getDay() uses:            0=Sun, 1=Mon … 6=Sat
+      // Convert: pythonDay = (jsDay + 6) % 7
       const officeDays = new Set(officeHours.filter(oh => oh.is_available).map(oh => oh.day_of_week));
-      const enabled = allDays.filter(day => officeDays.has(day.getDay()) && day >= today);
+      const enabled = allDays.filter(day => {
+        const pythonDay = (day.getDay() + 6) % 7;
+        return officeDays.has(pythonDay);
+      });
       setEnabledDates(enabled);
     };
     fetchEnabledDates();
   }, [selectedFacilitator]);
 
-  // Compute slot counts for each enabled date in the current month
+  // Compute slot counts for all enabled dates across the 3-month window
   useEffect(() => {
     const fetchSlotCounts = async () => {
       if (!selectedFacilitator || enabledDates.length === 0) return;
-      const today = new Date();
-      const start = startOfMonth(today);
-      const end = endOfMonth(today);
-      const allDays = eachDayOfInterval({ start, end });
       const counts: Record<string, number> = {};
-      for (const day of allDays) {
-        // Only check enabled days
-        if (enabledDates.some(d => d.toDateString() === day.toDateString())) {
-          const dateStr = day.toISOString().split('T')[0];
-          try {
-            const resp = await officeHoursApi.getAvailableSlots(selectedFacilitator, dateStr);
-            counts[dateStr] = (resp.available_slots || []).length;
-          } catch {
-            counts[dateStr] = 0;
-          }
+      for (const day of enabledDates) {
+        const dateStr = day.toISOString().split('T')[0];
+        try {
+          const resp = await officeHoursApi.getAvailableSlots(selectedFacilitator, dateStr);
+          counts[dateStr] = (resp.available_slots || []).length;
+        } catch {
+          counts[dateStr] = 0;
         }
       }
       setSlotCounts(counts);
     };
     fetchSlotCounts();
-    // Only run when enabledDates or selectedFacilitator changes
   }, [selectedFacilitator, enabledDates]);
 
   const handleNext = async () => {

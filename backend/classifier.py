@@ -27,7 +27,7 @@ CLASSIFIER_API_URL = os.environ.get(
     'https://tkwizera-student-support-api.hf.space/classify'
 )
 
-# The 6 categories tickets can be sorted into
+# The 5 main categories + 'general' as internal fallback (not shown in UI)
 CATEGORIES = [
     'assignment',       # Problems with homework or deadlines
     'grades',           # Grade appeals or exam issues
