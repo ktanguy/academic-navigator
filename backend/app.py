@@ -302,6 +302,86 @@ def create_app():
     def health():
         return {'status': 'healthy', 'message': 'Academic Navigator API is running'}
 
+    # API endpoint directory — lists every route grouped by service
+    @app.route('/api/endpoints')
+    def endpoints():
+        return {
+            "api": "Academic Navigator",
+            "base_url": "https://academic-navigator-api.onrender.com",
+            "services": {
+                "auth": {
+                    "description": "Authentication — register, login, session",
+                    "endpoints": [
+                        {"method": "POST", "path": "/api/auth/register",  "access": "Public",    "description": "Create a new student account"},
+                        {"method": "POST", "path": "/api/auth/login",     "access": "Public",    "description": "Login and receive a JWT token"},
+                        {"method": "GET",  "path": "/api/auth/me",        "access": "All roles", "description": "Get current logged-in user info"},
+                        {"method": "POST", "path": "/api/auth/logout",    "access": "All roles", "description": "Logout and invalidate session"},
+                    ]
+                },
+                "users": {
+                    "description": "User management — profiles, roles, departments",
+                    "endpoints": [
+                        {"method": "GET",    "path": "/api/users",                "access": "Admin / Student (facilitators only)", "description": "List users — admin sees all, student sees facilitators only"},
+                        {"method": "GET",    "path": "/api/users/facilitators",   "access": "Public",        "description": "List all facilitators for the directory"},
+                        {"method": "GET",    "path": "/api/users/stats",          "access": "Admin only",    "description": "Count of students, facilitators, admins"},
+                        {"method": "GET",    "path": "/api/users/<id>",           "access": "All roles",     "description": "Get a specific user profile"},
+                        {"method": "PATCH",  "path": "/api/users/<id>",           "access": "Self / Admin",  "description": "Update profile — only admin can change roles and emails"},
+                        {"method": "DELETE", "path": "/api/users/<id>",           "access": "Admin only",    "description": "Delete a user account"},
+                    ]
+                },
+                "tickets": {
+                    "description": "Support tickets — AI-routed helpdesk system",
+                    "endpoints": [
+                        {"method": "GET",  "path": "/api/tickets",                    "access": "All roles",             "description": "List tickets — student sees own, facilitator sees assigned, admin sees all"},
+                        {"method": "POST", "path": "/api/tickets",                    "access": "Student",               "description": "Submit a ticket — AI classifies and auto-assigns to department"},
+                        {"method": "GET",  "path": "/api/tickets/<id>",               "access": "All roles",             "description": "Get one ticket with full thread"},
+                        {"method": "PATCH","path": "/api/tickets/<id>",               "access": "Facilitator / Admin",   "description": "Update status, priority, or assignment"},
+                        {"method": "POST", "path": "/api/tickets/<id>/responses",     "access": "All roles",             "description": "Reply to a ticket thread"},
+                        {"method": "POST", "path": "/api/tickets/<id>/escalate",      "access": "Facilitator / Admin",   "description": "Move ticket to a different department and reassign"},
+                        {"method": "POST", "path": "/api/tickets/<id>/review",        "access": "Admin only",            "description": "Manually review a ticket flagged by AI (confidence < 70%)"},
+                        {"method": "GET",  "path": "/api/tickets/needs-review",       "access": "Admin only",            "description": "List all tickets waiting for manual review"},
+                        {"method": "GET",  "path": "/api/tickets/stats",              "access": "All roles",             "description": "Ticket counts by status — scoped to role"},
+                        {"method": "GET",  "path": "/api/tickets/classifier-info",    "access": "All roles",             "description": "Check if the AI classification model is online"},
+                    ]
+                },
+                "appointments": {
+                    "description": "Appointment booking between students and facilitators",
+                    "endpoints": [
+                        {"method": "GET",    "path": "/api/appointments",                  "access": "All roles",           "description": "List appointments — scoped to role"},
+                        {"method": "POST",   "path": "/api/appointments",                  "access": "Student",             "description": "Book a new appointment with a facilitator"},
+                        {"method": "GET",    "path": "/api/appointments/<id>",             "access": "All roles",           "description": "Get one appointment"},
+                        {"method": "PATCH",  "path": "/api/appointments/<id>",             "access": "Student / Facilitator","description": "Update status — confirm, cancel, reschedule"},
+                        {"method": "DELETE", "path": "/api/appointments/<id>",             "access": "Student / Admin",     "description": "Cancel and delete an appointment"},
+                        {"method": "GET",    "path": "/api/appointments/available-slots",  "access": "Public",              "description": "Get open time slots for a facilitator on a given date"},
+                        {"method": "GET",    "path": "/api/appointments/stats",            "access": "All roles",           "description": "Appointment counts by status — scoped to role"},
+                    ]
+                },
+                "office_hours": {
+                    "description": "Facilitator availability schedules",
+                    "endpoints": [
+                        {"method": "GET",        "path": "/api/office-hours",                                    "access": "Public",               "description": "View all office hours"},
+                        {"method": "GET",        "path": "/api/office-hours/facilitator/<id>",                   "access": "Public",               "description": "Get one facilitator's weekly schedule"},
+                        {"method": "GET",        "path": "/api/office-hours/facilitator/<id>/available-slots",   "access": "Public",               "description": "Available booking slots on a specific date"},
+                        {"method": "GET",        "path": "/api/office-hours/my",                                 "access": "Facilitator only",     "description": "Get own office hours"},
+                        {"method": "POST",       "path": "/api/office-hours",                                    "access": "Facilitator / Admin",  "description": "Create a new availability block"},
+                        {"method": "PATCH",      "path": "/api/office-hours/<id>",                               "access": "Facilitator / Admin",  "description": "Update an availability block"},
+                        {"method": "DELETE",     "path": "/api/office-hours/<id>",                               "access": "Facilitator / Admin",  "description": "Remove an availability block"},
+                        {"method": "POST",       "path": "/api/office-hours/bulk",                               "access": "Facilitator / Admin",  "description": "Replace entire weekly schedule at once"},
+                    ]
+                },
+                "notifications": {
+                    "description": "In-app alerts and email notifications",
+                    "endpoints": [
+                        {"method": "GET",  "path": "/api/notifications",                "access": "All roles",  "description": "Get own notifications — supports ?unread_only=true"},
+                        {"method": "POST", "path": "/api/notifications/<id>/read",      "access": "All roles",  "description": "Mark one notification as read"},
+                        {"method": "POST", "path": "/api/notifications/read-all",       "access": "All roles",  "description": "Mark all notifications as read"},
+                        {"method": "GET",  "path": "/api/notifications/email-config",   "access": "Admin only", "description": "Check SendGrid/SMTP email configuration status"},
+                        {"method": "POST", "path": "/api/notifications/test-email",     "access": "Admin only", "description": "Send a test email to verify configuration"},
+                    ]
+                }
+            }
+        }
+
     dist_folder = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dist')
 
     # When someone visits the root URL ("/"), send them the React app
