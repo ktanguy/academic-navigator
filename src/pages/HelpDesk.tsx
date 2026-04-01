@@ -81,92 +81,6 @@ const faqItems = [
   { question: "Where can I find capstone guidelines?", answer: "Capstone guidelines are available on the Student Portal under Resources." },
 ];
 
-const existingTickets = [
-  {
-    id: "TKT-001",
-    subject: "Can't Submit Assignment on Canvas",
-    category: "assignment",
-    status: "open",
-    priority: "high",
-    confidence: 92,
-    lastUpdate: "2 hours ago",
-    createdAt: "Feb 20, 2026",
-    assignedTo: "Dr. Sarah Chen",
-    department: "Academic Affairs",
-    description: "I can't submit my assignment on Canvas. The deadline is tomorrow and the upload keeps failing. I've tried multiple browsers and clearing cache but nothing works.",
-    aiAnalysis: "Issue likely related to file size or format. Canvas has a 500MB limit per upload.",
-    responses: [
-      { from: "Support Team", message: "Try compressing your file or splitting it into smaller parts. Canvas has a 500MB limit per upload.", time: "2 hours ago" },
-    ],
-  },
-  {
-    id: "TKT-002",
-    subject: "Midterm Grade Appeal",
-    category: "grades",
-    status: "in-progress",
-    priority: "medium",
-    confidence: 85,
-    lastUpdate: "1 day ago",
-    createdAt: "Feb 18, 2026",
-    assignedTo: "Prof. Michael Torres",
-    department: "Academic Affairs",
-    description: "I believe my midterm exam was graded incorrectly. Question 5 was marked wrong but my answer matches the solution key.",
-    aiAnalysis: "Grade appeal request detected. Routed to course instructor for review.",
-    responses: [
-      { from: "System", message: "Your appeal has been forwarded to Prof. Torres for review.", time: "1 day ago" },
-      { from: "Prof. Michael Torres", message: "I'm reviewing your submission. Will respond within 48 hours.", time: "12 hours ago" },
-    ],
-  },
-  {
-    id: "TKT-003",
-    subject: "Capstone Proposal Feedback",
-    category: "capstone",
-    status: "answered",
-    priority: "medium",
-    confidence: 94,
-    lastUpdate: "3 days ago",
-    createdAt: "Feb 15, 2026",
-    assignedTo: "Dr. Emily Rodriguez",
-    department: "Capstone Committee",
-    description: "Need feedback on my capstone project proposal before the submission deadline. Topic: AI-powered academic support system.",
-    aiAnalysis: "Capstone inquiry detected. Assigned to Capstone Committee for guidance.",
-    responses: [
-      { from: "Dr. Emily Rodriguez", message: "Great topic! Schedule a meeting to discuss your methodology section.", time: "3 days ago" },
-    ],
-  },
-  {
-    id: "TKT-004",
-    subject: "Transcript Request for Grad School",
-    category: "administrative",
-    status: "escalated",
-    priority: "high",
-    confidence: 65,
-    lastUpdate: "5 days ago",
-    createdAt: "Feb 13, 2026",
-    assignedTo: "Registrar's Office",
-    department: "Registrar's Office",
-    description: "How do I request an official transcript to send to graduate school applications? I need it sent to 3 universities.",
-    aiAnalysis: "Low confidence classification. Escalated to human review for proper handling.",
-    responses: [
-      { from: "System", message: "Your ticket has been forwarded to the Registrar's Office. A staff member will review shortly.", time: "5 days ago" },
-    ],
-  },
-  {
-    id: "TKT-005",
-    subject: "WiFi Connection Issues in Dorm",
-    category: "technical",
-    status: "open",
-    priority: "low",
-    confidence: 88,
-    lastUpdate: "6 hours ago",
-    createdAt: "Feb 21, 2026",
-    assignedTo: "IT Support",
-    department: "IT Support",
-    description: "WiFi keeps disconnecting in Building C, Room 204. Happens every 30 minutes or so.",
-    aiAnalysis: "Technical issue detected. Routed to IT Support for network troubleshooting.",
-    responses: [],
-  },
-];
 
 const statusConfig = {
   open: { color: "bg-warning text-warning-foreground", icon: Clock, label: "Open" },
@@ -287,26 +201,7 @@ const HelpDesk = () => {
           user: r.user,
         })),
       }))
-    : existingTickets.map(t => ({
-        id: t.id,
-        ticket_number: t.id,
-        subject: t.subject,
-        description: t.description,
-        category: t.category,
-        status: t.status,
-        priority: t.priority,
-        ai_category: t.category,
-        ai_confidence: t.confidence,
-        created_at: t.createdAt,
-        updated_at: t.lastUpdate,
-        assignee: { name: t.assignedTo },
-        department: t.department,
-        responses: t.responses.map(r => ({
-          from: r.from,
-          message: r.message,
-          time: r.time,
-        })),
-      }));
+    : [];
 
   // Filter tickets
   const filteredTickets = displayTickets.filter((ticket) => {
@@ -503,9 +398,9 @@ const HelpDesk = () => {
               className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
             >
               {[
-                { icon: MessageSquare, label: "Open Tickets", value: existingTickets.filter(t => t.status === "open").length, color: "bg-warning" },
-                { icon: Loader2, label: "In Progress", value: existingTickets.filter(t => t.status === "in-progress").length, color: "bg-primary" },
-                { icon: CheckCircle2, label: "Resolved", value: existingTickets.filter(t => t.status === "answered").length, color: "bg-success" },
+                { icon: MessageSquare, label: "Open Tickets", value: userTickets.filter(t => t.status === "open").length, color: "bg-warning" },
+                { icon: Loader2, label: "In Progress", value: userTickets.filter(t => t.status === "in-progress").length, color: "bg-primary" },
+                { icon: CheckCircle2, label: "Resolved", value: userTickets.filter(t => t.status === "answered" || t.status === "closed").length, color: "bg-success" },
                 { icon: Clock, label: "Avg. Response", value: "< 24h", color: "bg-blue-500" },
               ].map((stat, index) => (
                 <motion.div

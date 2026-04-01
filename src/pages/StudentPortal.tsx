@@ -27,56 +27,6 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { ticketsApi, appointmentsApi, Ticket, Appointment } from "@/services/api";
 
-const appointments = [
-  {
-    id: 1,
-    title: "Academic Advising",
-    facilitator: "Dr. Sarah Chen",
-    date: "Jan 30, 2026",
-    time: "2:00 PM",
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    title: "Financial Aid Consultation",
-    facilitator: "Mark Johnson",
-    date: "Feb 2, 2026",
-    time: "10:30 AM",
-    status: "upcoming",
-  },
-  {
-    id: 3,
-    title: "Career Counseling",
-    facilitator: "Dr. Emily Rodriguez",
-    date: "Jan 25, 2026",
-    time: "3:00 PM",
-    status: "completed",
-  },
-];
-
-const tickets = [
-  {
-    id: "TKT-001",
-    subject: "Course Registration Help",
-    status: "open",
-    priority: "high",
-    lastUpdate: "2 hours ago",
-  },
-  {
-    id: "TKT-002",
-    subject: "Transcript Request",
-    status: "in-progress",
-    priority: "medium",
-    lastUpdate: "1 day ago",
-  },
-  {
-    id: "TKT-003",
-    subject: "Housing Application Query",
-    status: "resolved",
-    priority: "low",
-    lastUpdate: "3 days ago",
-  },
-];
 
 const statusConfig: Record<string, { color: string; label: string }> = {
   open: { color: "bg-warning text-warning-foreground", label: "Open" },
@@ -139,26 +89,22 @@ const StudentPortal = () => {
   ).length;
 
   // Map API data to display format
-  const displayAppointments = userAppointments.length > 0 
-    ? userAppointments.map((a) => ({
-        id: a.id,
-        title: a.meeting_type || "Appointment",
-        facilitator: a.facilitator?.name || "Facilitator",
-        date: new Date(a.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-        time: a.time_slot,
-        status: a.status === "confirmed" || a.status === "pending" ? "upcoming" : "completed",
-      }))
-    : appointments;
+  const displayAppointments = userAppointments.map((a) => ({
+    id: a.id,
+    title: a.meeting_type || "Appointment",
+    facilitator: a.facilitator?.name || "Facilitator",
+    date: new Date(a.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    time: a.time_slot,
+    status: a.status === "confirmed" || a.status === "pending" ? "upcoming" : "completed",
+  }));
 
-  const displayTickets = userTickets.length > 0
-    ? userTickets.map((t) => ({
-        id: t.ticket_number,
-        subject: t.subject,
-        status: t.status === "answered" || t.status === "closed" ? "resolved" : t.status,
-        priority: t.priority,
-        lastUpdate: new Date(t.updated_at).toLocaleDateString(),
-      }))
-    : tickets;
+  const displayTickets = userTickets.map((t) => ({
+    id: t.ticket_number,
+    subject: t.subject,
+    status: t.status === "answered" || t.status === "closed" ? "resolved" : t.status,
+    priority: t.priority,
+    lastUpdate: new Date(t.updated_at).toLocaleDateString(),
+  }));
 
   if (isLoadingData) {
     return (

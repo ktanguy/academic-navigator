@@ -173,36 +173,6 @@ const analyticsData = [
   },
 ];
 
-const recentActivity = [
-  {
-    id: 1,
-    action: "New facilitator added",
-    user: "Dr. James Wilson",
-    time: "2 min ago",
-    type: "user",
-  },
-  {
-    id: 2,
-    action: "AI model updated",
-    user: "System",
-    time: "15 min ago",
-    type: "system",
-  },
-  {
-    id: 3,
-    action: "Report generated",
-    user: "Admin",
-    time: "1 hour ago",
-    type: "report",
-  },
-  {
-    id: 4,
-    action: "Settings modified",
-    user: "Admin",
-    time: "2 hours ago",
-    type: "settings",
-  },
-];
 
 const departmentStats = [
   { label: "Assignment Issues", percentage: 94, color: "#06142E" },
@@ -511,10 +481,10 @@ const AdminPanel = () => {
         const studentCount = fetchedUsers.filter((u: User) => u.role === 'student').length;
         
         setStatsData([
-          { ...analyticsData[0], value: studentCount || 12847 },
+          { ...analyticsData[0], value: studentCount },
           { ...analyticsData[1], value: stats.total || 0 },
-          { ...analyticsData[2], value: resolvedCount || 0 },
-          { ...analyticsData[3], value: 94 }, // Satisfaction (static for now)
+          { ...analyticsData[2], value: resolvedCount },
+          { ...analyticsData[3], value: stats.total > 0 ? Math.round((resolvedCount / stats.total) * 100) : 0 },
         ]);
       } catch (error) {
         console.error("Failed to fetch admin data:", error);
@@ -1061,9 +1031,9 @@ const AdminPanel = () => {
                         </Button>
                       </div>
                       <div className="space-y-3">
-                        {recentActivity.map((activity, index) => (
+                        {allTickets.slice(0, 5).map((ticket, index) => (
                           <motion.div
-                            key={activity.id}
+                            key={ticket.id}
                             initial={{ opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{
@@ -1075,17 +1045,20 @@ const AdminPanel = () => {
                           >
                             <div>
                               <p className="font-medium text-foreground text-sm">
-                                {activity.action}
+                                {ticket.subject}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {activity.user}
+                                {ticket.department || "General"} · {ticket.status}
                               </p>
                             </div>
                             <span className="text-xs text-muted-foreground">
-                              {activity.time}
+                              {new Date(ticket.created_at).toLocaleDateString()}
                             </span>
                           </motion.div>
                         ))}
+                        {allTickets.length === 0 && (
+                          <p className="text-sm text-muted-foreground text-center py-4">No tickets yet</p>
+                        )}
                       </div>
                     </motion.div>
                   </div>

@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Users,
   MessageSquare,
   Clock,
   TrendingUp,
@@ -9,7 +8,6 @@ import {
   CheckCircle2,
   ArrowUpRight,
   Sparkles,
-  ChevronRight,
   BookOpen,
   Home,
   UserCog,
@@ -127,112 +125,6 @@ const categoryToDepartment: Record<string, string> = {
   "Health Concerns": "health-services",
 };
 
-const requests = [
-  {
-    id: 1,
-    student: "Jordan Mugisha",
-    subject: "Assignment Submission Error",
-    summary: "Can't submit assignment on Canvas. Upload keeps failing before deadline.",
-    aiConfidence: 92,
-    aiCategory: "Assignment Issues",
-    department: "academic-affairs",
-    aiSuggestion: "Auto-assigned. Confidence ≥70%. Suggest checking file format and size limits.",
-    priority: "high",
-    time: "5 min ago",
-    status: "new",
-  },
-  {
-    id: 2,
-    student: "Amara Uwimana",
-    subject: "Grade Appeal - Midterm",
-    summary: "Requesting review of midterm exam grading in COMP 201",
-    aiConfidence: 78,
-    aiCategory: "Grade Appeals",
-    department: "academic-affairs",
-    aiSuggestion: "Auto-assigned. Confidence ≥70%. Schedule meeting with course facilitator.",
-    priority: "medium",
-    time: "18 min ago",
-    status: "new",
-  },
-  {
-    id: 3,
-    student: "Kwame Nkrumah",
-    subject: "Capstone Scope Clarification",
-    summary: "Needs guidance on narrowing down capstone project scope",
-    aiConfidence: 55,
-    aiCategory: "Capstone",
-    department: "capstone-committee",
-    aiSuggestion: "Flagged for review. Confidence below 70%. Requires manual categorization.",
-    priority: "high",
-    time: "32 min ago",
-    status: "needs-review",
-  },
-  {
-    id: 4,
-    student: "Fatoumata Diallo",
-    subject: "Transcript Request",
-    summary: "How to request official transcript for graduate school application",
-    aiConfidence: 95,
-    aiCategory: "Administrative",
-    department: "registrar",
-    aiSuggestion: "Auto-resolved. Provided step-by-step instructions via knowledge base.",
-    priority: "low",
-    time: "1 hour ago",
-    status: "resolved",
-  },
-  {
-    id: 5,
-    student: "Grace Iradukunda",
-    subject: "Canvas Login Issues",
-    summary: "Unable to access Canvas LMS - password reset not working",
-    aiConfidence: 88,
-    aiCategory: "Technical Issues",
-    department: "it-support",
-    aiSuggestion: "Auto-assigned. IT Support ticket. Check SSO integration status.",
-    priority: "high",
-    time: "45 min ago",
-    status: "new",
-  },
-  {
-    id: 6,
-    student: "Emmanuel Habimana",
-    subject: "Housing Application Status",
-    summary: "Inquiring about on-campus housing application for next semester",
-    aiConfidence: 91,
-    aiCategory: "General Inquiry",
-    department: "student-life",
-    aiSuggestion: "Auto-assigned. Student Life inquiry. Provide housing portal link.",
-    priority: "low",
-    time: "2 hours ago",
-    status: "new",
-  },
-  {
-    id: 7,
-    student: "Clarisse Uwase",
-    subject: "Medical Accommodation Request",
-    summary: "Requesting exam accommodations due to medical condition",
-    aiConfidence: 87,
-    aiCategory: "Health Concerns",
-    department: "health-services",
-    aiSuggestion: "Auto-assigned. Requires medical documentation verification.",
-    priority: "high",
-    time: "1 hour ago",
-    status: "new",
-  },
-  {
-    id: 8,
-    student: "Patrick Niyonzima",
-    subject: "Dean's List Inquiry",
-    summary: "Question about requirements for Dean's List recognition",
-    aiConfidence: 82,
-    aiCategory: "Administrative",
-    department: "dean-of-students",
-    aiSuggestion: "Auto-assigned. Provide Dean's List criteria from student handbook.",
-    priority: "low",
-    time: "3 hours ago",
-    status: "new",
-  },
-];
 
 const confidenceColors = (confidence: number) => {
   if (confidence >= 70) return "bg-success/15 text-success border-success/40";
@@ -301,7 +193,7 @@ const FacilitatorDashboard = () => {
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [displayRequests, setDisplayRequests] = useState<DisplayRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [replyText, setReplyText] = useState("");
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [stats, setStats] = useState({
@@ -311,7 +203,7 @@ const FacilitatorDashboard = () => {
     satisfaction: "94%",
   });
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { } = useAuth();
 
   // Fetch tickets from API
   useEffect(() => {
@@ -325,20 +217,20 @@ const FacilitatorDashboard = () => {
         // Calculate stats
         const resolved = transformed.filter(r => r.status === "resolved");
         const aiResolvedCount = resolved.filter(r => r.aiConfidence >= 70).length;
+        const total = transformed.length;
+        const aiResolvedPct = total > 0 ? Math.round((aiResolvedCount / total) * 100) : 0;
         setStats({
           activeRequests: transformed.filter(r => r.status !== "resolved").length,
           aiResolved: aiResolvedCount,
-          avgResponse: "4m",
-          satisfaction: "94%",
+          avgResponse: `${aiResolvedPct}% AI`,
+          satisfaction: `${total} total`,
         });
         
         // Track already resolved tickets
         setResolvedIds(resolved.map(r => r.id));
       } catch (error) {
         console.error("Failed to fetch tickets:", error);
-        // Fall back to demo data
-        const transformed = requests.map((r, idx) => ({ ...r, id: r.id || idx + 1 }));
-        setDisplayRequests(transformed);
+        setDisplayRequests([]);
       } finally {
         setIsLoading(false);
       }
