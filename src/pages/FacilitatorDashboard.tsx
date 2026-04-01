@@ -439,7 +439,7 @@ const FacilitatorDashboard = () => {
                       </SelectItem>
                       {escalationDestinations.map((dest) => {
                         const IconComponent = dest.icon;
-                        const count = requests.filter(r => r.department === dest.id).length;
+                        const count = displayRequests.filter(r => r.department === dest.id).length;
                         return (
                           <SelectItem key={dest.id} value={dest.id}>
                             <div className="flex items-center gap-2">
