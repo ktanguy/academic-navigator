@@ -200,8 +200,8 @@ export const Hero = () => {
               className="mt-12 flex flex-wrap gap-6 border-t border-border pt-8"
             >
               {[
-                { value: "85%+", label: "AI accuracy" },
-                { value: "< 3s", label: "classification time" },
+                { value: "87%", label: "AI accuracy" },
+                { value: "< 500ms", label: "warm classification" },
                 { value: "5", label: "departments covered" },
               ].map((stat) => (
                 <div key={stat.label} className="flex items-baseline gap-2">

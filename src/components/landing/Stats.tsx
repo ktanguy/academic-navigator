@@ -121,10 +121,10 @@ export const Stats = () => {
             className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-4"
           >
             {[
-              { value: "12K+", label: "Active Students" },
-              { value: "8K+", label: "Tickets Resolved" },
-              { value: "94%", label: "Satisfaction" },
-              { value: "89%", label: "AI Accuracy" },
+              { value: "87%", label: "AI Accuracy" },
+              { value: "70%", label: "Confidence Threshold" },
+              { value: "5", label: "Departments Covered" },
+              { value: "$0", label: "Deployment Cost" },
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <p className="text-2xl font-bold text-foreground sm:text-3xl">{stat.value}</p>

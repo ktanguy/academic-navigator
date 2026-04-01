@@ -24,7 +24,6 @@ import {
   Monitor,
   FileText,
   GraduationCap,
-  Bell,
   Lock,
   Database,
   CheckCircle2,
@@ -68,9 +67,7 @@ import {
 import {
   TicketCategoryChart,
   TrendChart,
-  AIClassificationChart,
   FacilitatorWorkloadChart,
-  CategoryAccuracyTable,
   ResponseTimeChart,
   ResolutionRateChart,
   DepartmentPerformanceRadar,
@@ -145,41 +142,41 @@ const analyticsData = [
   {
     icon: Users,
     label: "Total Students",
-    value: 12847,
-    change: "+12%",
+    value: 0,
+    change: "",
     positive: true,
   },
   {
     icon: MessageSquare,
     label: "Support Tickets",
-    value: 1429,
-    change: "-8%",
+    value: 0,
+    change: "",
     positive: true,
   },
   {
     icon: Sparkles,
     label: "AI Resolutions",
-    value: 892,
-    change: "+23%",
+    value: 0,
+    change: "",
     positive: true,
   },
   {
     icon: BarChart3,
-    label: "Avg. Satisfaction",
-    value: 94,
+    label: "Resolution Rate",
+    value: 0,
     suffix: "%",
-    change: "+3%",
+    change: "",
     positive: true,
   },
 ];
 
 
 const departmentStats = [
-  { label: "Assignment Issues", percentage: 94, color: "#06142E" },
-  { label: "Grade Appeals", percentage: 87, color: "#3b82f6" },
-  { label: "Capstone", percentage: 91, color: "#22c55e" },
-  { label: "Administrative", percentage: 89, color: "#8b5cf6" },
-  { label: "General Inquiry", percentage: 92, color: "#f59e0b" },
+  { label: "Assignment", percentage: 91, color: "#06142E" },
+  { label: "Grades", percentage: 100, color: "#3b82f6" },
+  { label: "Capstone", percentage: 100, color: "#22c55e" },
+  { label: "Administrative", percentage: 60, color: "#8b5cf6" },
+  { label: "Technical", percentage: 100, color: "#f59e0b" },
 ];
 
 // Department options for user assignment
@@ -242,7 +239,7 @@ const AdminPanel = () => {
     "analytics"
   );
   const { toast } = useToast();
-  const { user: currentUser } = useAuth();
+  useAuth();
   
   // User management state
   const [users, setUsers] = useState(initialUsers);
@@ -262,7 +259,7 @@ const AdminPanel = () => {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   
   // Analytics state
-  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [, setIsLoadingStats] = useState(true);
   const [statsData, setStatsData] = useState(analyticsData);
   const [ticketStats, setTicketStats] = useState<{
     total: number;
@@ -271,8 +268,8 @@ const AdminPanel = () => {
     by_priority: Record<string, number>;
   } | null>(null);
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
-  const [allAppointments, setAllAppointments] = useState<any[]>([]);
-  const [facilitatorStats, setFacilitatorStats] = useState<Array<{
+  const [, setAllAppointments] = useState<any[]>([]);
+  const [, setFacilitatorStats] = useState<Array<{
     name: string;
     tickets: number;
     appointments: number;
@@ -314,8 +311,8 @@ const AdminPanel = () => {
   const [confidenceThreshold, setConfidenceThreshold] = useState([70]);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [autoAssign, setAutoAssign] = useState(true);
-  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const [activeSettingType, setActiveSettingType] = useState("");
+  const [, setSettingsModalOpen] = useState(false);
+  const [activeSettingType, ] = useState("");
 
   // Fetch users and stats from API
   useEffect(() => {
@@ -625,15 +622,6 @@ const AdminPanel = () => {
     toast({ title: "User Removed", description: `${selectedUser.name} has been removed from the system.` });
   };
 
-  const handleToggleStatus = (userId: number) => {
-    setUsers(users.map(u => {
-      if (u.id === userId) {
-        const newStatus = u.status === "Active" ? "Inactive" : "Active";
-        return { ...u, status: newStatus };
-      }
-      return u;
-    }));
-  };
 
   const handleExportReport = () => {
     const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -830,13 +818,6 @@ const AdminPanel = () => {
     }
   };
 
-  const handleSaveSettings = () => {
-    setSettingsModalOpen(false);
-    toast({ 
-      title: "Settings Saved", 
-      description: `${activeSettingType} configuration has been updated.` 
-    });
-  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -920,7 +901,7 @@ const AdminPanel = () => {
                 >
                   {/* Analytics Cards */}
                   <StaggerContainer className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {statsData.map((stat, index) => (
+                    {statsData.map((stat) => (
                       <AnimatedListItem key={stat.label}>
                         <AnimatedCard className="rounded-xl bg-card p-5 shadow-card">
                           <div className="flex items-center justify-between">
@@ -1116,7 +1097,7 @@ const AdminPanel = () => {
                       { label: "Categories", value: "5", change: classifierInfo?.categories?.filter(c => c !== 'general')?.join(", ") || "assignment, grades, capstone, administrative, technical" },
                       { label: "Open Tickets", value: ticketStats?.by_status?.['open']?.toString() || "0", change: "Awaiting response" },
                       { label: "Resolved", value: ((ticketStats?.by_status?.['closed'] || 0) + (ticketStats?.by_status?.['resolved'] || 0)).toString(), change: "Successfully closed" },
-                    ].map((stat, index) => (
+                    ].map((stat) => (
                       <AnimatedListItem key={stat.label}>
                         <AnimatedCard className="rounded-xl bg-card p-5 shadow-card">
                           <p className="text-2xl font-bold text-foreground">{stat.value}</p>
@@ -1661,16 +1642,16 @@ const AdminPanel = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      {["Assignment Issues", "Grade Appeals", "Capstone", "Administrative", "General Inquiry"].map((cat, index) => (
-                        <div key={cat} className="flex items-center justify-between rounded-lg border p-3">
+                      {departmentStats.map((cat) => (
+                        <div key={cat.label} className="flex items-center justify-between rounded-lg border p-3">
                           <div className="flex items-center gap-3">
-                            <div 
-                              className="h-3 w-3 rounded-full" 
-                              style={{ backgroundColor: departmentStats[index]?.color || "#666" }}
+                            <div
+                              className="h-3 w-3 rounded-full"
+                              style={{ backgroundColor: cat.color }}
                             />
-                            <span className="text-sm font-medium">{cat}</span>
+                            <span className="text-sm font-medium">{cat.label}</span>
                           </div>
-                          <Badge variant="secondary">{departmentStats[index]?.percentage || 0}% accuracy</Badge>
+                          <Badge variant="secondary">{cat.percentage}% accuracy</Badge>
                         </div>
                       ))}
                     </div>
