@@ -65,6 +65,10 @@ const urgencyLevels = [
   { id: "high", label: "Urgent", description: "Within 48 hours", color: "bg-destructive/15 text-destructive" },
 ];
 
+const commonCourseCodes = [
+  "CS101", "CS201", "CS301", "MATH101", "MATH201", "ENG101", "BIO101", "CHEM101", "PHYS101", "HIST101", "ECON101"
+];
+
 const timeSlots = [
   { time: "9:00 AM", available: true },
   { time: "9:30 AM", available: false },
@@ -138,6 +142,13 @@ const Booking = () => {
     };
     fetchFacilitators();
   }, [teacherId]);
+
+  // Auto-fill student ID from logged-in user
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({ ...prev, studentId: user.id.toString() }));
+    }
+  }, [user]);
 
   // Fetch available slots from office hours when date and facilitator are selected
   useEffect(() => {
@@ -730,12 +741,12 @@ const Booking = () => {
                       </h3>
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <Label htmlFor="studentId">Student ID *</Label>
+                          <Label htmlFor="studentId">Student ID (Auto-filled) *</Label>
                           <Input
                             id="studentId"
-                            placeholder="e.g., STU-20240001"
                             value={formData.studentId}
-                            onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+                            readOnly
+                            className="bg-muted"
                           />
                         </div>
                         <div className="space-y-2">
@@ -745,7 +756,11 @@ const Booking = () => {
                             placeholder="e.g., CS301, MATH201"
                             value={formData.courseCode}
                             onChange={(e) => setFormData({ ...formData, courseCode: e.target.value })}
+                            list="courseCodes"
                           />
+                          <datalist id="courseCodes">
+                            {commonCourseCodes.map(code => <option key={code} value={code} />)}
+                          </datalist>
                         </div>
                       </div>
                     </div>

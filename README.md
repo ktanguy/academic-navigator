@@ -21,17 +21,20 @@
 
 ## Project Overview
 
-Academic Navigator addresses the lack of a structured, trackable communication channel between students and academic support staff at higher education institutions. Students often do not know who to contact, how to follow up on a request, or what happened after submitting a support query.
+Academic Navigator addresses fragmented student support in universities by providing a unified platform for communication and scheduling.
 
-The platform provides:
+**Scenario:** A student struggling with CS301 homework browses the staff directory, finds the appropriate facilitator, books an appointment, and tracks progress—all in one place. (Structured support improves retention by 20% [1].)
 
-- **Staff Directory** — Browse facilitators by department, view office hours and availability
-- **AI Help Desk** — Submit support tickets routed automatically to the right department by a DistilBERT model
-- **Appointment Booking** — Multi-step booking wizard with real-time slot availability
-- **Student Portal** — Unified dashboard tracking all tickets and appointments
-- **Facilitator Dashboard** — Manage assigned tickets, reply to students, escalate when needed
-- **Admin Panel** — User management, analytics, AI review queue
-- **Email Notifications** — Automated emails for every key event (booking, reply, escalation, resolution)
+Key Features:
+- **Staff Directory:** Browse facilitators by department with office hours
+- **AI Help Desk:** Auto-route tickets using DistilBERT classification
+- **Appointment Booking:** Real-time slot availability and booking wizard
+- **Student Portal:** Unified dashboard for tickets and appointments
+- **Facilitator Dashboard:** Manage assignments, reply, and escalate
+- **Admin Panel:** Analytics, user management, AI review queue
+- **Email Notifications:** Automated alerts for all actions
+
+[1] Tinto, V. (2012). Completing College: Rethinking Institutional Action.
 
 ---
 
@@ -480,6 +483,7 @@ Tested against the live deployed instance on Render.com. Each endpoint was calle
 
 | Feature | Priority | Rationale |
 |---------|----------|-----------|
+| Conduct real-world testing | High | Validate effectiveness with actual students and facilitators; potential to replace Excel-based office hours logging |
 | Migrate SQLite to PostgreSQL | High | SQLite resets on Render redeploy; PostgreSQL gives persistent storage |
 | Google Calendar sync | High | Reduces double-booking for facilitators |
 | SSO with institutional accounts | High | Eliminates manual account creation |
